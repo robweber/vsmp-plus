@@ -40,8 +40,6 @@ def save_position(file, pos):
 parser = argparse.ArgumentParser(description='VSMP Settings')
 parser.add_argument('-f', '--file', type=check_mp4, required=True,
     help="File to grab screens of")
-parser.add_argument('-d', '--delay',  default=120,
-    help="Delay between screen updates, in seconds")
 parser.add_argument('-i', '--increment',  default=4,
     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
