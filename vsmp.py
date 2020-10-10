@@ -13,13 +13,12 @@
 import argparse, os, time, sys, random
 from PIL import Image
 import ffmpeg
+
 # Ensure this is the correct import for your particular screen
 from waveshare_epd import epd7in5_V2
 
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
-
-print(os.environ['PATH'])
 
 def generate_frame(in_filename, out_filename, time, width, height):
     ffmpeg.input(in_filename, ss=time).filter('scale', width, height, force_original_aspect_ratio=1).filter('pad', width, height, -1, -1).output(out_filename, vframes=1).overwrite_output().run(capture_stdout=True, capture_stderr=True)
@@ -50,12 +49,13 @@ parser.add_argument('-s', '--start', default=1,
 
 args = parser.parse_args()
 
+# get the full path to this file
 dir_path = os.path.dirname(os.path.realpath(__file__))
-print(dir_path)
+
 # create the tmp directory if it doesn't exist
 tmpDir = os.path.join(dir_path, 'tmp')
 if (not os.path.exists(tmpDir)):
-  os.mkdir(tmpDir)
+    os.mkdir(tmpDir)
 
 # check if we have a "save" file
 currentPosition = float(args.start)
