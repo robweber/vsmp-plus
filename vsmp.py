@@ -49,8 +49,9 @@ parser.add_argument('-s', '--start', default=1,
 
 args = parser.parse_args()
 
-# get the full path to this file
-dir_path = os.path.dirname(os.path.realpath(__file__))
+# setup some helpful variables
+dir_path = os.path.dirname(os.path.realpath(__file__)) # full path to the directory of this script
+video_name = os.path.splitext(os.path.basename(args.file))[0] # video name, no ext
 
 # create the tmp directory if it doesn't exist
 tmpDir = os.path.join(dir_path, 'tmp')
@@ -59,7 +60,7 @@ if (not os.path.exists(tmpDir)):
 
 # check if we have a "save" file
 currentPosition = float(args.start)
-saveFile = os.path.join(tmpDir,'save.txt')
+saveFile = os.path.join(tmpDir,video_name + '.txt')
 if( os.path.exists(saveFile)):
     try:
         f = open(saveFile)
@@ -78,7 +79,7 @@ epd.init()
 
 grabFile = os.path.join(tmpDir,'grab.jpg')
 
-print(args.file)
+print('Using %s' % args.file)
 # Ensure this matches your particular screen
 width = 800
 height = 480
@@ -103,7 +104,7 @@ pil_im = pil_im.convert(mode='1',dither=Image.FLOYDSTEINBERG)
 
 # display the image
 epd.display(epd.getbuffer(pil_im))
-print('Diplaying frame %d of %s' %(frame,os.path.basename(args.file)))
+print('Diplaying frame %d of %s' % (frame,video_name))
 
 # save the next position
 currentPosition = currentPosition + float(args.increment)
