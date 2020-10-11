@@ -6,16 +6,26 @@ import ffmpeg
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
-def time_to_play(frames, delay):
+def time_to_play(total_frames, increment, delay):
+    # find out how many frames will display
+    frames = total_frames/increment
+
+    print('%d out of %d frames will display' % (frames, total_frames))
+
     # frames * delay = total minutes to play
     total = (frames * delay)/60
 
+    result = ()
     if(total / 1440 > 1):
-        return (total/1440, 'days')
+        result = (total/1440, 'days')
     elif(total / 60 > 1):
-        return (total/60, 'hours')
+        result = (total/60, 'hours')
     else:
-        return (total, 'minutes')
+        result = (total, 'minutes')
+
+    print('Video will take %f %s to fully play' % result)
+
+
 
 def check_mp4(value):
     if not value.endswith('.mp4'):
@@ -57,25 +67,31 @@ if( os.path.exists(saveFile)):
         print('error opening save file')
 
 print('Analyzing %s' % args.file)
-print('Start %s, Increment %s, Delay %s' % (args.start, args.increment, args.delay))
+print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' % (args.start, args.increment, args.delay))
+print('')
 
 # Check how many frames are in the movie
 frameCount = int(ffmpeg.probe(args.file)['streams'][0]['nb_frames'])
 
-# divide total by increment to get total frames to display
-framesToDisplay = frameCount/float(args.increment)
+# find total time to play entire movie
+print('Entire Video:')
+time = time_to_play(frameCount, float(args.increment), float(args.delay))
+print('')
 
-print('Total video will show %d out of %d frames' % (framesToDisplay, frameCount))
-
-# find total time to play
-time = time_to_play(framesToDisplay, float(args.delay))
-
-print('It would take %f %s to play the whole video' % time)
 
 # find time to play what's left
-frameCount = frameCount - currentPosition
-framesToDisplay = frameCount/float(args.increment)
-time = time_to_play(framesToDisplay , float(args.delay))
+print('Remaining Video:')
+time = time_to_play(frameCount - currentPosition, float(args.increment), float(args.delay))
+print('')
 
-print('It would take %f %s to play based on current position' % time)
+# figure out how many 'real time' minutes per hour
+print('Minutes of Film Displayed Breakdown:')
+secondsPerIncrement = float(args.increment)/30
+framesPerSecond = secondsPerIncrement/float(args.delay) # this is how many "seconds" of film actually shown per second of realtime
+
+minutesPerHour = (framesPerSecond * 60)
+print('Assuming 30fps total video is %f minutes long' % (frameCount/30/60))
+print('%f minutes of film per hour' % (minutesPerHour))
+print('%f minutes of film per day' % (minutesPerHour * 24))
+
 exit()
