@@ -70,8 +70,11 @@ print('Analyzing %s' % args.file)
 print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' % (args.start, args.increment, args.delay))
 print('')
 
-# Check how many frames are in the movie
-frameCount = int(ffmpeg.probe(args.file)['streams'][0]['nb_frames'])
+# run ffmpeg.probe to get the frame rate and frame count
+probeInfo = ffmpeg.probe(args.file)
+frameRateStr = probeInfo['streams'][0]['r_frame_rate'].split('/')
+frameRate = float(frameRateStr[0])/float(frameRateStr[1])
+frameCount = int(probeInfo['streams'][0]['nb_frames'])
 
 # find total time to play entire movie
 print('Entire Video:')
@@ -86,11 +89,11 @@ print('')
 
 # figure out how many 'real time' minutes per hour
 print('Minutes of Film Displayed Breakdown:')
-secondsPerIncrement = float(args.increment)/30
+secondsPerIncrement = float(args.increment)/frameRate
 framesPerSecond = secondsPerIncrement/float(args.delay) # this is how many "seconds" of film actually shown per second of realtime
 
 minutesPerHour = (framesPerSecond * 60)
-print('Assuming 30fps total video is %f minutes long' % (frameCount/30/60))
+print('Video framerate is %ffps, total video is %f minutes long' % (frameRate, frameCount/frameRate/60))
 print('%f minutes of film per hour' % (minutesPerHour))
 print('%f minutes of film per day' % (minutesPerHour * 24))
 
