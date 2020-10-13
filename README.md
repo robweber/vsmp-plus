@@ -10,7 +10,7 @@ Once the requirements are in place (See Install document) the program itself is 
 * ```--increment``` - how many frames to increment
 * ```--start``` - the frame to start on, if you want to skip into the video X amount
 
-Rather than running as a service the program will run once, starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. On the next run the save file will be read and this frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. 
+Rather than running as a service the program will run once, starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. On the next run the save file will be read and this frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. The save file and log file for the program are both stored in the ```tmp``` directory, which is created the first time the program is run. 
 
 To get the program to run continuously simply use __cron__ to schedule the program to run on any schedule of your choosing. I found using cron perferable to making a service as it allowed more customization of the display timing. Plus it was less taxing and error prone than having a python script run indefinitely. An example cron schedule would be: 
 

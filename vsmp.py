@@ -68,7 +68,7 @@ epd.init()
 
 grabFile = os.path.join(tmpDir,'grab.jpg')
 
-logging.info('Using %s' % args.file)
+logging.info('Loading %s' % args.file)
 
 # Check how many frames are in the movie
 frameCount = int(ffmpeg.probe(args.file)['streams'][0]['nb_frames'])
