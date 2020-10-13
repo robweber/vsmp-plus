@@ -45,6 +45,18 @@ parser.add_argument('-s', '--start', default=1,
 
 args = parser.parse_args()
 
+# run ffmpeg.probe to get the frame rate and frame count
+probeInfo = ffmpeg.probe(args.file)
+frameRateStr = probeInfo['streams'][0]['r_frame_rate'].split('/')
+frameRate = float(frameRateStr[0])/float(frameRateStr[1])
+frameCount = int(probeInfo['streams'][0]['nb_frames'])
+
+# print some initial information
+print('Analyzing %s' % args.file)
+print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' % (args.start, args.increment, args.delay))
+print('Video framerate is %ffps, total video is %f minutes long' % (frameRate, frameCount/frameRate/60))
+print('')
+
 # setup some helpful variables
 dir_path = os.path.dirname(os.path.realpath(__file__)) # full path to the directory of this script
 video_name = os.path.splitext(os.path.basename(args.file))[0] # video name, no ext
@@ -66,16 +78,6 @@ if( os.path.exists(saveFile)):
     except:
         print('error opening save file')
 
-print('Analyzing %s' % args.file)
-print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' % (args.start, args.increment, args.delay))
-print('')
-
-# run ffmpeg.probe to get the frame rate and frame count
-probeInfo = ffmpeg.probe(args.file)
-frameRateStr = probeInfo['streams'][0]['r_frame_rate'].split('/')
-frameRate = float(frameRateStr[0])/float(frameRateStr[1])
-frameCount = int(probeInfo['streams'][0]['nb_frames'])
-
 # find total time to play entire movie
 print('Entire Video:')
 time = time_to_play(frameCount, float(args.increment), float(args.delay))
@@ -88,12 +90,11 @@ time = time_to_play(frameCount - currentPosition, float(args.increment), float(a
 print('')
 
 # figure out how many 'real time' minutes per hour
-print('Minutes of Film Displayed Breakdown:')
 secondsPerIncrement = float(args.increment)/frameRate
 framesPerSecond = secondsPerIncrement/float(args.delay) # this is how many "seconds" of film actually shown per second of realtime
 
 minutesPerHour = (framesPerSecond * 60)
-print('Video framerate is %ffps, total video is %f minutes long' % (frameRate, frameCount/frameRate/60))
+print('Minutes of film displayed breakdown:')
 print('%f minutes of film per hour' % (minutesPerHour))
 print('%f minutes of film per day' % (minutesPerHour * 24))
 
