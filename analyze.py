@@ -6,6 +6,27 @@ import ffmpeg
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
+# found this on https://stackoverflow.com/questions/4048651/python-function-to-convert-seconds-into-minutes-hours-and-days
+intervals = (
+    ('weeks', 604800),  # 60 * 60 * 24 * 7
+    ('days', 86400),    # 60 * 60 * 24
+    ('hours', 3600),    # 60 * 60
+    ('minutes', 60),
+    ('seconds', 1),
+)
+
+def display_time(seconds, granularity=3):
+    result = []
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("{} {}".format(value, name))
+    return ', '.join(result[:granularity])
+
 def time_to_play(total_frames, increment, delay):
     # find out how many frames will display
     frames = total_frames/increment
@@ -13,18 +34,9 @@ def time_to_play(total_frames, increment, delay):
     print('%d out of %d frames will display' % (frames, total_frames))
 
     # frames * delay = total minutes to play
-    total = (frames * delay)/60
+    total = (frames * delay)
 
-    result = ()
-    if(total / 1440 > 1):
-        result = (total/1440, 'days')
-    elif(total / 60 > 1):
-        result = (total/60, 'hours')
-    else:
-        result = (total, 'minutes')
-
-    print('Video will take %f %s to fully play' % result)
-
+    print('Video will take %s to fully play' % display_time(total))
 
 
 def check_mp4(value):
