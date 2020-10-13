@@ -1,6 +1,5 @@
-import argparse, os, time, sys, random
+import argparse, ffmpeg, logging, os, time, sys, random
 from PIL import Image
-import ffmpeg
 from waveshare_epd import epd7in5_V2 # ensure this is the correct import for your screen
 
 # set path to ffmpeg
@@ -20,7 +19,7 @@ def save_position(file, pos):
         f.write(str(pos))
         f.close()
     except Exception:
-        print('error writing file')
+        logging.error('error writing file')
 
 # parse the arguments
 parser = argparse.ArgumentParser(description='VSMP Settings')
@@ -46,6 +45,9 @@ tmpDir = os.path.join(dir_path, 'tmp')
 if (not os.path.exists(tmpDir)):
     os.mkdir(tmpDir)
 
+# setup the logger, log to tmp/log.log
+logging.basicConfig(filename=os.path.join(tmpDir,'log.log'), datefmt='%m/%d %H:%M', format="%(levelname)s %(asctime)s: %(message)s", level=getattr(logging, 'INFO'))
+
 # check if we have a "save" file
 currentPosition = float(args.start)
 saveFile = os.path.join(tmpDir,video_name + '.txt')
@@ -56,7 +58,7 @@ if( os.path.exists(saveFile)):
             currentPosition = float(line.strip())
         f.close()
     except:
-        print('error opening save file')
+        logging.error('error opening save file')
 
 # setup the screen
 epd = epd7in5_V2.EPD()
@@ -66,7 +68,7 @@ epd.init()
 
 grabFile = os.path.join(tmpDir,'grab.jpg')
 
-print('Using %s' % args.file)
+logging.info('Using %s' % args.file)
 
 # Check how many frames are in the movie
 frameCount = int(ffmpeg.probe(args.file)['streams'][0]['nb_frames'])
@@ -88,7 +90,7 @@ pil_im = pil_im.convert(mode='1',dither=Image.FLOYDSTEINBERG)
 
 # display the image
 epd.display(epd.getbuffer(pil_im))
-print('Diplaying frame %d of %s' % (frame,video_name))
+logging.info('Diplaying frame %d of %s' % (frame,video_name))
 
 # save the next position
 currentPosition = currentPosition + float(args.increment)
