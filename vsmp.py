@@ -1,21 +1,7 @@
-#!/usr/bin/python
-# -*- coding:utf-8 -*-
-
-# *************************
-# ** Before running this **
-# ** code ensure you've  **
-# ** turned on SPI on    **
-# ** your Raspberry Pi   **
-# ** & installed the     **
-# ** Waveshare library   **
-# *************************
-
 import argparse, os, time, sys, random
 from PIL import Image
 import ffmpeg
-
-# Ensure this is the correct import for your particular screen
-from waveshare_epd import epd7in5_V2
+from waveshare_epd import epd7in5_V2 # ensure this is the correct import for your screen
 
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
@@ -51,6 +37,10 @@ args = parser.parse_args()
 dir_path = os.path.dirname(os.path.realpath(__file__)) # full path to the directory of this script
 video_name = os.path.splitext(os.path.basename(args.file))[0] # video name, no ext
 
+# Modify these to match your particular screen
+width = 800
+height = 480
+
 # create the tmp directory if it doesn't exist
 tmpDir = os.path.join(dir_path, 'tmp')
 if (not os.path.exists(tmpDir)):
@@ -71,21 +61,17 @@ if( os.path.exists(saveFile)):
 # setup the screen
 epd = epd7in5_V2.EPD()
 
-# Initialise and clear the screen
+# Initialize the screen
 epd.init()
-#epd.Clear()
 
 grabFile = os.path.join(tmpDir,'grab.jpg')
 
 print('Using %s' % args.file)
-# Ensure this matches your particular screen
-width = 800
-height = 480
 
 # Check how many frames are in the movie
 frameCount = int(ffmpeg.probe(args.file)['streams'][0]['nb_frames'])
 
-# Pick a random frame
+# set the position we want to use
 frame = currentPosition
 
 # Convert that frame to Timecode
