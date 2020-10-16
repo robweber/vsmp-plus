@@ -1,4 +1,4 @@
-import argparse, ffmpeg, logging, os, time, sys, random
+import argparse, ffmpeg, logging, os, time, sys, random, utils
 from PIL import Image
 from waveshare_epd import epd7in5_V2 # ensure this is the correct import for your screen
 
@@ -7,11 +7,6 @@ os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
 def generate_frame(in_filename, out_filename, time, width, height):
     ffmpeg.input(in_filename, ss=time).filter('scale', width, height, force_original_aspect_ratio=1).filter('pad', width, height, -1, -1).output(out_filename, vframes=1).overwrite_output().run(capture_stdout=True, capture_stderr=True)
-
-def check_mp4(value):
-    if not value.endswith('.mp4'):
-        raise argparse.ArgumentTypeError("%s should be an .mp4 file" % value)
-    return value
 
 def check_dir(value):
     if(not os.path.exists(value) and not os.path.isdir(value)):
@@ -51,30 +46,11 @@ def find_next_video(dir, lastPlayed):
     # return this video
     return os.path.join(dir, fileList[index])
 
-def read_file(file):
-    result = ''
-    try:
-        f = open(file)
-        for line in f:
-            result = result + line
-        f.close()
-    except Exception:
-        logging.error('error opening file %s' % file)
-
-    return result
-
-def write_file(file, pos):
-    try:
-        f = open(file, 'w')
-        f.write(str(pos))
-        f.close()
-    except Exception:
-        logging.error('error writing file')
 
 # parse the arguments
 parser = argparse.ArgumentParser(description='VSMP Settings')
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-f', '--file', type=check_mp4,
+group.add_argument('-f', '--file', type=utils.check_mp4,
     help="File to grab screens of")
 group.add_argument('-d', '--dir', type=check_dir,
     help="Dir to play videos from (in order)")
@@ -99,7 +75,7 @@ if (not os.path.exists(tmpDir)):
 lastPlayedFile = os.path.join(tmpDir, 'last_played.txt')
 
 # set the video file information
-video_file = find_video(args, read_file(lastPlayedFile))
+video_file = find_video(args, utils.read_file(lastPlayedFile))
 video_name = os.path.splitext(os.path.basename(video_file))[0] # video name, no ext
 
 # setup the logger, log to tmp/log.log
@@ -109,7 +85,7 @@ logging.basicConfig(filename=os.path.join(tmpDir,'log.log'), datefmt='%m/%d %H:%
 currentPosition = float(args.start)
 saveFile = os.path.join(tmpDir, video_name + '.txt')
 if( os.path.exists(saveFile)):
-    currentPosition = float(read_file(saveFile))
+    currentPosition = float(utils.read_file(saveFile))
 
 # setup the screen
 epd = epd7in5_V2.EPD()
@@ -121,11 +97,11 @@ grabFile = os.path.join(tmpDir,'grab.jpg')
 
 logging.info('Loading %s' % video_file)
 
-# Check how many frames are in the movie
-frameCount = int(ffmpeg.probe(video_file)['streams'][0]['nb_frames'])
+# get some info about the video (frame rate, total frames, runtime)
+videoInfo = utils.get_video_info(video_file)
 
-if(currentPosition >= frameCount):
-    currentPosition = args.start # in case we went over the frameCount
+if(currentPosition >= videoInfo['frame_count']):
+    currentPosition = args.start # in case we went over the frame count
 
 # set the position we want to use
 frame = currentPosition
@@ -148,18 +124,18 @@ logging.info('Diplaying frame %d of %s' % (frame,video_name))
 
 # save the next position
 currentPosition = currentPosition + float(args.increment)
-if(currentPosition >= frameCount):
+if(currentPosition >= videoInfo['frame_count']):
     if(args.dir is not None):
         # if in dir mode find the next video
-        video_file = find_next_video(args.dir, read_file(lastPlayedFile))
+        video_file = find_next_video(args.dir, utils.read_file(lastPlayedFile))
         logging.info('Will play %s on next run' % video_file)
 
     # start over if we got to the end
     currentPosition = args.start
 
 # save the next position and last video played filename
-write_file(saveFile, currentPosition)
-write_file(lastPlayedFile, video_file)
+utils.write_file(saveFile, currentPosition)
+utils.write_file(lastPlayedFile, video_file)
 
 # NB We should run sleep() while the display is resting more often, but there's a bug in the driver that's slightly fiddly to fix. Instead of just sleeping, it completely shuts down SPI communication 
 epd.sleep()

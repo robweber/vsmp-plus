@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-import argparse, os, time, sys, random
-import ffmpeg
+import argparse, logging, os, time, sys, random, utils
 
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
@@ -39,15 +38,10 @@ def time_to_play(total_frames, increment, delay):
     print('Video will take %s to fully play' % display_time(total))
 
 
-def check_mp4(value):
-    if not value.endswith('.mp4'):
-        raise argparse.ArgumentTypeError("%s should be an .mp4 file" % value)
-    return value
-
 # parse the arguments
 parser = argparse.ArgumentParser(description='VSMP Settings')
-parser.add_argument('-f', '--file', type=check_mp4, required=True,
-    help="File to grab screens of")
+parser.add_argument('-f', '--file', type=utils.check_mp4, required=True,
+    help="File to analyze")
 parser.add_argument('-d', '--delay',  default=120,
     help="Delay between screen updates, in seconds")
 parser.add_argument('-i', '--increment',  default=4,
@@ -57,16 +51,15 @@ parser.add_argument('-s', '--start', default=1,
 
 args = parser.parse_args()
 
+logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s", level=getattr(logging, 'INFO'))
+
 # run ffmpeg.probe to get the frame rate and frame count
-probeInfo = ffmpeg.probe(args.file)
-frameRateStr = probeInfo['streams'][0]['r_frame_rate'].split('/')
-frameRate = float(frameRateStr[0])/float(frameRateStr[1])
-frameCount = int(probeInfo['streams'][0]['nb_frames'])
+videoInfo = utils.get_video_info(args.file)
 
 # print some initial information
 print('Analyzing %s' % args.file)
 print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' % (args.start, args.increment, args.delay))
-print('Video framerate is %ffps, total video is %f minutes long' % (frameRate, frameCount/frameRate/60))
+print('Video framerate is %ffps, total video is %f minutes long' % (videoInfo['fps'], videoInfo['runtime']/60))
 print('')
 
 # setup some helpful variables
@@ -82,27 +75,21 @@ if (not os.path.exists(tmpDir)):
 currentPosition = float(args.start)
 saveFile = os.path.join(tmpDir,video_name + '.txt')
 if( os.path.exists(saveFile)):
-    try:
-        f = open(saveFile)
-        for line in f:
-            currentPosition = float(line.strip())
-        f.close()
-    except:
-        print('error opening save file')
+    currentPosition = float(utils.read_file(saveFile))
 
 # find total time to play entire movie
 print('Entire Video:')
-time = time_to_play(frameCount, float(args.increment), float(args.delay))
+time = time_to_play(videoInfo['frame_count'], float(args.increment), float(args.delay))
 print('')
 
 
 # find time to play what's left
 print('Remaining Video:')
-time = time_to_play(frameCount - currentPosition, float(args.increment), float(args.delay))
+time = time_to_play(videoInfo['frame_count'] - currentPosition, float(args.increment), float(args.delay))
 print('')
 
 # figure out how many 'real time' minutes per hour
-secondsPerIncrement = float(args.increment)/frameRate
+secondsPerIncrement = float(args.increment)/videoInfo['fps']
 framesPerSecond = secondsPerIncrement/float(args.delay) # this is how many "seconds" of film actually shown per second of realtime
 
 minutesPerHour = (framesPerSecond * 60)
