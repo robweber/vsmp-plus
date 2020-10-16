@@ -106,8 +106,8 @@ if(currentPosition >= videoInfo['frame_count']):
 # set the position we want to use
 frame = currentPosition
 
-# Convert that frame to Timecode
-msTimecode = "%dms"%(frame*41.666666)
+# Convert that frame to ms from start of video (frame/fps) * 1000
+msTimecode = "%dms" % ((frame/videoInfo['fps']) * 1000)
 
 # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it as grab.jpg
 generate_frame(video_file, grabFile, msTimecode, width, height)
@@ -120,7 +120,7 @@ pil_im = pil_im.convert(mode='1',dither=Image.FLOYDSTEINBERG)
 
 # display the image
 epd.display(epd.getbuffer(pil_im))
-logging.info('Diplaying frame %d of %s' % (frame,video_name))
+logging.info('Diplaying frame %d (%d seconds) of %s' % (frame,frame/videoInfo['fps'],video_name))
 
 # save the next position
 currentPosition = currentPosition + float(args.increment)
