@@ -121,7 +121,7 @@ if(args.timecode):
     font18 = ImageFont.truetype(os.path.join(dir_path, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
     # show the timecode of the video in the format HH:mm:SS
-    message = '%s' % utils.display_time(frame/videoInfo['fps'],3,'{value:02d}',':',True, utils.intervals[1:])
+    message = '%s' % utils.display_time(frame/videoInfo['fps'],3,'{value:02d}',':',True, utils.intervals[2:])
 
     # get a draw object
     draw = ImageDraw.Draw(pil_im)
