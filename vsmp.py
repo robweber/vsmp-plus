@@ -1,5 +1,5 @@
 import argparse, ffmpeg, logging, os, time, sys, random, utils
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2 # ensure this is the correct import for your screen
 
 # set path to ffmpeg
@@ -58,6 +58,8 @@ parser.add_argument('-i', '--increment',  default=4,
     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
     help="Start at a specific frame")
+parser.add_argument('-t', '--timecode', action='store_true',
+    help='show the video timecode on the bottom of the display')
 
 args = parser.parse_args()
 
@@ -114,6 +116,20 @@ generate_frame(video_file, grabFile, msTimecode, width, height)
 
 # Open grab.jpg in PIL
 pil_im = Image.open(grabFile)
+
+if(args.timecode):
+    font18 = ImageFont.truetype(os.path.join(dir_path, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
+
+    # show the timecode of the video in the format HH:mm:SS
+    message = '%s' % utils.display_time(frame/videoInfo['fps'],3,'{value:02d}',':',True, utils.intervals[1:])
+
+    # get a draw object
+    draw = ImageDraw.Draw(pil_im)
+    draw.rectangle((width/2-100,0,width/2+100,20), fill = (0,0,0))
+    tw,th = draw.textsize(message) # gets the width and height of the text drawn
+
+    # draw timecode, centering on the middle
+    draw.text(((width-tw)/2,height-20), message, font = font18, fill = (255,255,255))
 
 # Dither the image into a 1 bit bitmap (Just zeros and ones)
 pil_im = pil_im.convert(mode='1',dither=Image.FLOYDSTEINBERG)
