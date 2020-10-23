@@ -12,7 +12,7 @@ sudo update-alternatives --config python
 
 sudo pip3 install spidev
 sudo pip3 install image
-sudo pip4 install ffmpeg-python
+sudo pip3 install ffmpeg-python
 
 # set the path to the av libs
 sudo cp ffmpeglibs.conf /etc/ld.so.conf.d/ffmpeglibs.conf
