@@ -7,12 +7,12 @@ from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2  # ensure this is the correct import for your screen
 
 # setup some helpful variables
-dir_path = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
 
 # create the tmp directory if it doesn't exist
-tmpDir = os.path.join(dir_path, 'tmp')
-if (not os.path.exists(tmpDir)):
-    os.mkdir(tmpDir)
+TMP_DIR = os.path.join(DIR_PATH, 'tmp')
+if (not os.path.exists(TMP_DIR)):
+    os.mkdir(TMP_DIR)
 
 # Modify these to match your particular screen
 width = 800
@@ -86,10 +86,10 @@ parser.add_argument('-t', '--timecode', action='store_true',
 
 args = parser.parse_args()
 
-lastPlayedFile = os.path.join(tmpDir, 'last_played.txt')
+lastPlayedFile = os.path.join(TMP_DIR, 'last_played.txt')
 
 # setup the logger, log to tmp/log.log
-logging.basicConfig(filename=os.path.join(tmpDir, 'log.log'), datefmt='%m/%d %H:%M',
+logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
 
@@ -98,7 +98,7 @@ video_file = find_video(args, utils.read_file(lastPlayedFile))
 
 # check if we have a "save" file
 currentPosition = float(args.start)
-saveFile = os.path.join(tmpDir, video_file['name'] + '.txt')
+saveFile = os.path.join(TMP_DIR, video_file['name'] + '.txt')
 if(os.path.exists(saveFile)):
     currentPosition = float(utils.read_file(saveFile))
 
@@ -108,7 +108,7 @@ epd = epd7in5_V2.EPD()
 # Initialize the screen
 epd.init()
 
-grabFile = os.path.join(tmpDir, 'grab.jpg')
+grabFile = os.path.join(TMP_DIR, 'grab.jpg')
 
 logging.info('Loading %s' % video_file['file'])
 
@@ -132,7 +132,7 @@ generate_frame(video_file['file'], grabFile, msTimecode, width, height)
 pil_im = Image.open(grabFile)
 
 if(args.timecode):
-    font18 = ImageFont.truetype(os.path.join(dir_path, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
+    font18 = ImageFont.truetype(os.path.join(DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
     # show the timecode of the video in the format HH:mm:SS
     message = '%s' % utils.display_time(seconds=frame/videoInfo['fps'],
