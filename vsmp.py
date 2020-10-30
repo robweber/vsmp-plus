@@ -9,6 +9,18 @@ from waveshare_epd import epd7in5_V2  # ensure this is the correct import for yo
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
+# setup some helpful variables
+dir_path = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
+
+# create the tmp directory if it doesn't exist
+tmpDir = os.path.join(dir_path, 'tmp')
+if (not os.path.exists(tmpDir)):
+    os.mkdir(tmpDir)
+
+# Modify these to match your particular screen
+width = 800
+height = 480
+
 
 def generate_frame(in_filename, out_filename, time, width, height):
     ffmpeg.input(in_filename, ss=time) \
@@ -77,17 +89,6 @@ parser.add_argument('-t', '--timecode', action='store_true',
 
 args = parser.parse_args()
 
-# setup some helpful variables
-dir_path = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
-
-# Modify these to match your particular screen
-width = 800
-height = 480
-
-# create the tmp directory if it doesn't exist
-tmpDir = os.path.join(dir_path, 'tmp')
-if (not os.path.exists(tmpDir)):
-    os.mkdir(tmpDir)
 lastPlayedFile = os.path.join(tmpDir, 'last_played.txt')
 
 # setup the logger, log to tmp/log.log
