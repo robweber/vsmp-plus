@@ -26,7 +26,7 @@ def check_dir(value):
 
 
 def find_video(args, lastPlayed):
-    result = None
+    result = {}
 
     # if in file mode, just use the file name
     if(args.file is not None):
@@ -34,10 +34,11 @@ def find_video(args, lastPlayed):
     else:
         # we're in dir mode, use the name of the last played file
         if(lastPlayed != ''):
-            result = lastPlayed
+            result['file'] = lastPlayed
         else:
-            result = find_next_video(args.dir, lastPlayed)
+            result['file'] = find_next_video(args.dir, lastPlayed)
 
+    result['name'] = os.path.splitext(os.path.basename(result['file']))[0] #video name, no ext
     return result
 
 
@@ -91,7 +92,6 @@ lastPlayedFile = os.path.join(tmpDir, 'last_played.txt')
 
 # set the video file information
 video_file = find_video(args, utils.read_file(lastPlayedFile))
-video_name = os.path.splitext(os.path.basename(video_file))[0]  # video name, no ext
 
 # setup the logger, log to tmp/log.log
 logging.basicConfig(filename=os.path.join(tmpDir, 'log.log'), datefmt='%m/%d %H:%M',
@@ -100,7 +100,7 @@ logging.basicConfig(filename=os.path.join(tmpDir, 'log.log'), datefmt='%m/%d %H:
 
 # check if we have a "save" file
 currentPosition = float(args.start)
-saveFile = os.path.join(tmpDir, video_name + '.txt')
+saveFile = os.path.join(tmpDir, video_file['name'] + '.txt')
 if(os.path.exists(saveFile)):
     currentPosition = float(utils.read_file(saveFile))
 
@@ -112,12 +112,13 @@ epd.init()
 
 grabFile = os.path.join(tmpDir, 'grab.jpg')
 
-logging.info('Loading %s' % video_file)
+logging.info('Loading %s' % video_file['file'])
 
 # get some info about the video (frame rate, total frames, runtime)
-videoInfo = utils.get_video_info(video_file)
+videoInfo = utils.get_video_info(video_file['file'])
 
 if(currentPosition >= videoInfo['frame_count']):
+    video_file = find_video(args, utils.read_file(lastPlayedFile))
     currentPosition = args.start  # in case we went over the frame count
 
 # set the position we want to use
@@ -127,7 +128,7 @@ frame = currentPosition
 msTimecode = "%dms" % ((frame/videoInfo['fps']) * 1000)
 
 # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it as grab.jpg
-generate_frame(video_file, grabFile, msTimecode, width, height)
+generate_frame(video_file['file'], grabFile, msTimecode, width, height)
 
 # Open grab.jpg in PIL
 pil_im = Image.open(grabFile)
@@ -156,15 +157,13 @@ pil_im = pil_im.convert(mode='1', dither=Image.FLOYDSTEINBERG)
 
 # display the image
 epd.display(epd.getbuffer(pil_im))
-logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, frame/videoInfo['fps'], video_name))
+logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, frame/videoInfo['fps'], video_file['name']))
 
 # save the next position
 currentPosition = currentPosition + float(args.increment)
 if(currentPosition >= videoInfo['frame_count']):
-    if(args.dir is not None):
-        # if in dir mode find the next video
-        video_file = find_next_video(args.dir, utils.read_file(lastPlayedFile))
-        logging.info('Will play %s on next run' % video_file)
+    video_file = find_video(args, utils.read_file(lastPlayedFile))
+    logging.info('Will start %s on next run' % video_file)
 
     # start over if we got to the end
     currentPosition = args.start
