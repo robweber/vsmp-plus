@@ -90,13 +90,13 @@ if (not os.path.exists(tmpDir)):
     os.mkdir(tmpDir)
 lastPlayedFile = os.path.join(tmpDir, 'last_played.txt')
 
-# set the video file information
-video_file = find_video(args, utils.read_file(lastPlayedFile))
-
 # setup the logger, log to tmp/log.log
 logging.basicConfig(filename=os.path.join(tmpDir, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
+
+# set the video file information
+video_file = find_video(args, utils.read_file(lastPlayedFile))
 
 # check if we have a "save" file
 currentPosition = float(args.start)
@@ -170,7 +170,7 @@ if(currentPosition >= videoInfo['frame_count']):
 
 # save the next position and last video played filename
 utils.write_file(saveFile, currentPosition)
-utils.write_file(lastPlayedFile, video_file)
+utils.write_file(lastPlayedFile, video_file['file'])
 
 epd.sleep()
 exit()
