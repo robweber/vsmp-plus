@@ -3,9 +3,6 @@ import logging
 import os
 import utils
 
-# set path to ffmpeg
-os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
-
 
 def time_to_play(total_frames, increment, delay):
     # find out how many frames will display

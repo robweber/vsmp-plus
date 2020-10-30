@@ -1,6 +1,10 @@
 import argparse
 import ffmpeg
 import logging
+import os
+
+# set path to ffmpeg
+os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
 intervals = (
     ('months', 604800),  # 60 * 60 * 24 * 30

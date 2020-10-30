@@ -6,9 +6,6 @@ import utils
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2  # ensure this is the correct import for your screen
 
-# set path to ffmpeg
-os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
-
 # setup some helpful variables
 dir_path = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
 
