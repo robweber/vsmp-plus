@@ -25,7 +25,7 @@ parser.add_argument('-d', '--delay',  default=120,
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
-                    help="Start at a specific frame")
+                    help="Number of seconds into the film to start")
 
 args = parser.parse_args()
 
@@ -35,10 +35,12 @@ logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
 # run ffmpeg.probe to get the frame rate and frame count
 videoInfo = utils.get_video_info(args.file)
 
+startFrame = utils.seconds_to_frames(args.start, videoInfo['fps'])
+
 # print some initial information
 print('Analyzing %s' % args.file)
 print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' %
-      (args.start, args.increment, args.delay))
+      (startFrame, args.increment, args.delay))
 print('Video framerate is %ffps, total video is %f minutes long' %
       (videoInfo['fps'], videoInfo['runtime']/60))
 print('')
@@ -54,14 +56,14 @@ if (not os.path.exists(tmpDir)):
     os.mkdir(tmpDir)
 
 # check if we have a "save" file
-currentPosition = float(args.start)
+currentPosition = startFrame
 saveFile = os.path.join(tmpDir, video_name + '.txt')
 if(os.path.exists(saveFile)):
     currentPosition = float(utils.read_file(saveFile))
 
 # find total time to play entire movie
 print('Entire Video:')
-time_to_play(videoInfo['frame_count'],
+time_to_play(videoInfo['frame_count'] - startFrame,
              float(args.increment), float(args.delay))
 print('')
 
@@ -73,7 +75,7 @@ time_to_play(videoInfo['frame_count'] - currentPosition,
 print('')
 
 # figure out how many 'real time' minutes per hour
-secondsPerIncrement = float(args.increment)/videoInfo['fps']
+secondsPerIncrement = utils.frames_to_seconds(args.increment, videoInfo['fps'])
 framesPerSecond = secondsPerIncrement/float(args.delay)  # this is how many "seconds" of film actually shown per second of realtime
 
 minutesPerHour = (framesPerSecond * 60)
