@@ -41,6 +41,14 @@ def display_time(seconds, granularity=3, timeFormat="{value} {interval_name}",
     return joiner.join(result[:granularity])
 
 
+def frames_to_seconds(frames, fps):
+    return frames/fps
+
+
+def seconds_to_frames(seconds, fps):
+    return seconds * fps
+
+
 # Check if a file is an mp4
 def check_mp4(value):
     if not value.endswith('.mp4'):
