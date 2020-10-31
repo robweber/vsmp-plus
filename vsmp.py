@@ -49,14 +49,16 @@ def find_video(args, lastPlayed, next=False):
 
     result['name'] = os.path.splitext(os.path.basename(result['file']))[0] #video name, no ext
 
+    # get some info about the video (frame rate, total frames, runtime)
+    result['info'] = utils.get_video_info(result['file'])
+
+
     # find the saved position
-    result['pos'] = float(args.start)
+    result['pos'] = float(utils.seconds_to_frames(args.start, result['info']['fps']))
+    print('%f' % utils.seconds_to_frames(args.start, result['info']['fps']))
     saveFile = os.path.join(TMP_DIR, result['name'] + '.txt')
     if(os.path.exists(saveFile)):
         result['pos'] = float(utils.read_file(saveFile))
-
-    # get some info about the video (frame rate, total frames, runtime)
-    result['info'] = utils.get_video_info(result['file'])
 
     return result
 
@@ -94,7 +96,7 @@ group.add_argument('-d', '--dir', type=check_dir,
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
-                    help="Start at a specific frame")
+                    help="Number of seconds into the video to start")
 parser.add_argument('-t', '--timecode', action='store_true',
                     help='show the video timecode on the bottom of the display')
 
@@ -128,7 +130,7 @@ if(video_file['pos'] >= video_file['info']['frame_count']):
 frame = video_file['pos']
 
 # Convert that frame to ms from start of video (frame/fps) * 1000
-msTimecode = "%dms" % ((frame/video_file['info']['fps']) * 1000)
+msTimecode = "%dms" % (utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000)
 
 # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it as grab.jpg
 generate_frame(video_file['file'], grabFile, msTimecode, width, height)
@@ -140,7 +142,7 @@ if(args.timecode):
     font18 = ImageFont.truetype(os.path.join(DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
     # show the timecode of the video in the format HH:mm:SS
-    message = '%s' % utils.display_time(seconds=frame/video_file['info']['fps'],
+    message = '%s' % utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
                                         granularity=3,
                                         timeFormat='{value:02d}',
                                         joiner=':',
@@ -160,7 +162,7 @@ pil_im = pil_im.convert(mode='1', dither=Image.FLOYDSTEINBERG)
 
 # display the image
 epd.display(epd.getbuffer(pil_im))
-logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, frame/video_file['info']['fps'], video_file['name']))
+logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, utils.frames_to_seconds(frame, video_file['info']['fps']), video_file['name']))
 
 # save the next position
 video_file['pos'] = video_file['pos'] + float(args.increment)
