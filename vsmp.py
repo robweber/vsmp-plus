@@ -52,10 +52,12 @@ def find_video(args, lastPlayed, next=False):
     # get some info about the video (frame rate, total frames, runtime)
     result['info'] = utils.get_video_info(result['file'])
 
+    # modify the end frame, if needed
+    result['info']['frames_count'] = result['info']['frame_count'] - utils.seconds_to_frames(args.end, result['info']['fps'])
 
     # find the saved position
     result['pos'] = float(utils.seconds_to_frames(args.start, result['info']['fps']))
-    print('%f' % utils.seconds_to_frames(args.start, result['info']['fps']))
+
     saveFile = os.path.join(TMP_DIR, result['name'] + '.txt')
     if(os.path.exists(saveFile)):
         result['pos'] = float(utils.read_file(saveFile))
@@ -97,6 +99,8 @@ parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the video to start")
+parser.add_argument('-e', '--end', default=0,
+                    help="Number of seconds to cut off the end of the video")
 parser.add_argument('-t', '--timecode', action='store_true',
                     help='show the video timecode on the bottom of the display')
 

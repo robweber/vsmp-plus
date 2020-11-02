@@ -26,7 +26,8 @@ parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the film to start")
-
+parser.add_argument('-e', '--end', default=0,
+                    help="Number of seconds to cut off the end of the video")
 args = parser.parse_args()
 
 logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
@@ -36,11 +37,12 @@ logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
 videoInfo = utils.get_video_info(args.file)
 
 startFrame = utils.seconds_to_frames(args.start, videoInfo['fps'])
+videoInfo['frame_count'] = videoInfo['frame_count'] - utils.seconds_to_frames(args.end, videoInfo['fps'])
 
 # print some initial information
 print('Analyzing %s' % args.file)
-print('Starting Frame: %s, Frame Increment: %s, Delay between updates: %s' %
-      (startFrame, args.increment, args.delay))
+print('Starting Frame: %s, Ending Frame: %s, Frame Increment: %s, Delay between updates: %s' %
+      (startFrame, videoInfo['frame_count'], args.increment, args.delay))
 print('Video framerate is %ffps, total video is %f minutes long' %
       (videoInfo['fps'], videoInfo['runtime']/60))
 print('')
