@@ -42,7 +42,7 @@ videoInfo['frame_count'] = videoInfo['frame_count'] - utils.seconds_to_frames(ar
 # print some initial information
 print('Analyzing %s' % args.file)
 print('Starting Frame: %s, Ending Frame: %s, Frame Increment: %s, Delay between updates: %s' %
-      (startFrame, videoInfo['frame_count'], args.increment, args.delay))
+      (startFrame, videoInfo['frame_count'] - startFrame, args.increment, args.delay))
 print('Video framerate is %ffps, total video is %f minutes long' %
       (videoInfo['fps'], videoInfo['runtime']/60))
 print('')
