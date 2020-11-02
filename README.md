@@ -9,6 +9,7 @@ Once the requirements are in place (See Install document) the program itself is 
 * ```--file``` - the video file to pull frames from. Must be an MP4 
 * ```--increment``` - how many frames to increment
 * ```--start``` - the number of seconds into the video to start, if you want to skip into the video X amount
+* ```--end``` - the number of seconds to cut off the end of the video, useful for skipping credit sequences
 * ```--timecode``` - show the timecode HH:mm:SS of the video on the bottom of the display, default is false
 
 Rather than running as a service the program will run once, starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. On the next run the save file will be read and this frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. The save file and log file for the program are both stored in the ```tmp``` directory, which is created the first time the program is run. 
@@ -28,7 +29,7 @@ The analyze program will take the same inputs as above the addition of the ```--
 
 ```
 Analyzing /home/pi/Videos/Test.Video.mp4 
-Starting Frame: 200, Frame Increment: 30, Delay between updates: 120
+Starting Frame: 200, Ending Frame: 186672, Frame Increment: 30, Delay between updates: 120
 Video framerate is 29.970000fps, total video is 103.810477 minutes long
 
 Entire Video: 
