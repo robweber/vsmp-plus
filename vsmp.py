@@ -42,10 +42,10 @@ def find_video(args, lastPlayed, next=False):
         result = args.file
     else:
         # we're in dir mode, use the name of the last played file
-        if(lastPlayed != ''):
+        if(lastPlayed != '' and not next):
             result['file'] = lastPlayed
         else:
-            result['file'] = find_next_video(args.dir, lastPlayed, next)
+            result['file'] = find_next_video(args.dir, lastPlayed)
 
     result['name'] = os.path.splitext(os.path.basename(result['file']))[0] #video name, no ext
 
@@ -65,20 +65,16 @@ def find_video(args, lastPlayed, next=False):
     return result
 
 
-def find_next_video(dir, lastPlayed, next=False):
+def find_next_video(dir, lastPlayed):
     # list all files in the directory
     fileList = os.listdir(dir)
 
     index = 0  # assume we'll just use the first video
     if(lastPlayed != ''):
         for aFile in fileList:
-            index = index + 1
+            index = index + 1 #increment by one (ie, next vid)
             if(aFile == os.path.basename(lastPlayed)):
                 break
-
-    # if 'next' is True, force the next video in the list
-    if(next):
-        index = index + 1
 
     # go back to start of list if we got to the end
     if(index >= len(fileList)):
