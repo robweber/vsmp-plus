@@ -53,7 +53,7 @@ def find_video(args, lastPlayed, next=False):
     result['info'] = utils.get_video_info(result['file'])
 
     # modify the end frame, if needed
-    result['info']['frames_count'] = result['info']['frame_count'] - utils.seconds_to_frames(args.end, result['info']['fps'])
+    result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(args.end, result['info']['fps'])
 
     # find the saved position
     result['pos'] = float(utils.seconds_to_frames(args.start, result['info']['fps']))
@@ -173,7 +173,7 @@ video_file['pos'] = video_file['pos'] + float(args.increment)
 
 if(video_file['pos'] >= video_file['info']['frame_count']):
     #save position of old video
-    video_file['pos'] = arg.start
+    video_file['pos'] = args.start
     utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
 
     # set 'next' to True to force new file
