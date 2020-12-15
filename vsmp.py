@@ -67,7 +67,7 @@ def find_video(args, lastPlayed, next=False):
 
 def find_next_video(dir, lastPlayed):
     # list all files in the directory
-    fileList = os.listdir(dir)
+    fileList = sorted(os.listdir(dir))
 
     index = 0  # assume we'll just use the first video
     if(lastPlayed != ''):
