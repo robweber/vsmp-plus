@@ -23,7 +23,7 @@ python /home/pi/very-slow-media-player/vsmp.py --file /path/to/file.mp4 --increm
 ```
 
 ## Find Timing
-Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? With this in mind the ```analyze.py`` file was born. 
+Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? With this in mind the ```analyze.py``` file was born. 
 
 The analyze program will take the same inputs as above the addition of the ```--delay``` argument. Delay is the amount of time in seconds between runs you intend to set with cron. Using these inputs the video is analyzed and some information is displayed regarding projected play times. 
 
