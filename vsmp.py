@@ -47,7 +47,7 @@ def find_video(args, lastPlayed, next=False):
         else:
             result['file'] = find_next_video(args.dir, lastPlayed)
 
-    result['name'] = os.path.splitext(os.path.basename(result['file']))[0] #video name, no ext
+    result['name'] = os.path.splitext(os.path.basename(result['file']))[0]  # video name, no ext
 
     # get some info about the video (frame rate, total frames, runtime)
     result['info'] = utils.get_video_info(result['file'])
@@ -72,7 +72,7 @@ def find_next_video(dir, lastPlayed):
     index = 0  # assume we'll just use the first video
     if(lastPlayed != ''):
         for aFile in fileList:
-            index = index + 1 #increment by one (ie, next vid)
+            index = index + 1  # increment by one (ie, next vid)
             if(aFile == os.path.basename(lastPlayed)):
                 break
 
@@ -168,7 +168,7 @@ logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, utils.frames_to_s
 video_file['pos'] = video_file['pos'] + float(args.increment)
 
 if(video_file['pos'] >= video_file['info']['frame_count']):
-    #save position of old video
+    # save position of old video
     video_file['pos'] = args.start
     utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
 
