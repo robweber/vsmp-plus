@@ -3,6 +3,7 @@ import logging
 import os
 import fnmatch
 import utils
+from termcolor import colored
 
 # full path to the directory of this script
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -21,7 +22,7 @@ def time_to_play(total_frames, increment, delay):
     # frames * delay = total minutes to play
     total = (frames * delay)
 
-    print('Video will take %s to fully play' % utils.display_time(total))
+    print(colored('Will take %s to fully play' % utils.display_time(total), 'red'))
 
 def analyze_video(file, start, end, increment, delay):
 
@@ -32,7 +33,7 @@ def analyze_video(file, start, end, increment, delay):
     videoInfo['frame_count'] = videoInfo['frame_count'] - utils.seconds_to_frames(end, videoInfo['fps'])
 
     # print some initial information
-    print('Analyzing %s' % file) 
+    print(colored('Analyzing %s' % file, 'green'))
     print('Starting Frame: %s, Ending Frame: %s, Frame Increment: %s, Delay between updates: %s' %
           (startFrame, videoInfo['frame_count'] - startFrame, increment, delay))
     print('Video framerate is %ffps, total video is %f minutes long' %
@@ -100,7 +101,7 @@ if(args.file is not None):
     analyze_video(args.file, args.start, args.end, args.increment, args.delay)
 else:
     # assume files play in order and files prior to the current have already played
-    print('Analyzing Entire Directory %s' % args.dir)
+    print(colored('Analyzing Entire Directory %s' % args.dir, 'green'))
 
     # get the currently playing file, if exists
     lastPlayedFile = utils.read_file(os.path.join(TMP_DIR, 'last_played.txt'))
@@ -126,7 +127,7 @@ else:
 
     # give a summary of the total play time left
     print('')
-    print('Time to play full directory:')
+    print(colored('Time to play full directory:', 'yellow'))
     time_to_play(totalFrames, float(args.increment), float(args.delay))
 
 exit()
