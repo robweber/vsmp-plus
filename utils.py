@@ -51,8 +51,8 @@ def seconds_to_frames(seconds, fps):
 
 # Check if a file is an mp4
 def check_mp4(value):
-    if not value.endswith('.mp4'):
-        raise argparse.ArgumentTypeError("%s should be an .mp4 file" % value)
+    if not os.path.exists(value) or not value.endswith('.mp4'):
+        raise argparse.ArgumentTypeError("%s does not exist or is not an .mp4 file" % value)
     return value
 
 
