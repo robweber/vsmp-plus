@@ -3,6 +3,7 @@ import ffmpeg
 import logging
 import os
 import utils
+import fnmatch
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2  # ensure this is the correct import for your screen
 
@@ -66,15 +67,18 @@ def find_video(args, lastPlayed, next=False):
 
 
 def find_next_video(dir, lastPlayed):
-    # list all files in the directory
-    fileList = sorted(os.listdir(dir))
+    # list all files in the directory, filter on mp4
+    fileList = sorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
 
-    index = 0  # assume we'll just use the first video
-    if(lastPlayed != ''):
-        for aFile in fileList:
-            index = index + 1  # increment by one (ie, next vid)
-            if(aFile == os.path.basename(lastPlayed)):
-                break
+    index = 0
+
+    # get the index of the last played file (if exists)
+    try:
+        index = fileList.index(os.path.basename(lastPlayed))
+        index = index + 1  # get the next one
+
+    except ValueError:
+        index = 0  # just use the first one
 
     # go back to start of list if we got to the end
     if(index >= len(fileList)):
