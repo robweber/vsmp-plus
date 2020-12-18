@@ -29,12 +29,6 @@ def generate_frame(in_filename, out_filename, time, width, height):
           .run(capture_stdout=True, capture_stderr=True)
 
 
-def check_dir(value):
-    if(not os.path.exists(value) and not os.path.isdir(value)):
-        raise argparse.ArgumentTypeError("%s is not a directory" % value)
-    return value
-
-
 def find_video(args, lastPlayed, next=False):
     result = {}
 
@@ -93,7 +87,7 @@ parser = argparse.ArgumentParser(description='VSMP Settings')
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-f', '--file', type=utils.check_mp4,
                    help="File to grab screens of")
-group.add_argument('-d', '--dir', type=check_dir,
+group.add_argument('-d', '--dir', type=utils.check_dir,
                    help="Dir to play videos from (in order)")
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
