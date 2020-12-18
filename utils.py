@@ -7,7 +7,8 @@ import os
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
 intervals = (
-    ('months', 604800),  # 60 * 60 * 24 * 30
+    ('months', 2592000),  # 60 * 60 * 24 * 30
+    ('weeks', 604800),  # 60 * 60 * 24 * 7
     ('days', 86400),    # 60 * 60 * 24
     ('hours', 3600),    # 60 * 60
     ('minutes', 60),
@@ -53,6 +54,13 @@ def seconds_to_frames(seconds, fps):
 def check_mp4(value):
     if not os.path.exists(value) or not value.endswith('.mp4'):
         raise argparse.ArgumentTypeError("%s does not exist or is not an .mp4 file" % value)
+    return value
+
+
+# Check if directory is valid
+def check_dir(value):
+    if(not os.path.exists(value) and not os.path.isdir(value)):
+        raise argparse.ArgumentTypeError("%s is not a directory" % value)
     return value
 
 
