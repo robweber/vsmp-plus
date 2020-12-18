@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import fnmatch
 import utils
 
 # full path to the directory of this script
@@ -28,7 +29,7 @@ def analyze_video(file, start, end, increment, delay):
     videoInfo = utils.get_video_info(file)
 
     startFrame = utils.seconds_to_frames(start, videoInfo['fps'])
-    videoInfo['frame_count'] = videoInfo['frame_count'] - utils.seconds_to_frames(args.end, videoInfo['fps'])
+    videoInfo['frame_count'] = videoInfo['frame_count'] - utils.seconds_to_frames(end, videoInfo['fps'])
 
     # print some initial information
     print('Analyzing %s' % file) 
@@ -46,6 +47,9 @@ def analyze_video(file, start, end, increment, delay):
     saveFile = os.path.join(TMP_DIR, video_name + '.txt')
     if(os.path.exists(saveFile)):
         currentPosition = float(utils.read_file(saveFile))
+
+        if(currentPosition < startFrame):
+            currentPosition = startFrame
 
     # find total time to play entire movie
     print('Entire Video:')
@@ -68,10 +72,16 @@ def analyze_video(file, start, end, increment, delay):
     print('%f minutes of film per hour' % (minutesPerHour))
     print('%f minutes of film per day' % (minutesPerHour * 24))
 
+    # return number of frames left to play
+    return videoInfo['frame_count'] - currentPosition
+
 # parse the arguments
-parser = argparse.ArgumentParser(description='VSMP Settings')
-parser.add_argument('-f', '--file', type=utils.check_mp4, required=True,
+parser = argparse.ArgumentParser(description='VSMP Analyze Settings')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('-f', '--file', type=utils.check_mp4,
                     help="File to analyze")
+group.add_argument('-D', '--dir', type=utils.check_dir,
+                    help="Directory to analyze")
 parser.add_argument('-d', '--delay',  default=120,
                     help="Delay between screen updates, in seconds")
 parser.add_argument('-i', '--increment',  default=4,
@@ -85,6 +95,38 @@ args = parser.parse_args()
 logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
 
-analyze_video(args.file, args.start, args.end, args.increment, args.delay)
+# check if we have one file or several
+if(args.file is not None):
+    analyze_video(args.file, args.start, args.end, args.increment, args.delay)
+else:
+    # assume files play in order and files prior to the current have already played
+    print('Analyzing Entire Directory %s' % args.dir)
+
+    # get the currently playing file, if exists
+    lastPlayedFile = utils.read_file(os.path.join(TMP_DIR, 'last_played.txt'))
+
+    # read in all files from the directory
+    fileList = sorted(fnmatch.filter(os.listdir(args.dir), '*.mp4'))
+    index = 0
+
+    # try and get the index of the last played file
+    try:
+        index = fileList.index(os.path.basename(lastPlayedFile))
+    except ValueError:
+        index = 0
+
+    print('%d out of %d files left to play' % (len(fileList) - index, len(fileList)))
+    print('')
+
+    # analyze each file
+    totalFrames = 0
+    for i in range(index, len(fileList)):
+        totalFrames = totalFrames + analyze_video(os.path.join(args.dir, fileList[i]), args.start, args.end, args.increment, args.delay)
+        print('')
+
+    # give a summary of the total play time left
+    print('')
+    print('Time to play full directory:')
+    time_to_play(totalFrames, float(args.increment), float(args.delay))
 
 exit()
