@@ -46,7 +46,7 @@ Minutes of film displayed breakdown:
 
 ```
 
-Tweaking these values you can find the optimum settings to get your desired play time. 
+Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-D``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking a whole directory the program will assume the current value of the ```last_played.txt``` file is the currently running file and analyze from this point forward. 
 
 ### Links
 https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4
