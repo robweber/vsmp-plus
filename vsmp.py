@@ -145,7 +145,7 @@ if(args.timecode):
                                         timeFormat='{value:02d}',
                                         joiner=':',
                                         show_zeros=True,
-                                        intervals=utils.intervals[2:])
+                                        intervals=utils.intervals[3:])
 
     # get a draw object
     draw = ImageDraw.Draw(pil_im)
