@@ -1,4 +1,5 @@
 #!/bin/bash
+# From: https://gist.github.com/jjangsangy/058456fe2d04e3c5f6107d62b60542e3
 
 TMPDIR="$(mktemp -d)"
 
@@ -68,11 +69,11 @@ sudo apt-get update -qq && sudo apt-get -y install \
 
 
 # To disable remove --enable-libfdk-aac
-#git clone --depth 1 https://github.com/mstorsjo/fdk-aac "${TMPDIR}/fdk-aac" && cd "${TMPDIR}/fdk-aac" \
-#  && autoreconf -fiv \
-#  && ./configure \
-#  && make -j$(nproc) \
-#  && sudo make install
+git clone --depth 1 https://github.com/mstorsjo/fdk-aac "${TMPDIR}/fdk-aac" && cd "${TMPDIR}/fdk-aac" \
+  && autoreconf -fiv \
+  && ./configure \
+  && make -j$(nproc) \
+  && sudo make install
 
 # To disable remove --enable-libdav1d
 git clone --depth 1 https://code.videolan.org/videolan/dav1d.git "${TMPDIR}/dav1d" && mkdir "${TMPDIR}/dav1d/build" && cd "${TMPDIR}/dav1d/build" \
@@ -81,64 +82,64 @@ git clone --depth 1 https://code.videolan.org/videolan/dav1d.git "${TMPDIR}/dav1
   && sudo ninja install
 
 # To disable remove --enable-libkvazaar
-#git clone --depth 1 https://github.com/ultravideo/kvazaar.git "${TMPDIR}/kvazaar" && cd "${TMPDIR}/kvazaar" \
-#  && ./autogen.sh \
-#  && ./configure \
-#  && make -j$(nproc) \
-#  && sudo make install
+git clone --depth 1 https://github.com/ultravideo/kvazaar.git "${TMPDIR}/kvazaar" && cd "${TMPDIR}/kvazaar" \
+  && ./autogen.sh \
+  && ./configure \
+  && make -j$(nproc) \
+  && sudo make install
 
 # To disable remove --enable-libvpx
-#git clone --depth 1 https://chromium.googlesource.com/webm/libvpx "${TMPDIR}/libvpx" && cd "${TMPDIR}/libvpx" \
-#  && ./configure --disable-examples \
-#  && make -j$(nproc) \
-#  && sudo make install
+git clone --depth 1 https://chromium.googlesource.com/webm/libvpx "${TMPDIR}/libvpx" && cd "${TMPDIR}/libvpx" \
+  && ./configure --disable-examples \
+  && make -j$(nproc) \
+  && sudo make install
 
 # To disable remove --enable-libaom
-#git clone --depth 1 https://aomedia.googlesource.com/aom "${TMPDIR}/aom" && mkdir "${TMPDIR}/aom/aom_build" && cd "${TMPDIR}/aom/aom_build" \
-#  && git checkout $(git rev-list -1 --before="Dec 15 2019" master) \
-#  && cmake -G "Unix Makefiles" AOM_SRC -DENABLE_NASM=on -DPYTHON_EXECUTABLE="$(which python3)" -DCMAKE_C_FLAGS="-mfpu=vfp -mfloat-abi=hard" .. \
-#  && sed -i 's/ENABLE_NEON:BOOL=ON/ENABLE_NEON:BOOL=OFF/' CMakeCache.txt \
-#  && make -j$(nproc) \
-#  && sudo make install
+git clone --depth 1 https://aomedia.googlesource.com/aom "${TMPDIR}/aom" && mkdir "${TMPDIR}/aom/aom_build" && cd "${TMPDIR}/aom/aom_build" \
+  && git checkout $(git rev-list -1 --before="Dec 15 2019" master) \
+  && cmake -G "Unix Makefiles" AOM_SRC -DENABLE_NASM=on -DPYTHON_EXECUTABLE="$(which python3)" -DCMAKE_C_FLAGS="-mfpu=vfp -mfloat-abi=hard" .. \
+  && sed -i 's/ENABLE_NEON:BOOL=ON/ENABLE_NEON:BOOL=OFF/' CMakeCache.txt \
+  && make -j$(nproc) \
+  && sudo make install
 
 # Compile FFmpeg
-#git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git "${TMPDIR}/FFmpeg" && cd "${TMPDIR}/FFmpeg" \
-#  && ./configure \
-#    --extra-cflags="-I/usr/local/include" \
- #   --extra-ldflags="-L/usr/local/lib" \
-#    --extra-libs="-lpthread -lm" \
-#    --arch=armel \
-#    --enable-gmp \
-#    --enable-gpl \
-#    --enable-libaom \
-#    --enable-libass \
-#    --enable-libdav1d \
-#    --enable-libfdk-aac \
-#    --enable-libfreetype \
-#    --enable-libkvazaar \
-#    --enable-libmp3lame \
-#    --enable-libopencore-amrnb \
-#    --enable-libopencore-amrwb \
-#    --enable-libopus \
-#    --enable-librtmp \
-#    --enable-libsnappy \
-#    --enable-libsoxr \
-#    --enable-libssh \
-#    --enable-libvorbis \
-#    --enable-libvpx \
-#    --enable-libwebp \
-#    --enable-libx264 \
-#    --enable-libx265 \
-#    --enable-libxml2 \
-#    --enable-mmal \
-#    --enable-nonfree \
-#    --enable-omx \
-#    --enable-omx-rpi \
-#    --enable-version3 \
-#    --target-os=linux \
-#    --enable-pthreads \
-#    --enable-openssl \
-#    --enable-hardcoded-tables \
-#    --extra-ldflags="-latomic" \
-#  && make -j$(nproc) \
-#  && sudo make install
+git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git "${TMPDIR}/FFmpeg" && cd "${TMPDIR}/FFmpeg" \
+  && ./configure \
+    --extra-cflags="-I/usr/local/include" \
+    --extra-ldflags="-L/usr/local/lib" \
+    --extra-libs="-lpthread -lm" \
+    --arch=armel \
+    --enable-gmp \
+    --enable-gpl \
+    --enable-libaom \
+    --enable-libass \
+    --enable-libdav1d \
+    --enable-libfdk-aac \
+    --enable-libfreetype \
+    --enable-libkvazaar \
+    --enable-libmp3lame \
+    --enable-libopencore-amrnb \
+    --enable-libopencore-amrwb \
+    --enable-libopus \
+    --enable-librtmp \
+    --enable-libsnappy \
+    --enable-libsoxr \
+    --enable-libssh \
+    --enable-libvorbis \
+    --enable-libvpx \
+    --enable-libwebp \
+    --enable-libx264 \
+    --enable-libx265 \
+    --enable-libxml2 \
+    --enable-mmal \
+    --enable-nonfree \
+    --enable-omx \
+    --enable-omx-rpi \
+    --enable-version3 \
+    --target-os=linux \
+    --enable-pthreads \
+    --enable-openssl \
+    --enable-hardcoded-tables \
+    --extra-ldflags="-latomic" \
+  && make -j$(nproc) \
+  && sudo make install
