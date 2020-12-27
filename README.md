@@ -48,15 +48,21 @@ Minutes of film displayed breakdown:
 
 Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-D``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking a whole directory the program will assume the current value of the ```last_played.txt``` file is the currently running file and analyze from this point forward. 
 
-### Links
-https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4
+## Differences/Additions
 
-https://www.raspberrypi-spy.co.uk/2014/08/enabling-the-spi-interface-on-the-raspberry-pi/
+I mentioned two other versions of this type of project that I took inspiration from when creating this one. I tried to combine pieces of each that I liked while putting my own spin on things. Below is a quick summary of modifications from these other two projects. 
 
-https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
+1. Combining the cron syntax method of automation with the python processing. 
+2. Added analyzer to help with figuring out video play times
+3. Pulling the exact framerate of the video insteading of hardcoding it - this fixed issues when the end of the video is close in calculating the timecode
+4. Use seconds instead of frames for ```--start``` value. More intuitive
+5. Added ```--end``` value to skip end credits
+6. Added the ```-timecode``` value so you can see where you are in the video compared to "realtime" playing
 
-https://magpi.raspberrypi.org/articles/samba-file-server
+## Problems With FFMPEG
 
-https://gist.github.com/jjangsangy/058456fe2d04e3c5f6107d62b60542e3
+One common problem when installed FFMPEG from source is that the libraries need to be manually added to your path in order to find the program. This can be done with the following command. It is a good idea to add that to your ```.bashrc``` file. When using cron you must also add this to the top of your cron file so it gets executed each time. 
 
-https://stackoverflow.com/questions/61384486/error-dav1d-0-2-1-not-found-using-pkg-config
+```
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/arm-linux-gnueabihf/:/usr/local/lib/
+```
