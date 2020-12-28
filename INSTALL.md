@@ -23,7 +23,7 @@ I won't get into the details of installing the Raspberry Pi OS. There are other 
 sudo raspi-config
 
 # clone this repo
-git clone ....
+git clone https://github.com/robweber/vsmp-plus.git
 cd very-slow-media-player-plus
 
 # install required system libraries
