@@ -24,7 +24,7 @@ sudo raspi-config
 
 # clone this repo
 git clone https://github.com/robweber/vsmp-plus.git
-cd very-slow-media-player-plus
+cd vsmp-plus
 
 # install required system libraries
 sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin ffmpeg-python

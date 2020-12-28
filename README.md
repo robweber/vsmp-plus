@@ -18,7 +18,7 @@ To get the program to run continuously simply use __cron__ to schedule the progr
 
 ``` 
 
-python /home/pi/very-slow-media-player/vsmp.py --file /path/to/file.mp4 --increment 100
+python /home/pi/vsmp-plus/vsmp.py --file /path/to/file.mp4 --increment 100
 
 ```
 
