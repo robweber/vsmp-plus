@@ -151,7 +151,6 @@ if(args.timecode):
 
     # get a draw object
     draw = ImageDraw.Draw(pil_im)
-    draw.rectangle((width/2-100, 0, width/2+100, 20), fill=(0, 0, 0))
     tw, th = draw.textsize(message)  # gets the width and height of the text drawn
 
     # draw timecode, centering on the middle
