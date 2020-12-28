@@ -5,7 +5,7 @@ import os
 import utils
 import fnmatch
 from PIL import Image, ImageDraw, ImageFont
-from waveshare_epd import epd7in5_V2  # ensure this is the correct import for your screen
+from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
 # setup some helpful variables
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
@@ -15,13 +15,14 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 if (not os.path.exists(TMP_DIR)):
     os.mkdir(TMP_DIR)
 
-# Modify these to match your particular screen
-width = 800
-height = 480
+# pull width/height from driver
+width = epd_driver.EPD_WIDTH
+height = epd_driver.EPD_HEIGHT
 
 
-def generate_frame(in_filename, out_filename, time, width, height):
+def generate_frame(in_filename, out_filename, time):
     ffmpeg.input(in_filename, ss=time) \
+          .filter('scale', 'iw*sar', 'ih') \
           .filter('scale', width, height, force_original_aspect_ratio=1) \
           .filter('pad', width, height, -1, -1) \
           .output(out_filename, vframes=1) \
@@ -111,12 +112,13 @@ logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H
 video_file = find_video(args, utils.read_file(lastPlayedFile))
 
 # setup the screen
-epd = epd7in5_V2.EPD()
+epd = epd_driver.EPD()
 
 # Initialize the screen
 epd.init()
 
-grabFile = os.path.join(TMP_DIR, 'grab.jpg')
+# save grab file in memory as a bitmap
+grabFile = os.path.join('/dev/shm/', 'frame.bmp')
 
 logging.info('Loading %s' % video_file['file'])
 
@@ -130,8 +132,8 @@ frame = video_file['pos']
 # Convert that frame to ms from start of video (frame/fps) * 1000
 msTimecode = "%dms" % (utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000)
 
-# Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it as grab.jpg
-generate_frame(video_file['file'], grabFile, msTimecode, width, height)
+# Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
+generate_frame(video_file['file'], grabFile, msTimecode)
 
 # Open grab.jpg in PIL
 pil_im = Image.open(grabFile)
