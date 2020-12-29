@@ -1,7 +1,9 @@
-# VSMP (Very Slow Media Player)
+# VSMP+ (Very Slow Media Player Plus)
 I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of this project. 
 
 Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. That is what this project seeks to do. Combing piece of both of them I ended up with the following, which is both the same and different from their designs. 
+
+![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
 ## Basic Usage
 Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a variety of arguments: 
