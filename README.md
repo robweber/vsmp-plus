@@ -3,6 +3,8 @@ I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-v
 
 Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. That is what this project seeks to do. Combing piece of both of them I ended up with the following, which is both the same and different from their designs. 
 
+![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
+
 ## Basic Usage
 Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a variety of arguments: 
 
