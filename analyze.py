@@ -1,4 +1,4 @@
-import argparse
+import configargparse
 import logging
 import os
 import fnmatch
@@ -77,7 +77,9 @@ def analyze_video(file, start, end, increment, delay):
     return videoInfo['frame_count'] - currentPosition
 
 # parse the arguments
-parser = argparse.ArgumentParser(description='VSMP Analyze Settings')
+parser = configargparse.ArgumentParser(description='VSMP Analyze Settings')
+parser.add_argument('-c', '--config', is_config_file=True,
+                    help='Path to custom config file')
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-f', '--file', type=utils.check_mp4,
                     help="File to analyze")
