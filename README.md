@@ -8,6 +8,7 @@ Both of the reference articles had pieces I liked and pieces I wanted to enhance
 ## Basic Usage
 Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a variety of arguments: 
 
+* ```--config``` - path to a config file, see below
 * ```--file``` - the video file to pull frames from. Must be an MP4 _mutually exclusive with --dir_
 * ```--dir``` - a directory of video files to pull frames from. _mutually exclusive with --file_
 * ```--increment``` - how many frames to increment
@@ -21,7 +22,8 @@ To get the program to run continuously simply use __cron__ to schedule the progr
 
 ``` 
 
-python /home/pi/vsmp-plus/vsmp.py --file /path/to/file.mp4 --increment 100
+# updates the screen every 5 min
+*/5 * * * * python /home/pi/vsmp-plus/vsmp.py --file /path/to/file.mp4 --increment 100
 
 ```
 
@@ -50,6 +52,22 @@ Minutes of film displayed breakdown:
 ```
 
 Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-D``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking a whole directory the program will assume the current value of the ```last_played.txt``` file is the currently running file and analyze from this point forward. 
+
+## Config File
+
+Instead of passing in all the arguments on the command line you can also create a config file and pass in your values with the ```-c``` option instead. There is a sample of this file in the ```setup/``` directory. Any command line argument can be specified in the file. 
+
+```
+
+# Example Config file
+dir = /path/to/directory/
+increment = 50
+start = 100
+end = 300
+
+```
+
+Using a config file also makes it easier to test settings with the ```analyze.py``` file as you can use one file for both. 
 
 ## Differences/Additions
 
