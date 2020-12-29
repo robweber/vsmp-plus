@@ -32,7 +32,7 @@ sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-num
 # setup the waveshare library
 cd ../waveshare_lib
 sudo python setup.py install
-cd ../scripts
+cd ..
 ```
 
 You must then set python 3 as the default for the system. Use the following commands to do this, adjust directories to python 3.8 or 3.9 as needed. 
@@ -50,7 +50,7 @@ Next install some python libraries needed.
 
 ```
 
-sudo pip3 install -r scripts/requirements.txt
+sudo pip3 install -r setup/requirements.txt
 
 ```
 
@@ -59,7 +59,7 @@ This next step is optional but it is probably a good idea at this point to check
 ```
 
 # OPTIONAL - check if the e-paper sign is working properly
-python examples/epd_7in5_V2_test.py
+python waveshare_lib/examples/epd_7in5_V2_test.py
 
 ```
 
@@ -70,10 +70,10 @@ Now we have to build the FFMPEG library. If using a NOOBS install you may alread
 cd ..
 
 # run the ffmpeg installer
-sudo ./scripts/ffmpeg-rpi-4.sh
+sudo ./setup/ffmpeg-rpi-4.sh
 
 # set the path to the av libs
-sudo cp ffmpeglibs.conf /etc/ld.so.conf.d/ffmpeglibs.conf
+sudo cp setup/ffmpeglibs.conf /etc/ld.so.conf.d/ffmpeglibs.conf
 sudo ldconfig
 
 ```
@@ -107,4 +107,4 @@ PrivateMounts=no
 
 ```
 
-There is an already modified version of this file in the ```scripts``` directory you can copy to the above file location. After this reboot your system. USB drives will be auto mounted to ```/media/usb``` after a reboot. 
+There is an already modified version of this file in the ```setup``` directory you can copy to the above file location. After this reboot your system. USB drives will be auto mounted to ```/media/usb``` after a reboot. 
