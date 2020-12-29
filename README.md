@@ -69,3 +69,7 @@ One common problem when installed FFMPEG from source is that the libraries need 
 ```
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/arm-linux-gnueabihf/:/usr/local/lib/
 ```
+
+## Notes
+
+The waveshare files are modified from the original repository: [https://github.com/waveshare/e-Paper](https://github.com/waveshare/e-Paper)
