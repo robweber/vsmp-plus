@@ -8,7 +8,8 @@ Both of the reference articles had pieces I liked and pieces I wanted to enhance
 ## Basic Usage
 Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a variety of arguments: 
 
-* ```--file``` - the video file to pull frames from. Must be an MP4 
+* ```--file``` - the video file to pull frames from. Must be an MP4 _mutually exclusive with --dir_
+* ```--dir``` - a directory of video files to pull frames from. _mutually exclusive with --file_
 * ```--increment``` - how many frames to increment
 * ```--start``` - the number of seconds into the video to start, if you want to skip into the video X amount
 * ```--end``` - the number of seconds to cut off the end of the video, useful for skipping credit sequences
