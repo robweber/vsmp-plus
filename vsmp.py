@@ -177,7 +177,7 @@ parser.add_argument('-c', '--config', is_config_file=True,
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-f', '--file', type=utils.check_mp4,
                    help="File to grab screens of")
-group.add_argument('-D', '--dir', type=utils.check_dir,
+group.add_argument('-d', '--dir', type=utils.check_dir,
                    help="Dir to play videos from (in order)")
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
