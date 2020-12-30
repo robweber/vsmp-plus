@@ -111,14 +111,14 @@ logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
 
-# set the video file information
-video_file = find_video(args, utils.read_file(lastPlayedFile))
-
 # setup the screen
 epd = epd_driver.EPD()
 
 # Initialize the screen
 epd.init()
+
+# set the video file information
+video_file = find_video(args, utils.read_file(lastPlayedFile))
 
 # save grab file in memory as a bitmap
 grabFile = os.path.join('/dev/shm/', 'frame.bmp')
