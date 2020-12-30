@@ -5,6 +5,8 @@ import logging
 import os
 import utils
 import fnmatch
+import signal
+import sys
 import time
 from croniter import croniter
 from datetime import datetime
@@ -24,6 +26,13 @@ lastPlayedFile = os.path.join(TMP_DIR, 'last_played.txt')
 # pull width/height from driver
 width = epd_driver.EPD_WIDTH
 height = epd_driver.EPD_HEIGHT
+
+
+# function to handle when the is killed and exit gracefully
+def signal_handler(signum, frame):
+    logging.info('Exiting Program')
+    epd_driver.epdconfig.module_exit()
+    sys.exit(0)
 
 
 def generate_frame(in_filename, out_filename, time):
@@ -183,6 +192,10 @@ parser.add_argument('-t', '--timecode', action='store_true',
 
 args = parser.parse_args()
 
+# add hooks for interrupt signal
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
+
 # setup the logger, log to tmp/log.log
 logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
@@ -210,5 +223,3 @@ while 1:
 
     # sleep for one minute
     time.sleep(60 - datetime.now().second)
-
-exit()
