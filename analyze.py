@@ -83,10 +83,10 @@ parser.add_argument('-c', '--config', is_config_file=True,
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-f', '--file', type=utils.check_mp4,
                     help="File to analyze")
-group.add_argument('-D', '--dir', type=utils.check_dir,
+group.add_argument('-d', '--dir', type=utils.check_dir,
                     help="Directory to analyze")
-parser.add_argument('-d', '--delay',  default=120,
-                    help="Delay between screen updates, in seconds")
+parser.add_argument('-u', '--update',  default="* * * * *",
+                    help="when to update the display as a cron expression")
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
@@ -100,7 +100,7 @@ logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
 
 # check if we have one file or several
 if(args.file is not None):
-    analyze_video(args.file, args.start, args.end, args.increment, args.delay)
+    analyze_video(args.file, args.start, args.end, args.increment, args.update)
 else:
     # assume files play in order and files prior to the current have already played
     print(colored('Analyzing Entire Directory %s' % args.dir, 'green'))
@@ -124,7 +124,7 @@ else:
     # analyze each file
     totalFrames = 0
     for i in range(index, len(fileList)):
-        totalFrames = totalFrames + analyze_video(os.path.join(args.dir, fileList[i]), args.start, args.end, args.increment, args.delay)
+        totalFrames = totalFrames + analyze_video(os.path.join(args.dir, fileList[i]), args.start, args.end, args.increment, args.update)
         print('')
 
     # give a summary of the total play time left

@@ -50,7 +50,7 @@ Minutes of film displayed breakdown:
 
 ```
 
-Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-D``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.txt``` file is the currently running file and analyze from this point forward.
+Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-d``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.txt``` file is the currently running file and analyze from this point forward.
 
 ## Config File
 
