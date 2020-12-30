@@ -1,4 +1,5 @@
 configargparse
+croniter
 spidev
 image
 ffmpeg-python
