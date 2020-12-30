@@ -2,6 +2,7 @@ import argparse
 import ffmpeg
 import logging
 import os
+from croniter import croniter
 
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
@@ -63,6 +64,12 @@ def check_dir(value):
         raise argparse.ArgumentTypeError("%s is not a directory" % value)
     return value
 
+
+# Check if passed in value is a valid cron schedule
+def check_cron(schedule):
+    if(not croniter.is_valid(schedule)):
+        raise argparse.ArgumentTypeError("%s is not a valid cron expression" % schedule)
+    return schedule
 
 # Uses ffprobe to get various play details from the video file
 def get_video_info(file):
