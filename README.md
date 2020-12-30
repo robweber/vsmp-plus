@@ -79,6 +79,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 4. Use seconds instead of frames for ```--start``` value. More intuitive
 5. Added ```--end``` value to skip end credits
 6. Added the ```-timecode``` value so you can see where you are in the video compared to "realtime" playing
+7. Can use either a configuration (.conf) file or pass in arguments via CLI
 
 ## Problems With FFMPEG
 
