@@ -172,8 +172,8 @@ group.add_argument('-D', '--dir', type=utils.check_dir,
                    help="Dir to play videos from (in order)")
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
-parser.add_argument('-d', '--delay', type=utils.check_cron, default='*/5 * * * *',
-                    help="amount of time between updates as a cron expression")
+parser.add_argument('-u', '--update', type=utils.check_cron, default='* * * * *',
+                    help="when to update the display as a cron expression")
 parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the video to start")
 parser.add_argument('-e', '--end', default=0,
@@ -188,16 +188,16 @@ logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
 
-logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Delay between updates: %s' %
-      (args.increment, args.start, args.end, args.delay))
+logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
+      (args.increment, args.start, args.end, args.update))
 
 # setup the screen
 epd = epd_driver.EPD()
 
 # initialize the cron scheduler and get the next update time
-cron = croniter(args.delay, datetime.now())
+cron = croniter(args.update, datetime.now())
 nextUpdate = cron.get_next(datetime)
-logging.info('Next update: %s' % nextRun)
+logging.info('Next update: %s' % nextUpdate)
 
 while 1:
     now = datetime.now()
@@ -206,7 +206,7 @@ while 1:
     if(nextUpdate <= now):
         update_display(args, epd)
         nextUpdate = cron.get_next(datetime)
-        logging.info('Next update: %s' % nextRun)
+        logging.info('Next update: %s' % nextUpdate)
 
     # sleep for one minute
     time.sleep(60 - datetime.now().second)
