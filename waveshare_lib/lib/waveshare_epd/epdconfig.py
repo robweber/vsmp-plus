@@ -6,7 +6,7 @@
 # *----------------
 # * | This version:   V1.0
 # * | Date        :   2019-06-21
-# * | Info        :   
+# * | Info        :
 # ******************************************************************************
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documnetation files (the "Software"), to deal
@@ -72,6 +72,9 @@ class RaspberryPi:
         self.SPI.max_speed_hz = 4000000
         self.SPI.mode = 0b00
         return 0
+
+    def module_sleep(self):
+        self.module_exit()
 
     def module_exit(self):
         logging.debug("spi end")
