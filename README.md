@@ -33,20 +33,21 @@ The analyze program will take the same inputs as above. Using these inputs the v
 
 ```
 Analyzing /home/pi/Videos/Test.Video.mp4
-Starting Frame: 200, Ending Frame: 186672, Frame Increment: 30, Delay between updates: 120
-Video framerate is 29.970000fps, total video is 103.810477 minutes long
+Starting Frame: 2697.2999999999997, Ending Frame: 197080.7, Frame Increment: 50, Update on schedule: */5 * * * *
+Video framerate is 29.970000fps, total video is 116.098877 minutes long
 
 Entire Video:
-6222 out of 186672 frames will display
-Video will take 1.0 week, 1.0 day, 15.0 hours to fully play
+3941 out of 197080 frames will display
+Will take 1 week, 6 days, 16 hours to fully play
 
 Remaining Video:
-5072 out of 152172 frames will display
-Video will take 1.0 week, 1.0 hour, 4.0 minutes to fully play
+3941 out of 197080 frames will display
+Will take 1 week, 6 days, 16 hours to fully play
 
 Minutes of film displayed breakdown:
-0.500501 minutes of film per hour
-12.012012 minutes of film per day
+0.333667 minutes of film per hour
+8.008008 minutes of film per day
+
 
 ```
 

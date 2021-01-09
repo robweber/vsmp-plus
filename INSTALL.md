@@ -28,7 +28,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 cd vsmp-plus
 
 # install required system libraries
-sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin ffmpeg-python
+sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin
 
 # setup the waveshare library
 cd ../waveshare_lib
@@ -41,7 +41,7 @@ You must then set python 3 as the default for the system. Use the following comm
 ```
 
 # set python3 as default https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 2
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 sudo update-alternatives --config python
 
@@ -98,7 +98,7 @@ sudo systemctl start vsmp
 sudo systemctl stop vsmp
 ```
 
-Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile. If using cron to trigger the program you must also include this in your cron file.
+Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile. 
 
 ```
 
