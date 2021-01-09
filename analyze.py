@@ -81,7 +81,7 @@ def analyze_video(file, start, end, increment, update_expression):
     for i in croniter_range(now, tomorrow, update_expression):
         day_total = day_total + 1
     secondsPerIncrement = utils.frames_to_seconds(increment, videoInfo['fps'])
-    framesPerSecond = secondsPerIncrement/(60/(day_total/24))  # this is how many "seconds" of film actually shown per second of realtime
+    framesPerSecond = secondsPerIncrement/(60/(day_total/24)*60)  # this is how many "seconds" of film actually shown per second of realtime
 
     minutesPerHour = (framesPerSecond * 60)
     print('Minutes of film displayed breakdown:')
