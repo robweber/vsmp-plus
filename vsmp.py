@@ -5,6 +5,11 @@ import logging
 import os
 import utils
 import fnmatch
+import signal
+import sys
+import time
+from croniter import croniter
+from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
@@ -16,9 +21,18 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 if (not os.path.exists(TMP_DIR)):
     os.mkdir(TMP_DIR)
 
+lastPlayedFile = os.path.join(TMP_DIR, 'last_played.txt')
+
 # pull width/height from driver
 width = epd_driver.EPD_WIDTH
 height = epd_driver.EPD_HEIGHT
+
+
+# function to handle when the is killed and exit gracefully
+def signal_handler(signum, frame):
+    logging.info('Exiting Program')
+    epd_driver.epdconfig.module_exit()
+    sys.exit(0)
 
 
 def generate_frame(in_filename, out_filename, time):
@@ -84,6 +98,78 @@ def find_next_video(dir, lastPlayed):
     return os.path.join(dir, fileList[index])
 
 
+def update_display(args, epd):
+    # Initialize the screen
+    epd.init()
+
+    # set the video file information
+    video_file = find_video(args, utils.read_file(lastPlayedFile))
+
+    # save grab file in memory as a bitmap
+    grabFile = os.path.join('/dev/shm/', 'frame.bmp')
+
+    logging.info('Loading %s' % video_file['file'])
+
+    if(video_file['pos'] >= video_file['info']['frame_count']):
+        # set 'next' to true to force new video file
+        video_file = find_video(args, utils.read_file(lastPlayedFile), True)
+
+    # set the position we want to use
+    frame = video_file['pos']
+
+    # Convert that frame to ms from start of video (frame/fps) * 1000
+    msTimecode = "%dms" % (utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000)
+
+    # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
+    generate_frame(video_file['file'], grabFile, msTimecode)
+
+    # Open grab.jpg in PIL
+    pil_im = Image.open(grabFile)
+
+    if(args.timecode):
+        font18 = ImageFont.truetype(os.path.join(DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
+
+        # show the timecode of the video in the format HH:mm:SS
+        message = '%s' % utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
+                                            granularity=3,
+                                            timeFormat='{value:02d}',
+                                            joiner=':',
+                                            show_zeros=True,
+                                            intervals=utils.intervals[3:])
+
+        # get a draw object
+        draw = ImageDraw.Draw(pil_im)
+        tw, th = draw.textsize(message)  # gets the width and height of the text drawn
+
+        # draw timecode, centering on the middle
+        draw.text(((width-tw)/2, height-20), message, font=font18, fill=(255, 255, 255))
+
+    # Dither the image into a 1 bit bitmap (Just zeros and ones)
+    pil_im = pil_im.convert(mode='1', dither=Image.FLOYDSTEINBERG)
+
+    # display the image
+    epd.display(epd.getbuffer(pil_im))
+    logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, utils.frames_to_seconds(frame, video_file['info']['fps']), video_file['name']))
+
+    # save the next position
+    video_file['pos'] = video_file['pos'] + float(args.increment)
+
+    if(video_file['pos'] >= video_file['info']['frame_count']):
+        # save position of old video
+        video_file['pos'] = args.start
+        utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
+
+        # set 'next' to True to force new file
+        video_file = find_video(args, utils.read_file(lastPlayedFile), True)
+        logging.info('Will start %s on next run' % video_file)
+
+    # save the next position and last video played filename
+    utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
+    utils.write_file(lastPlayedFile, video_file['file'])
+
+    epd.sleep()
+
+
 # parse the arguments
 parser = configargparse.ArgumentParser(description='VSMP Settings')
 parser.add_argument('-c', '--config', is_config_file=True,
@@ -91,10 +177,12 @@ parser.add_argument('-c', '--config', is_config_file=True,
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-f', '--file', type=utils.check_mp4,
                    help="File to grab screens of")
-group.add_argument('-D', '--dir', type=utils.check_dir,
+group.add_argument('-d', '--dir', type=utils.check_dir,
                    help="Dir to play videos from (in order)")
 parser.add_argument('-i', '--increment',  default=4,
                     help="Number of frames skipped between screen updates")
+parser.add_argument('-u', '--update', type=utils.check_cron, default='* * * * *',
+                    help="when to update the display as a cron expression")
 parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the video to start")
 parser.add_argument('-e', '--end', default=0,
@@ -104,83 +192,34 @@ parser.add_argument('-t', '--timecode', action='store_true',
 
 args = parser.parse_args()
 
-lastPlayedFile = os.path.join(TMP_DIR, 'last_played.txt')
+# add hooks for interrupt signal
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
 # setup the logger, log to tmp/log.log
 logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
 
-# set the video file information
-video_file = find_video(args, utils.read_file(lastPlayedFile))
+logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
+      (args.increment, args.start, args.end, args.update))
 
 # setup the screen
 epd = epd_driver.EPD()
 
-# Initialize the screen
-epd.init()
+# initialize the cron scheduler and get the next update time
+cron = croniter(args.update, datetime.now())
+nextUpdate = cron.get_next(datetime)
+logging.info('Next update: %s' % nextUpdate)
 
-# save grab file in memory as a bitmap
-grabFile = os.path.join('/dev/shm/', 'frame.bmp')
+while 1:
+    now = datetime.now()
 
-logging.info('Loading %s' % video_file['file'])
+    # check if the display should be updated
+    if(nextUpdate <= now):
+        update_display(args, epd)
+        nextUpdate = cron.get_next(datetime)
+        logging.info('Next update: %s' % nextUpdate)
 
-if(video_file['pos'] >= video_file['info']['frame_count']):
-    # set 'next' to true to force new video file
-    video_file = find_video(args, utils.read_file(lastPlayedFile), True)
-
-# set the position we want to use
-frame = video_file['pos']
-
-# Convert that frame to ms from start of video (frame/fps) * 1000
-msTimecode = "%dms" % (utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000)
-
-# Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
-generate_frame(video_file['file'], grabFile, msTimecode)
-
-# Open grab.jpg in PIL
-pil_im = Image.open(grabFile)
-
-if(args.timecode):
-    font18 = ImageFont.truetype(os.path.join(DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
-
-    # show the timecode of the video in the format HH:mm:SS
-    message = '%s' % utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
-                                        granularity=3,
-                                        timeFormat='{value:02d}',
-                                        joiner=':',
-                                        show_zeros=True,
-                                        intervals=utils.intervals[3:])
-
-    # get a draw object
-    draw = ImageDraw.Draw(pil_im)
-    tw, th = draw.textsize(message)  # gets the width and height of the text drawn
-
-    # draw timecode, centering on the middle
-    draw.text(((width-tw)/2, height-20), message, font=font18, fill=(255, 255, 255))
-
-# Dither the image into a 1 bit bitmap (Just zeros and ones)
-pil_im = pil_im.convert(mode='1', dither=Image.FLOYDSTEINBERG)
-
-# display the image
-epd.display(epd.getbuffer(pil_im))
-logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, utils.frames_to_seconds(frame, video_file['info']['fps']), video_file['name']))
-
-# save the next position
-video_file['pos'] = video_file['pos'] + float(args.increment)
-
-if(video_file['pos'] >= video_file['info']['frame_count']):
-    # save position of old video
-    video_file['pos'] = args.start
-    utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
-
-    # set 'next' to True to force new file
-    video_file = find_video(args, utils.read_file(lastPlayedFile), True)
-    logging.info('Will start %s on next run' % video_file)
-
-# save the next position and last video played filename
-utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
-utils.write_file(lastPlayedFile, video_file['file'])
-
-epd.sleep()
-exit()
+    # sleep for one minute
+    time.sleep(60 - datetime.now().second)

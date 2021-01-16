@@ -1,23 +1,24 @@
 # Install
 
-I installed this on a base install of [Raspberry Pi OS](https://www.raspberrypi.org/downloads/) (formally Raspbian). If you use some other method some of this libraries may already exist but this is assuming you have a fresh OS. 
+I installed this on a base install of [Raspberry Pi OS](https://www.raspberrypi.org/downloads/) (formally Raspbian). If you use some other method some of this libraries may already exist but this is assuming you have a fresh OS.
 
 ## Hardware
 
-Most of this hardware is identical to the build by Tom Whitwell, although I used a different picture frame. Any frame you can modify will work. 
+Most of this hardware is identical to the build by Tom Whitwell, although I used a different picture frame. Any frame you can modify will work.
 
 * RaspberyPi 4 with SD card and power suppply
 * 7.5 inch e-paper screen [link](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm)
-* A photo frame. I used [this one from Target](https://www.target.com/p/5-34-x-7-34-picture-holder-frame-black-room-essentials-8482/-/A-77656810#lnk=sametab). 
+* A photo frame. I used [this one from Target](https://www.target.com/p/5-34-x-7-34-picture-holder-frame-black-room-essentials-8482/-/A-77656810#lnk=sametab).
 
-__Notes on the frame:__ I found this one to be a good buy since it has a slideout piece with a gap behind it. This was useful for mounting some of the components. The base is also super sturdy. 
+__Notes on the frame:__ I found this one to be a good buy since it has a slideout piece with a gap behind it. This was useful for mounting some of the components. The base is also super sturdy.
 
-The display itself connects to the GPIO pins of the Pi. There are some pictures in the above link and some basic instructions with the device. 
+The display itself connects to the GPIO pins of the Pi. There are some pictures in the above link and some basic instructions with the device.
 
 ## Software Install
 
-I won't get into the details of installing the Raspberry Pi OS. There are other good guides on that if you're unsure. Just make sure you have it installed with SSH enabled. Once you have access to the system you can run the following commands to get the software components working. 
+I won't get into the details of installing the Raspberry Pi OS. There are other good guides on that if you're unsure. Just make sure you have it installed with SSH enabled. Once you have access to the system you can run the following commands to get the software components working.
 
+### Clone Repo and Install Libraries
 ```
 # enable SPI - very important https://www.raspberrypi-spy.co.uk/2014/08/enabling-the-spi-interface-on-the-raspberry-pi/
 sudo raspi-config
@@ -27,7 +28,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 cd vsmp-plus
 
 # install required system libraries
-sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin ffmpeg-python
+sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin
 
 # setup the waveshare library
 cd ../waveshare_lib
@@ -35,18 +36,18 @@ sudo python setup.py install
 cd ..
 ```
 
-You must then set python 3 as the default for the system. Use the following commands to do this, adjust directories to python 3.8 or 3.9 as needed. 
+You must then set python 3 as the default for the system. Use the following commands to do this, adjust directories to python 3.8 or 3.9 as needed.
 
 ```
 
 # set python3 as default https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 2
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 sudo update-alternatives --config python
 
 ```
 
-Next install some python libraries needed. 
+Next install some python libraries needed.
 
 ```
 
@@ -54,7 +55,8 @@ sudo pip3 install -r setup/requirements.txt
 
 ```
 
-This next step is optional but it is probably a good idea at this point to check that the e-ink display is working. 
+### Test E-Ink Display
+This next step is optional but it is probably a good idea at this point to check that the e-ink display is working.
 
 ```
 
@@ -63,7 +65,8 @@ python waveshare_lib/examples/epd_7in5_V2_test.py
 
 ```
 
-Now we have to build the FFMPEG library. If using a NOOBS install you may already have this installed but on a base system you have to compile it yourself. __This will take a long time__. Be patient. 
+### Build FFmpeg
+Now we have to build the FFMPEG library. If using a NOOBS install you may already have this installed but on a base system you have to compile it yourself. __This will take a long time__. Be patient.
 
 ```
 # get out of the waveshare lib
@@ -78,7 +81,24 @@ sudo ldconfig
 
 ```
 
-Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile. If using cron to trigger the program you must also include this in your cron file. 
+### Install service
+
+You can run the program on it's own but to keep it running after you close your SSH session you'll need to install it as a service. The file to do this is in the ```setup``` folder. If you edit the service file you can pass in any arguments or the location of your configuration file. By default it will run the program with the defaults, not ideal.
+
+```
+# install the service on the system
+sudo cp setup/vsmp.service /etc/systemd/system/vsmp.service
+sudo chown root:root /etc/systemd/system/vsmp.service
+sudo systemctl enable vsmp
+
+# start the service
+sudo systemctl start vsmp
+
+# stop the Service
+sudo systemctl stop vsmp
+```
+
+Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile. 
 
 ```
 
@@ -88,7 +108,7 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/arm-linux-gnueabihf/:/usr/local/
 
 ## USB Automount
 
-If you want to pull files from a USB device you may want to setup auto mount functionality for USB sticks. This can easily be done by installing the ```usbmount``` package. 
+If you want to pull files from a USB device you may want to setup auto mount functionality for USB sticks. This can easily be done by installing the ```usbmount``` package.
 
 ```
 
@@ -96,7 +116,7 @@ sudo apt-get install usbmount
 
 ```
 
-Once installed for the RaspberryPi OS you need to modify one line of the ```/lib/systemd/system/systemd-udevd.service``` file. 
+Once installed for the RaspberryPi OS you need to modify one line of the ```/lib/systemd/system/systemd-udevd.service``` file.
 
 ```
 
@@ -107,4 +127,4 @@ PrivateMounts=no
 
 ```
 
-There is an already modified version of this file in the ```setup``` directory you can copy to the above file location. After this reboot your system. USB drives will be auto mounted to ```/media/usb``` after a reboot. 
+There is an already modified version of this file in the ```setup``` directory you can copy to the above file location. After this reboot your system. USB drives will be auto mounted to ```/media/usb``` after a reboot.

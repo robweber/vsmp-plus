@@ -3,6 +3,8 @@ import logging
 import os
 import fnmatch
 import utils
+from croniter import croniter, croniter_range
+from datetime import datetime, timedelta
 from termcolor import colored
 
 # full path to the directory of this script
@@ -13,18 +15,26 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 if (not os.path.exists(TMP_DIR)):
     os.mkdir(TMP_DIR)
 
-def time_to_play(total_frames, increment, delay):
+def time_to_play(total_frames, increment, update_expression):
     # find out how many frames will display
     frames = total_frames/increment
 
     print('%d out of %d frames will display' % (frames, total_frames))
 
-    # frames * delay = total minutes to play
-    total = (frames * delay)
+    # find out how expression matches until frames = 0
+    cron = croniter(update_expression, datetime.now())
+    iter = cron.all_next(datetime)
 
+    stopDate = datetime.now()  # datetime at which all frames will be displayed
+    while(frames > 0):
+        stopDate = next(iter)
+        frames = frames - 1
+
+    # get seconds between now and then
+    total = (stopDate - datetime.now()).total_seconds()
     print(colored('Will take %s to fully play' % utils.display_time(total), 'red'))
 
-def analyze_video(file, start, end, increment, delay):
+def analyze_video(file, start, end, increment, update_expression):
 
     # run ffmpeg.probe to get the frame rate and frame count
     videoInfo = utils.get_video_info(file)
@@ -34,8 +44,8 @@ def analyze_video(file, start, end, increment, delay):
 
     # print some initial information
     print(colored('Analyzing %s' % file, 'green'))
-    print('Starting Frame: %s, Ending Frame: %s, Frame Increment: %s, Delay between updates: %s' %
-          (startFrame, videoInfo['frame_count'] - startFrame, increment, delay))
+    print('Starting Frame: %s, Ending Frame: %s, Frame Increment: %s, Update on schedule: %s' %
+          (startFrame, videoInfo['frame_count'] - startFrame, increment, update_expression))
     print('Video framerate is %ffps, total video is %f minutes long' %
          (videoInfo['fps'], videoInfo['runtime']/60))
     print('')
@@ -55,18 +65,23 @@ def analyze_video(file, start, end, increment, delay):
     # find total time to play entire movie
     print('Entire Video:')
     time_to_play(videoInfo['frame_count'] - startFrame,
-                 float(increment), float(delay))
+                 float(increment), update_expression)
     print('')
 
     # find time to play what's left
     print('Remaining Video:')
     time_to_play(videoInfo['frame_count'] - currentPosition,
-                float(increment), float(delay))
+                float(increment), update_expression)
     print('')
 
     # figure out how many 'real time' minutes per hour
+    now = datetime.now()
+    tomorrow = now + timedelta(days=1)
+    day_total = 0
+    for i in croniter_range(now, tomorrow, update_expression):
+        day_total = day_total + 1
     secondsPerIncrement = utils.frames_to_seconds(increment, videoInfo['fps'])
-    framesPerSecond = secondsPerIncrement/float(delay)  # this is how many "seconds" of film actually shown per second of realtime
+    framesPerSecond = secondsPerIncrement/(60/(day_total/24)*60)  # this is how many "seconds" of film actually shown per second of realtime
 
     minutesPerHour = (framesPerSecond * 60)
     print('Minutes of film displayed breakdown:')
@@ -83,16 +98,18 @@ parser.add_argument('-c', '--config', is_config_file=True,
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-f', '--file', type=utils.check_mp4,
                     help="File to analyze")
-group.add_argument('-D', '--dir', type=utils.check_dir,
+group.add_argument('-d', '--dir', type=utils.check_dir,
                     help="Directory to analyze")
-parser.add_argument('-d', '--delay',  default=120,
-                    help="Delay between screen updates, in seconds")
-parser.add_argument('-i', '--increment',  default=4,
+parser.add_argument('-u', '--update', type=utils.check_cron, default="* * * * *",
+                    help="when to update the display as a cron expression")
+parser.add_argument('-i', '--increment', default=4,
                     help="Number of frames skipped between screen updates")
 parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the film to start")
 parser.add_argument('-e', '--end', default=0,
                     help="Number of seconds to cut off the end of the video")
+parser.add_argument('-t', '--timecode', action='store_true',
+                    help='does nothing, for compatibility with vsmp config file')
 args = parser.parse_args()
 
 logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
@@ -100,7 +117,7 @@ logging.basicConfig(datefmt='%m/%d %H:%M', format="%(asctime)s: %(message)s",
 
 # check if we have one file or several
 if(args.file is not None):
-    analyze_video(args.file, args.start, args.end, args.increment, args.delay)
+    analyze_video(args.file, args.start, args.end, args.increment, args.update)
 else:
     # assume files play in order and files prior to the current have already played
     print(colored('Analyzing Entire Directory %s' % args.dir, 'green'))
@@ -124,12 +141,12 @@ else:
     # analyze each file
     totalFrames = 0
     for i in range(index, len(fileList)):
-        totalFrames = totalFrames + analyze_video(os.path.join(args.dir, fileList[i]), args.start, args.end, args.increment, args.delay)
+        totalFrames = totalFrames + analyze_video(os.path.join(args.dir, fileList[i]), args.start, args.end, args.increment, args.update)
         print('')
 
     # give a summary of the total play time left
     print('')
     print(colored('Time to play full directory:', 'yellow'))
-    time_to_play(totalFrames, float(args.increment), float(args.delay))
+    time_to_play(totalFrames, float(args.increment), args.update)
 
 exit()
