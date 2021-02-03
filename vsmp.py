@@ -126,16 +126,26 @@ def update_display(args, epd):
     # Open grab.jpg in PIL
     pil_im = Image.open(grabFile)
 
-    if(args.timecode):
+    if(args.notification):
         font18 = ImageFont.truetype(os.path.join(DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
-        # show the timecode of the video in the format HH:mm:SS
-        message = '%s' % utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
-                                            granularity=3,
-                                            timeFormat='{value:02d}',
-                                            joiner=':',
-                                            show_zeros=True,
-                                            intervals=utils.intervals[3:])
+        message = '%s %s'
+        title = ''
+        timecode = ''
+
+        if('title' in args.notification):
+            title = video_file['info']['title']
+
+        if('timecode' in args.notification):
+            # show the timecode of the video in the format HH:mm:SS
+            timecode = utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
+                                          granularity=3,
+                                          timeFormat='{value:02d}',
+                                          joiner=':',
+                                          show_zeros=True,
+                                          intervals=utils.intervals[3:])
+
+        message = message % (title, timecode)
 
         # get a draw object
         draw = ImageDraw.Draw(pil_im)
@@ -187,8 +197,8 @@ parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the video to start")
 parser.add_argument('-e', '--end', default=0,
                     help="Number of seconds to cut off the end of the video")
-parser.add_argument('-t', '--timecode', action='store_true',
-                    help='show the video timecode on the bottom of the display')
+parser.add_argument('-n', '--notification', nargs='*', default=[], choices=['timecode', 'title'],
+                    help='show a notification on the bottom of the screen, can be the title of the video, timecode, or both')
 
 args = parser.parse_args()
 
