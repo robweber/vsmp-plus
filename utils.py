@@ -82,8 +82,16 @@ def get_video_info(file):
     frameRateStr = probeInfo['streams'][0]['r_frame_rate'].split('/')
     frameRate = float(frameRateStr[0])/float(frameRateStr[1])
 
+    # get the filename to show as a title
+    name = os.path.splitext(os.path.basename(file))[0]
+    if('title' in probeInfo['format']['tags']):
+        name = probeInfo['format']['tags']['title']
+    else:
+        # replace common chars with spaces
+        name = name.replace('.', ' ')
+
     return {'frame_count': frameCount, 'fps': frameRate,
-            'runtime': frameCount/frameRate}
+            'runtime': frameCount/frameRate, 'title': name}
 
 
 # read contents of a file
