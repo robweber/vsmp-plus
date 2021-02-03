@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-02-03
+
+### Added
+
+- Added ability to extract title information from the video file, if it exists
+
+### Changed
+
+- changed ```-t``` to ```-n``` (notification). This allows for displaying the video title, timecode or both through the use of ```-n title timecode``` or just ```-n timecode``` as examples
+
 ## 2020-12-29
 
 ### Added
@@ -19,7 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## 2020-12-28
 
-### Added 
+### Added
 
 - license - [GPLv3](https://github.com/robweber/vsmp-plus/blob/master/LICENSE)
 - pictures of working version in frame
@@ -37,4 +47,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Older
 
-Modifications made before start of changelog can be found in the commit history. 
+Modifications made before start of changelog can be found in the commit history.
