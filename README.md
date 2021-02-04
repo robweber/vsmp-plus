@@ -51,7 +51,7 @@ Minutes of film displayed breakdown:
 
 ```
 
-Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-d``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.txt``` file is the currently running file and analyze from this point forward.
+Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-d``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.json``` file is the currently running file and analyze from this point forward.
 
 ## Config File
 
@@ -75,7 +75,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 
 1. Using cron syntax for updating instead of a simple delay in seconds. This allows for more complex schedules, like not updating at night if you don't want to miss something.
 2. Added analyzer to help with figuring out video play times
-3. Pulling the exact framerate of the video insteading of hardcoding it - this fixed issues when the end of the video is close in calculating the timecode
+3. Pulling the exact framerate of the video instead of hardcoding it - this fixed issues when the end of the video is close in calculating the timecode
 4. Use seconds instead of frames for ```--start``` value. More intuitive
 5. Added ```--end``` value to skip end credits
 6. Added the ```-display``` value so you can see where the title of the video and/or the timecode for the frame displayed
