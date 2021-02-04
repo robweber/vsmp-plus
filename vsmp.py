@@ -165,9 +165,9 @@ def update_display(args, epd):
     video_file['pos'] = video_file['pos'] + float(args.increment)
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
-        # save position of old video
-        video_file['pos'] = args.start
-        utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
+        # delete the old save file
+        if(os.path.exists(os.path.join(TMP_DIR, video_file['name'] + '.txt'))):
+            os.remove(os.path.join(TMP_DIR, video_file['name'] + '.txt'))
 
         # set 'next' to True to force new file
         video_file = find_video(args, utils.read_file(lastPlayedFile), True)
