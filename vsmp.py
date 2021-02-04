@@ -69,9 +69,10 @@ def find_video(args, lastPlayed, next=False):
     # find the saved position
     result['pos'] = float(utils.seconds_to_frames(args.start, result['info']['fps']))
 
-    saveFile = os.path.join(TMP_DIR, result['name'] + '.txt')
+    saveFile = os.path.join(TMP_DIR, result['name'] + '.json')
     if(os.path.exists(saveFile)):
-        result['pos'] = float(utils.read_file(saveFile))
+        savedData = utils.read_json(saveFile)
+        result['pos'] = float(savedData['pos'])
 
     return result
 
@@ -166,15 +167,15 @@ def update_display(args, epd):
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # delete the old save file
-        if(os.path.exists(os.path.join(TMP_DIR, video_file['name'] + '.txt'))):
-            os.remove(os.path.join(TMP_DIR, video_file['name'] + '.txt'))
+        if(os.path.exists(os.path.join(TMP_DIR, video_file['name'] + '.json'))):
+            os.remove(os.path.join(TMP_DIR, video_file['name'] + '.json'))
 
         # set 'next' to True to force new file
         video_file = find_video(args, utils.read_file(lastPlayedFile), True)
         logging.info('Will start %s on next run' % video_file)
 
     # save the next position and last video played filename
-    utils.write_file(os.path.join(TMP_DIR, video_file['name'] + '.txt'), video_file['pos'])
+    utils.write_json(os.path.join(TMP_DIR, video_file['name'] + '.json'), video_file)
     utils.write_file(lastPlayedFile, video_file['file'])
 
     epd.sleep()
