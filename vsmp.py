@@ -21,7 +21,7 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 if (not os.path.exists(TMP_DIR)):
     os.mkdir(TMP_DIR)
 
-lastPlayedFile = os.path.join(TMP_DIR, 'last_played.txt')
+lastPlayedFile = os.path.join(TMP_DIR, 'last_played.json')
 
 # pull width/height from driver
 width = epd_driver.EPD_WIDTH
@@ -45,23 +45,12 @@ def generate_frame(in_filename, out_filename, time):
           .run(capture_stdout=True, capture_stderr=True)
 
 
-def find_video(args, lastPlayed, next=False):
-    result = {}
-
-    # if in file mode, just use the file name
-    if(args.file is not None):
-        result = args.file
-    else:
-        # we're in dir mode, use the name of the last played file if it exists in the directory
-        if(lastPlayed != '' and os.path.basename(lastPlayed) in os.listdir(args.dir) and not next):
-            result['file'] = lastPlayed
-        else:
-            result['file'] = find_next_video(args.dir, lastPlayed)
-
-    result['name'] = os.path.splitext(os.path.basename(result['file']))[0]  # video name, no ext
+def analyze_video(args, file):
+    # save full path plus filename with no ext
+    result = {"file": file, 'name': os.path.splitext(os.path.basename(file))[0]}
 
     # get some info about the video (frame rate, total frames, runtime)
-    result['info'] = utils.get_video_info(result['file'])
+    result['info'] = utils.get_video_info(result['info'])
 
     # modify the end frame, if needed
     result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(args.end, result['info']['fps'])
@@ -73,6 +62,23 @@ def find_video(args, lastPlayed, next=False):
     if(os.path.exists(saveFile)):
         savedData = utils.read_json(saveFile)
         result['pos'] = float(savedData['pos'])
+
+    return result
+
+
+def find_video(args, lastPlayed, next=False):
+    result = {}
+
+    # if in file mode, just use the file name
+    if(args.file is not None):
+        result = analyze_video(args, args.file)
+    else:
+        # we're in dir mode, use the name of the last played file if it exists in the directory
+        if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(args.dir) and not next):
+            # use information loaded from last played file
+            result = lastPlayed
+        else:
+            result = analyze_video(args, find_next_video(args.dir, lastPlayed['file']))
 
     return result
 
@@ -104,7 +110,7 @@ def update_display(args, epd):
     epd.init()
 
     # set the video file information
-    video_file = find_video(args, utils.read_file(lastPlayedFile))
+    video_file = find_video(args, utils.read_json(lastPlayedFile))
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
@@ -113,7 +119,7 @@ def update_display(args, epd):
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to true to force new video file
-        video_file = find_video(args, utils.read_file(lastPlayedFile), True)
+        video_file = find_video(args, utils.read_json(lastPlayedFile), True)
 
     # set the position we want to use
     frame = video_file['pos']
@@ -171,12 +177,12 @@ def update_display(args, epd):
             os.remove(os.path.join(TMP_DIR, video_file['name'] + '.json'))
 
         # set 'next' to True to force new file
-        video_file = find_video(args, utils.read_file(lastPlayedFile), True)
+        video_file = find_video(args, utils.read_json(lastPlayedFile), True)
         logging.info('Will start %s on next run' % video_file)
 
     # save the next position and last video played filename
     utils.write_json(os.path.join(TMP_DIR, video_file['name'] + '.json'), video_file)
-    utils.write_file(lastPlayedFile, video_file['file'])
+    utils.write_json(lastPlayedFile, video_file)
 
     epd.sleep()
 
