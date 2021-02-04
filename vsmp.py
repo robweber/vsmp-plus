@@ -50,7 +50,7 @@ def analyze_video(args, file):
     result = {"file": file, 'name': os.path.splitext(os.path.basename(file))[0]}
 
     # get some info about the video (frame rate, total frames, runtime)
-    result['info'] = utils.get_video_info(result['info'])
+    result['info'] = utils.get_video_info(file)
 
     # modify the end frame, if needed
     result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(args.end, result['info']['fps'])
@@ -71,7 +71,10 @@ def find_video(args, lastPlayed, next=False):
 
     # if in file mode, just use the file name
     if(args.file is not None):
-        result = analyze_video(args, args.file)
+        if(args.file == lastPlayed['file']):
+            result = lastPlayed
+        else:
+            result = analyze_video(args, args.file)
     else:
         # we're in dir mode, use the name of the last played file if it exists in the directory
         if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(args.dir) and not next):
