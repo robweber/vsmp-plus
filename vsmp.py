@@ -52,8 +52,8 @@ def find_video(args, lastPlayed, next=False):
     if(args.file is not None):
         result = args.file
     else:
-        # we're in dir mode, use the name of the last played file
-        if(lastPlayed != '' and not next):
+        # we're in dir mode, use the name of the last played file if it exists in the directory
+        if(lastPlayed != '' and os.path.basename(lastPlayed) in os.listdir(args.dir) and not next):
             result['file'] = lastPlayed
         else:
             result['file'] = find_next_video(args.dir, lastPlayed)
