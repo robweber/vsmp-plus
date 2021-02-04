@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 
-- changed ```-t``` to ```-n``` (notification). This allows for displaying the video title, timecode or both through the use of ```-n title timecode``` or just ```-n timecode``` as examples
+- changed ```-t``` to ```-D``` (display). This allows for displaying the video title, timecode or both through the use of ```-D title timecode``` or just ```-D timecode``` as examples
 
 ## 2020-12-29
 

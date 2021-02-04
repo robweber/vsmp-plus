@@ -15,7 +15,7 @@ Once the requirements are in place (See Install document) the program itself is 
 * ```--update``` - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron).
 * ```--start``` - the number of seconds into the video to start, if you want to skip into the video X amount
 * ```--end``` - the number of seconds to cut off the end of the video, useful for skipping credit sequences
-* ```--notification``` - show the title, timecode of the frame being displayed, or both on the bottom of the display. Time in the form of HH:mm:SS.
+* ```--display``` - show the title, timecode of the frame being displayed, or both on the bottom of the display. Time in the form of HH:mm:SS.
 
 Once started, either with the CLI or as a service, the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. At each update time the save file will be read and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The save file and log file for the program are both stored in the ```tmp``` directory, which is created the first time the program is run.
 
@@ -78,7 +78,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 3. Pulling the exact framerate of the video insteading of hardcoding it - this fixed issues when the end of the video is close in calculating the timecode
 4. Use seconds instead of frames for ```--start``` value. More intuitive
 5. Added ```--end``` value to skip end credits
-6. Added the ```-notification``` value so you can see where the title of the video and/or the timecode for the frame displayed
+6. Added the ```-display``` value so you can see where the title of the video and/or the timecode for the frame displayed
 7. Can use either a configuration (.conf) file or pass in arguments via CLI
 
 ## Problems With FFMPEG

@@ -108,8 +108,8 @@ parser.add_argument('-s', '--start', default=1,
                     help="Number of seconds into the film to start")
 parser.add_argument('-e', '--end', default=0,
                     help="Number of seconds to cut off the end of the video")
-parser.add_argument('-n', '--notification', nargs='*', default=[], choices=['timecode', 'title'],
-                    help='show a notification on the bottom of the screen, can be the title of the video, timecode, or both')
+parser.add_argument('-D', '--display', nargs='*', default=[], choices=['timecode', 'title'],
+                    help='show a display on the bottom of the screen, can be the title of the video, timecode, or both')
 
 args = parser.parse_args()
 
