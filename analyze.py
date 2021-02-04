@@ -55,9 +55,10 @@ def analyze_video(file, start, end, increment, update_expression):
 
     # check if we have a "save" file
     currentPosition = startFrame
-    saveFile = os.path.join(TMP_DIR, video_name + '.txt')
+    saveFile = os.path.join(TMP_DIR, video_name + '.json')
     if(os.path.exists(saveFile)):
-        currentPosition = float(utils.read_file(saveFile))
+        saveData = utils.read_json(saveFile)
+        currentPosition = float(saveData['pos'])
 
         if(currentPosition < startFrame):
             currentPosition = startFrame
@@ -124,7 +125,7 @@ else:
     print(colored('Analyzing Entire Directory %s' % args.dir, 'green'))
 
     # get the currently playing file, if exists
-    lastPlayedFile = utils.read_file(os.path.join(TMP_DIR, 'last_played.txt'))
+    lastPlayedFile = utils.read_json(os.path.join(TMP_DIR, 'last_played.json'))
 
     # read in all files from the directory
     fileList = sorted(fnmatch.filter(os.listdir(args.dir), '*.mp4'))
@@ -132,7 +133,7 @@ else:
 
     # try and get the index of the last played file
     try:
-        index = fileList.index(os.path.basename(lastPlayedFile))
+        index = fileList.index(os.path.basename(lastPlayedFile['file']))
     except ValueError:
         index = 0
 
