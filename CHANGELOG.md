@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## 2021-02-04
 
+### Changed
+
+- save file information as a JSON object instead of just the positional information
+
 ### Fixed
 
 - check that ```last_played.txt``` file value is contained in the video directory when using the ```--dir``` option before using the saved value. Fixes issues where the video was deleted or the program restarted with a new directory option
