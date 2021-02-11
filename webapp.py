@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, flash, url_for, jsonify, request
 
 def webapp_thread(port_number):
-    app = Flask(__name__)
+    app = Flask(import_name="vsmp-plus", static_folder=os.path.join(utils.DIR_PATH, 'web', 'static'), template_folder=os.path.join(utils.DIR_PATH, 'web', 'templates'))
 
     @app.route('/', methods=['GET'])
     def index():
