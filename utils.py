@@ -8,6 +8,11 @@ from croniter import croniter
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
+# setup some helpful variables
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
+TMP_DIR = os.path.join(DIR_PATH, 'tmp')
+LAST_PLAYED_FILE = os.path.join(TMP_DIR, 'last_played.json')
+
 intervals = (
     ('months', 2592000),  # 60 * 60 * 24 * 30
     ('weeks', 604800),  # 60 * 60 * 24 * 7
@@ -16,7 +21,6 @@ intervals = (
     ('minutes', 60),
     ('seconds', 1),
 )
-
 
 def display_time(seconds, granularity=3, timeFormat="{value} {interval_name}",
                  joiner=', ', show_zeros=False, intervals=intervals):

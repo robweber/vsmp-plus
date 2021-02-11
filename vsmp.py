@@ -15,15 +15,9 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
-# setup some helpful variables
-DIR_PATH = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
-
 # create the tmp directory if it doesn't exist
-TMP_DIR = os.path.join(DIR_PATH, 'tmp')
-if (not os.path.exists(TMP_DIR)):
-    os.mkdir(TMP_DIR)
-
-lastPlayedFile = os.path.join(TMP_DIR, 'last_played.json')
+if (not os.path.exists(utils.TMP_DIR)):
+    os.mkdir(utils.TMP_DIR)
 
 # pull width/height from driver
 width = epd_driver.EPD_WIDTH
@@ -60,7 +54,7 @@ def analyze_video(args, file):
     # find the saved position
     result['pos'] = float(utils.seconds_to_frames(args.start, result['info']['fps']))
 
-    saveFile = os.path.join(TMP_DIR, result['name'] + '.json')
+    saveFile = os.path.join(utils.TMP_DIR, result['name'] + '.json')
     if(os.path.exists(saveFile)):
         savedData = utils.read_json(saveFile)
         result['pos'] = float(savedData['pos'])
@@ -115,7 +109,7 @@ def update_display(args, epd):
     epd.init()
 
     # set the video file information
-    video_file = find_video(args, utils.read_json(lastPlayedFile))
+    video_file = find_video(args, utils.read_json(utils.LAST_PLAYED_FILE))
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
@@ -124,7 +118,7 @@ def update_display(args, epd):
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to true to force new video file
-        video_file = find_video(args, utils.read_json(lastPlayedFile), True)
+        video_file = find_video(args, utils.read_json(utils.LAST_PLAYED_FILE), True)
 
     # set the position we want to use
     frame = video_file['pos']
@@ -139,7 +133,7 @@ def update_display(args, epd):
     pil_im = Image.open(grabFile)
 
     if(args.display):
-        font18 = ImageFont.truetype(os.path.join(DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
+        font18 = ImageFont.truetype(os.path.join(utils.DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
         message = '%s %s'
         title = ''
@@ -178,16 +172,16 @@ def update_display(args, epd):
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # delete the old save file
-        if(os.path.exists(os.path.join(TMP_DIR, video_file['name'] + '.json'))):
-            os.remove(os.path.join(TMP_DIR, video_file['name'] + '.json'))
+        if(os.path.exists(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'))):
+            os.remove(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'))
 
         # set 'next' to True to force new file
-        video_file = find_video(args, utils.read_json(lastPlayedFile), True)
+        video_file = find_video(args, utils.read_json(utils.LAST_PLAYED_FILE), True)
         logging.info('Will start %s on next run' % video_file)
 
     # save the next position and last video played filename
-    utils.write_json(os.path.join(TMP_DIR, video_file['name'] + '.json'), video_file)
-    utils.write_json(lastPlayedFile, video_file)
+    utils.write_json(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'), video_file)
+    utils.write_json(utils.LAST_PLAYED_FILE, video_file)
 
     epd.sleep()
 
@@ -219,7 +213,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
 
 # setup the logger, log to tmp/log.log
-logging.basicConfig(filename=os.path.join(TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
+logging.basicConfig(filename=os.path.join(utils.TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, 'INFO'))
 
@@ -230,7 +224,7 @@ logging.info('Starting with options Frame Increment: %s frames, Video start: %s 
 epd = epd_driver.EPD()
 
 # start the web app
-t_webApp = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(5000, TMP_DIR))
+t_webApp = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(5000,))
 t_webApp.setDaemon(True)
 t_webApp.start()
 

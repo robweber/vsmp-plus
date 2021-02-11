@@ -2,8 +2,7 @@ import utils
 import os
 from flask import Flask, render_template, flash, url_for, jsonify, request
 
-def webapp_thread(port_number, tmp_dir):
-    TMP_DIR = tmp_dir
+def webapp_thread(port_number):
     app = Flask(__name__)
 
     @app.route('/', methods=['GET'])
@@ -12,6 +11,6 @@ def webapp_thread(port_number, tmp_dir):
 
     @app.route('/status', methods=['GET'])
     def status():
-        return jsonify(utils.read_json(os.path.join(TMP_DIR, 'last_played.json')))
+        return jsonify(utils.read_json(utils.LAST_PLAYED_FILE))
 
     app.run(debug=True, host='0.0.0.0', port=port_number, use_reloader=False)
