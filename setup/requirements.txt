@@ -4,3 +4,4 @@ spidev
 image
 ffmpeg-python
 termcolor
+Flask

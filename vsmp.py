@@ -8,6 +8,8 @@ import fnmatch
 import signal
 import sys
 import time
+import threading
+import webapp
 from croniter import croniter
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
@@ -226,6 +228,11 @@ logging.info('Starting with options Frame Increment: %s frames, Video start: %s 
 
 # setup the screen
 epd = epd_driver.EPD()
+
+# start the web app
+t_webApp = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(5000, TMP_DIR))
+t_webApp.setDaemon(True)
+t_webApp.start()
 
 # initialize the cron scheduler and get the next update time
 cron = croniter(args.update, datetime.now())
