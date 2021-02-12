@@ -1,6 +1,41 @@
 {% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+function load_status(){
+  $.ajax({type: 'GET', url: '/status', success: function(data, status, request){
+    $('#file_title').text(data.name);
+
+    percentComplete = (data.pos/data.info.frame_count) * 100;
+    $('#file_progress').css("width", percentComplete.toFixed(2) + "%");
+
+    setTimeout(load_status, 30000)
+  }
+
+  });
+}
+</script>
+{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>Main</h1>
+    <h1 id="file_title">Current Status</h1>
+    <div class="progress">
+      <div class="progress-bar" id="file_progress" role="progressbar" style="width: 0%"></div>
+    </div>
 </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      Program is:
+    </div>
+    <div class="col-md-8">
+      <p class="text-success"><b>Running</b></p>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    load_status()
+})
+</script>
+
 {% endblock %}
