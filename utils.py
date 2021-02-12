@@ -12,6 +12,7 @@ os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 LAST_PLAYED_FILE = os.path.join(TMP_DIR, 'last_played.json')
+CONFIG_FILE = os.path.join(TMP_DIR, 'config.json')
 
 intervals = (
     ('months', 2592000),  # 60 * 60 * 24 * 30
@@ -97,6 +98,17 @@ def get_video_info(file):
 
     return {'frame_count': frameCount, 'fps': frameRate,
             'runtime': frameCount/frameRate, 'title': name}
+
+
+# get the configuration, use default values where custom don't exist
+def get_configuration():
+    # default configuration
+    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
+
+    # merge any saved configuration
+    result.update(read_json(CONFIG_FILE))
+
+    return result
 
 
 # read JSON formatted file

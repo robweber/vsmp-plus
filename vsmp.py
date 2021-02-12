@@ -11,7 +11,7 @@ import time
 import threading
 import webapp
 from croniter import croniter
-from datetime import datetime
+from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
@@ -41,7 +41,7 @@ def generate_frame(in_filename, out_filename, time):
           .run(capture_stdout=True, capture_stderr=True)
 
 
-def analyze_video(args, file):
+def analyze_video(config, file):
     # save full path plus filename with no ext
     result = {"file": file, 'name': os.path.splitext(os.path.basename(file))[0]}
 
@@ -49,10 +49,10 @@ def analyze_video(args, file):
     result['info'] = utils.get_video_info(file)
 
     # modify the end frame, if needed
-    result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(args.end, result['info']['fps'])
+    result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(config['end'], result['info']['fps'])
 
     # find the saved position
-    result['pos'] = float(utils.seconds_to_frames(args.start, result['info']['fps']))
+    result['pos'] = float(utils.seconds_to_frames(config['start'], result['info']['fps']))
 
     saveFile = os.path.join(utils.TMP_DIR, result['name'] + '.json')
     if(os.path.exists(saveFile)):
@@ -62,22 +62,22 @@ def analyze_video(args, file):
     return result
 
 
-def find_video(args, lastPlayed, next=False):
+def find_video(config, lastPlayed, next=False):
     result = {}
 
     # if in file mode, just use the file name
-    if(args.file is not None):
-        if(args.file == lastPlayed['file']):
+    if(config['mode'] == 'file'):
+        if(config['path'] == lastPlayed['file']):
             result = lastPlayed
         else:
-            result = analyze_video(args, args.file)
+            result = analyze_video(config, config['path'])
     else:
         # we're in dir mode, use the name of the last played file if it exists in the directory
-        if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(args.dir) and not next):
+        if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(config['path']) and not next):
             # use information loaded from last played file
             result = lastPlayed
         else:
-            result = analyze_video(args, find_next_video(args.dir, lastPlayed['file']))
+            result = analyze_video(config, find_next_video(config['path'], lastPlayed['file']))
 
     return result
 
@@ -104,12 +104,12 @@ def find_next_video(dir, lastPlayed):
     return os.path.join(dir, fileList[index])
 
 
-def update_display(args, epd):
+def update_display(config, epd):
     # Initialize the screen
     epd.init()
 
     # set the video file information
-    video_file = find_video(args, utils.read_json(utils.LAST_PLAYED_FILE))
+    video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE))
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
@@ -118,7 +118,7 @@ def update_display(args, epd):
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to true to force new video file
-        video_file = find_video(args, utils.read_json(utils.LAST_PLAYED_FILE), True)
+        video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE), True)
 
     # set the position we want to use
     frame = video_file['pos']
@@ -132,17 +132,17 @@ def update_display(args, epd):
     # Open grab.jpg in PIL
     pil_im = Image.open(grabFile)
 
-    if(args.display):
+    if(len(config['display']) > 0):
         font18 = ImageFont.truetype(os.path.join(utils.DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
         message = '%s %s'
         title = ''
         timecode = ''
 
-        if('title' in args.display):
+        if('title' in config['display']):
             title = video_file['info']['title']
 
-        if('timecode' in args.display):
+        if('timecode' in config['display']):
             # show the timecode of the video in the format HH:mm:SS
             timecode = utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
                                           granularity=3,
@@ -168,7 +168,7 @@ def update_display(args, epd):
     logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, utils.frames_to_seconds(frame, video_file['info']['fps']), video_file['name']))
 
     # save the next position
-    video_file['pos'] = video_file['pos'] + float(args.increment)
+    video_file['pos'] = video_file['pos'] + float(config['increment'])
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # delete the old save file
@@ -176,7 +176,7 @@ def update_display(args, epd):
             os.remove(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'))
 
         # set 'next' to True to force new file
-        video_file = find_video(args, utils.read_json(utils.LAST_PLAYED_FILE), True)
+        video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE), True)
         logging.info('Will start %s on next run' % video_file)
 
     # save the next position and last video played filename
@@ -190,23 +190,11 @@ def update_display(args, epd):
 parser = configargparse.ArgumentParser(description='VSMP Settings')
 parser.add_argument('-c', '--config', is_config_file=True,
                     help='Path to custom config file')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-f', '--file', type=utils.check_mp4,
-                   help="File to grab screens of")
-group.add_argument('-d', '--dir', type=utils.check_dir,
-                   help="Dir to play videos from (in order)")
-parser.add_argument('-i', '--increment',  default=4,
-                    help="Number of frames skipped between screen updates")
-parser.add_argument('-u', '--update', type=utils.check_cron, default='* * * * *',
-                    help="when to update the display as a cron expression")
-parser.add_argument('-s', '--start', default=1,
-                    help="Number of seconds into the video to start")
-parser.add_argument('-e', '--end', default=0,
-                    help="Number of seconds to cut off the end of the video")
-parser.add_argument('-D', '--display', nargs='*', default=[], choices=['timecode', 'title'],
-                    help='show a display on the bottom of the screen, can be the title of the video, timecode, or both')
+parser.add_argument('-p', '--port', default=5000,
+                    help="Port number to run the web server on, 5000 by default")
 
 args = parser.parse_args()
+config = utils.get_configuration()
 
 # add hooks for interrupt signal
 signal.signal(signal.SIGTERM, signal_handler)
@@ -218,27 +206,37 @@ logging.basicConfig(filename=os.path.join(utils.TMP_DIR, 'log.log'), datefmt='%m
                     level=getattr(logging, 'INFO'))
 
 logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
-      (args.increment, args.start, args.end, args.update))
+      (config['increment'], config['start'], config['end'], config['update']))
 
 # setup the screen
 epd = epd_driver.EPD()
 
 # start the web app
-webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(5000,))
+webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port,))
 webAppThread.setDaemon(True)
 webAppThread.start()
 
 # initialize the cron scheduler and get the next update time
-cron = croniter(args.update, datetime.now())
+cron = croniter(config['update'], datetime.now())
 nextUpdate = cron.get_next(datetime)
 logging.info('Next update: %s' % nextUpdate)
 
 while 1:
     now = datetime.now()
 
+    # if the config.json file exists and was recently saved
+    if(os.path.exists(utils.CONFIG_FILE) and os.path.getmtime(utils.CONFIG_FILE) > (now - timedelta(minutes=1)).timestamp()):
+        logging.info('Refreshing configuration information')
+        config = utils.get_configuration()
+
+        # refresh next update as it may have changed
+        cron = croniter(config['update'], now)
+        nextUpdate = cron.get_next(datetime)
+        logging.info('Next update: %s' % nextUpdate)
+
     # check if the display should be updated
     if(nextUpdate <= now):
-        update_display(args, epd)
+        update_display(config, epd)
         nextUpdate = cron.get_next(datetime)
         logging.info('Next update: %s' % nextUpdate)
 
