@@ -224,9 +224,9 @@ logging.info('Starting with options Frame Increment: %s frames, Video start: %s 
 epd = epd_driver.EPD()
 
 # start the web app
-t_webApp = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(5000,))
-t_webApp.setDaemon(True)
-t_webApp.start()
+webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(5000,))
+webAppThread.setDaemon(True)
+webAppThread.start()
 
 # initialize the cron scheduler and get the next update time
 cron = croniter(args.update, datetime.now())
