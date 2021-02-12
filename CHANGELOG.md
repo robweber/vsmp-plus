@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-02-12
+
+### Added
+
+- added ability to refresh config while program is running. Adjustments to ```config.json``` file will update config without program restart
+
+### Changed
+
+- changed arguments to main ```vsmp.py``` file. Only webserver port is given as an argument. Other parameters are either defaults or pulled from ```tmp/config.json```
+
+## 2021-02-11
+
+### Added
+
+- added Flask based web service with some basic endpoints. will eventually allow for on the fly program control
+
+### Changed
+
+- moved some global values to the utils file to be used more generally
+
 ## 2021-02-04
 
 ### Changed
