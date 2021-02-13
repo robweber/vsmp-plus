@@ -51,8 +51,9 @@ def analyze_video(config, file):
     # modify the end frame, if needed
     result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(config['end'], result['info']['fps'])
 
-    # find the saved position
+    # find the saved position and played percent
     result['pos'] = float(utils.seconds_to_frames(config['start'], result['info']['fps']))
+    result['percent_complete'] = (result['pos']/result['info']['frame_count']) * 100
 
     saveFile = os.path.join(utils.TMP_DIR, result['name'] + '.json')
     if(os.path.exists(saveFile)):
@@ -77,6 +78,9 @@ def find_video(config, lastPlayed, next=False):
             # use information loaded from last played file
             result = lastPlayed
         else:
+            # file might not exist (first run) just make it blank
+            if('file' not in lastPlayed):
+                lastPlayed['file'] = ''
             result = analyze_video(config, find_next_video(config['path'], lastPlayed['file']))
 
     return result

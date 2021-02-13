@@ -5,8 +5,7 @@ function load_status(){
   $.ajax({type: 'GET', url: '/status', success: function(data, status, request){
     $('#file_title').text(data.name);
 
-    percentComplete = (data.pos/data.info.frame_count) * 100;
-    $('#file_progress').css("width", percentComplete.toFixed(2) + "%");
+    $('#file_progress').css("width", data.percent_complete.toFixed(2) + "%");
 
     setTimeout(load_status, 30000)
   }
