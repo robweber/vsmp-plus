@@ -2,7 +2,7 @@
 {% block header %}
 <script type="text/javascript">
 function load_status(){
-  $.ajax({type: 'GET', url: '/status', success: function(data, status, request){
+  $.ajax({type: 'GET', url: '/api/status', success: function(data, status, request){
     $('#file_title').text(data.name);
 
     $('#file_progress').css("width", data.percent_complete.toFixed(2) + "%");

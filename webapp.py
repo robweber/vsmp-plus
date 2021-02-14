@@ -9,11 +9,11 @@ def webapp_thread(port_number):
     def index():
         return render_template('index.html')
 
-    @app.route('/configuration', methods=['GET'])
+    @app.route('/api/configuration', methods=['GET'])
     def get_configuration():
         return jsonify(utils.get_configuration())
 
-    @app.route('/status', methods=['GET'])
+    @app.route('/api/status', methods=['GET'])
     def status():
         return jsonify(utils.read_json(utils.LAST_PLAYED_FILE))
 
