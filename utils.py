@@ -59,23 +59,17 @@ def seconds_to_frames(seconds, fps):
 
 # Check if a file is an mp4
 def check_mp4(value):
-    if not os.path.exists(value) or not value.endswith('.mp4'):
-        raise argparse.ArgumentTypeError("%s does not exist or is not an .mp4 file" % value)
-    return value
+    return os.path.exists(value) and value.endswith('.mp4')
 
 
 # Check if directory is valid
 def check_dir(value):
-    if(not os.path.exists(value) and not os.path.isdir(value)):
-        raise argparse.ArgumentTypeError("%s is not a directory" % value)
-    return value
+    return os.path.exists(value) and os.path.isdir(value)
 
 
 # Check if passed in value is a valid cron schedule
 def check_cron(schedule):
-    if(not croniter.is_valid(schedule)):
-        raise argparse.ArgumentTypeError("%s is not a valid cron expression" % schedule)
-    return schedule
+    return croniter.is_valid(schedule)
 
 # Uses ffprobe to get various play details from the video file
 def get_video_info(file):
