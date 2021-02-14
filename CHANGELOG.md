@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-02-14
+
+### Added
+
+- added ability to POST values to ```/api/configuration``` and update configuration
+- added setup web page to view current configuration values (no update yet)
+
 ## 2021-02-13
 
 ### Added
