@@ -9,6 +9,10 @@ def webapp_thread(port_number):
     def index():
         return render_template('index.html')
 
+    @app.route('/setup', methods=['GET'])
+    def setup_view():
+        return render_template('setup.html', config=utils.get_configuration())
+
     @app.route('/api/configuration', methods=['GET'])
     def get_configuration():
         return jsonify(utils.get_configuration())
