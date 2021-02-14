@@ -97,7 +97,7 @@ def get_video_info(file):
 # get the configuration, use default values where custom don't exist
 def get_configuration():
     # default configuration
-    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
+    result = {'running': True, 'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
 
     # merge any saved configuration
     result.update(read_json(CONFIG_FILE))

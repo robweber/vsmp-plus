@@ -240,7 +240,10 @@ while 1:
 
     # check if the display should be updated
     if(nextUpdate <= now):
-        update_display(config, epd)
+        if(config['running']):
+            update_display(config, epd)
+        else:
+            logging.info('Updating display paused, skipping this time')
         nextUpdate = cron.get_next(datetime)
         logging.info('Next update: %s' % nextUpdate)
 
