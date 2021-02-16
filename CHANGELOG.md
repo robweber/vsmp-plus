@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added ability to pause or resume the player via the web interface
 
+### Changed
+
+- updated bootstrap version to 4.3.1 and updated web app theme
+
 ## 2021-02-14
 
 ### Added
