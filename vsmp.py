@@ -53,12 +53,13 @@ def analyze_video(config, file):
 
     # find the saved position and played percent
     result['pos'] = float(utils.seconds_to_frames(config['start'], result['info']['fps']))
-    result['percent_complete'] = (result['pos']/result['info']['frame_count']) * 100
 
     saveFile = os.path.join(utils.TMP_DIR, result['name'] + '.json')
     if(os.path.exists(saveFile)):
         savedData = utils.read_json(saveFile)
         result['pos'] = float(savedData['pos'])
+
+    result['percent_complete'] = (result['pos']/result['info']['frame_count']) * 100
 
     return result
 
@@ -123,6 +124,9 @@ def update_display(config, epd):
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to true to force new video file
         video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE), True)
+
+    # calculate the percent percent_complete
+    video_file['percent_complete'] = (video_file['pos']/video_file['info']['frame_count']) * 100
 
     # set the position we want to use
     frame = video_file['pos']

@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - updated bootstrap version to 4.3.1 and updated web app theme
+- fixed percent complete calculation, was done prior to loading current position resulting in incorrect percent value
 
 ## 2021-02-14
 
