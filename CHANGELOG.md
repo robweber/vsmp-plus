@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-02-16
+
+### Added
+
+- added ability to pause or resume the player via the web interface
+
 ## 2021-02-14
 
 ### Added

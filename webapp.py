@@ -7,7 +7,7 @@ def webapp_thread(port_number):
 
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html')
+        return render_template('index.html', config=utils.get_configuration())
 
     @app.route('/setup', methods=['GET'])
     def setup_view():
@@ -52,6 +52,23 @@ def webapp_thread(port_number):
         result['success'] = True
         result['message'] = 'Settings updated'
         return jsonify(result)
+
+    @app.route('/api/control/<action>', methods=['POST'])
+    def execute_action(action):
+        result = {'success': True, 'message': ''}
+
+        # get the action
+        if(action in ['pause', 'play']):
+            config = utils.get_configuration()
+            config['running'] = action == 'play'  # eval to True/False
+            utils.write_json(utils.CONFIG_FILE, config)
+            result['message'] = 'Action %s executed' % action
+        else:
+            result['success'] = False
+            result['message'] = 'Not a valid control action'
+
+        return jsonify(result)
+
 
     @app.route('/api/status', methods=['GET'])
     def status():
