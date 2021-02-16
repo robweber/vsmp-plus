@@ -23,6 +23,10 @@ function run_action(action){
       $('#toggle_pause_button').toggle();
       $('#video_progress').toggleClass('bg-secondary');
     }
+    else
+    {
+      showFlash(data.message, 'error');
+    }
   }
   });
 }
