@@ -9,30 +9,34 @@
         {% block header %}{% endblock %}
     </head>
     <body>
-        <!-- Fixed navbar -->
-        <nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">VSMP+</a>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/setup">Setup</a></li>
-                        <li><a href="/about">About</a></li>
-                    </ul>
-              </div>
-            </div>
+        <div class="container">
+        <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills float-right">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/setup">Setup</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+            </li>
+          </ul>
         </nav>
-        <div class="container theme-showcase" role="main">
-            {% for category,message in get_flashed_messages(with_categories=true) %}
-                <div class="alert alert-{{ category }}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-            <div id="js-success-alert" class="alert alert-success" style="display:none" role="alert"></div>
-            <div id="js-error-alert" class="alert alert-danger" style="display:none" role="alert"></div>
-            {% block content %}{% endblock %}
+        <h3 class="text-muted">VSMP+</h3>
+        </div>
+        {% for category,message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        <div id="js-success-alert" class="alert alert-success" style="display:none" role="alert"></div>
+        <div id="js-error-alert" class="alert alert-danger" style="display:none" role="alert"></div>
+        {% block content %}{% endblock %}
+        <footer class="footer mt-4">
+             <p><a href="">Rob Weber</a></p>
+        </footer>
         </div>
     </body>
 </html>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container m-b-sm">
+<div class="container mb-4">
   <div class="row">
     <div class="col-md-12">
       Use this page to modify the setup of the display. Settings can be adjusted while the sign is running and will take effect within 1 minute of hitting the save button.
@@ -8,80 +8,92 @@
   </div>
 </div>
 <div class="container">
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Mode
+      <b>Mode</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <select class="custom-select">
         <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
         <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
       </select>
     </div>
-    <div class="col-md-4">
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
       The current play mode, can be a specific file or a full directory
     </div>
   </div>
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Path
+      <b>Path</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" />
     </div>
-    <div class="col-md-4">
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
       The full system path to either the file or directory VSMP should pull from. This will be verified to exist upon save.
     </div>
   </div>
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Update Time
+      <b>Update Time</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <input type="text" id="config_path" class="form-control" value="{{ config['update'] }}" />
     </div>
-    <div class="col-md-4">
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
       How often to update the sign, given as a <a href="http://en.wikipedia.org/wiki/Cron">cron expression</a>
     </div>
   </div>
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Frames to increment
+      <b>Frames to increment</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <input type="text" id="config_path" class="form-control" value="{{ config['increment'] }}" />
     </div>
-    <div class="col-md-4">
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
       How many frames to increment on each update.
     </div>
   </div>
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Start time skip
+      <b>Start time skip</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <input type="text" id="config_path" class="form-control" value="{{ config['start'] }}" />
     </div>
-    <div class="col-md-4">
-      How many <b>seconds</b> in to the video to skip when starting a new video
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      How many <i>seconds</i> in to the video to skip when starting a new video
     </div>
   </div>
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Start time skip
+      <b>End time skip</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <input type="text" id="config_path" class="form-control" value="{{ config['end'] }}" />
     </div>
-    <div class="col-md-4">
-      How many <b>seconds</b> in to the video to skip at the end of a video, useful for skipping credit sequences
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      How many <i>seconds</i> in to the video to skip at the end of a video, useful for skipping credit sequences
     </div>
   </div>
-  <div class="row m-y-sm">
+  <div class="row my-1">
     <div class="col-md-4">
-      Additional display options
+      <b>Additional display options</b>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
         <label class="form-check-label" for="inlineCheckbox1">Title</label>
@@ -91,7 +103,9 @@
         <label class="form-check-label" for="inlineCheckbox2">Timecode</label>
       </div>
     </div>
-    <div class="col-md-4">
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
       Optionally display the video title or timecode below the video on the display
     </div>
   </div>
