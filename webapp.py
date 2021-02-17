@@ -22,7 +22,7 @@ def webapp_thread(port_number):
         result = {'success': False, 'message': ''}
 
         # get the request data and do some verification
-        data = request.json
+        data = request.get_json(force=True)
 
         # check mode
         if(data['mode'] not in ['file', 'dir']):

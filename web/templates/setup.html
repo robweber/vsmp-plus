@@ -1,4 +1,44 @@
 {% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+  function saveConfig(){
+    // build the json post
+    postData = {"mode": $('#config_mode').val(),
+               "path": $('#config_path').val(),
+               "update": $('#config_update').val(),
+               "increment": parseInt($('#config_increment').val()),
+               "start": parseInt($('#config_start').val()),
+               "end": parseInt($('#config_end').val()) };
+
+    // display represented as an array
+    display = [];
+    if($('#config_display_title').is(':checked'))
+    {
+      display.push('title');
+    }
+
+    if($('#config_display_timecode').is(':checked'))
+    {
+      display.push('timecode');
+    }
+
+    postData.display = display;
+
+    $.ajax({type: 'POST', contentType: 'application/json', url: '/api/configuration', data: JSON.stringify(postData), success: function(data, status, request){
+
+      if(data.success)
+      {
+        showFlash(data.message, 'success')
+      }
+      else
+      {
+        showFlash(data.message, 'error');
+      }
+    }});
+
+  }
+</script>
+{% endblock %}
 {% block content %}
 <div class="container mb-4">
   <div class="row">
@@ -13,7 +53,7 @@
       <b>Mode</b>
     </div>
     <div class="col-md-8">
-      <select class="custom-select">
+      <select class="custom-select" id="config_mode">
         <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
         <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
       </select>
@@ -42,7 +82,7 @@
       <b>Update Time</b>
     </div>
     <div class="col-md-8">
-      <input type="text" id="config_path" class="form-control" value="{{ config['update'] }}" />
+      <input type="text" id="config_update" class="form-control" value="{{ config['update'] }}" />
     </div>
   </div>
   <div class="row my-2 bg-light">
@@ -55,7 +95,7 @@
       <b>Frames to increment</b>
     </div>
     <div class="col-md-8">
-      <input type="text" id="config_path" class="form-control" value="{{ config['increment'] }}" />
+      <input type="text" id="config_increment" class="form-control" value="{{ config['increment'] }}" />
     </div>
   </div>
   <div class="row my-2 bg-light">
@@ -68,7 +108,7 @@
       <b>Start time skip</b>
     </div>
     <div class="col-md-8">
-      <input type="text" id="config_path" class="form-control" value="{{ config['start'] }}" />
+      <input type="text" id="config_start" class="form-control" value="{{ config['start'] }}" />
     </div>
   </div>
   <div class="row my-2 bg-light">
@@ -81,7 +121,7 @@
       <b>End time skip</b>
     </div>
     <div class="col-md-8">
-      <input type="text" id="config_path" class="form-control" value="{{ config['end'] }}" />
+      <input type="text" id="config_end" class="form-control" value="{{ config['end'] }}" />
     </div>
   </div>
   <div class="row my-2 bg-light">
@@ -95,18 +135,23 @@
     </div>
     <div class="col-md-8">
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
-        <label class="form-check-label" for="inlineCheckbox1">Title</label>
+        <input class="form-check-input" type="checkbox" id="config_display_title" name="config_display" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
+        <label class="form-check-label" for="config_display_title">Title</label>
       </div>
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="timecode" {{ 'checked' if 'timecode' in config['display'] else '' }}>
-        <label class="form-check-label" for="inlineCheckbox2">Timecode</label>
+        <input class="form-check-input" type="checkbox" id="config_display_timecode" name="config_display" value="timecode" {{ 'checked' if 'timecode' in config['display'] else '' }}>
+        <label class="form-check-label" for="config_display_timecode">Timecode</label>
       </div>
     </div>
   </div>
   <div class="row my-2 bg-light">
     <div class="col-md-12">
       Optionally display the video title or timecode below the video on the display
+    </div>
+  </div>
+  <div class="row my-3">
+    <div class="col-md-12" align="center">
+      <button class="btn btn-primary" onClick="saveConfig()">Save</button>
     </div>
   </div>
 </div>
