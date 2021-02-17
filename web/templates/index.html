@@ -19,7 +19,7 @@ function run_action(action){
     if(data.success)
     {
       // if success, toggle the buttons
-      $('#toggle_play_button').toggle();
+      $('#toggle_resume_button').toggle();
       $('#toggle_pause_button').toggle();
       $('#video_progress').toggleClass('bg-secondary');
     }
@@ -41,7 +41,7 @@ function run_action(action){
 </div>
 <div class="container my-2" align="center">
   <button class="btn btn-danger" id="toggle_pause_button" onClick="run_action('pause')" style="display: {{ 'display' if config['running'] else 'none' }}">Pause</button>
-  <button class="btn btn-success" id="toggle_play_button" onClick="run_action('play')" style="display: {{ 'none' if config['running'] else 'display' }}">Play</button>
+  <button class="btn btn-success" id="toggle_resume_button" onClick="run_action('resume')" style="display: {{ 'none' if config['running'] else 'display' }}">Resume</button>
 </div>
 <script type="text/javascript">
 $(document).ready(function () {

@@ -64,9 +64,9 @@ def webapp_thread(port_number, debugMode=False):
         result = {'success': True, 'message': ''}
 
         # get the action
-        if(action in ['pause', 'play']):
+        if(action in ['pause', 'resume']):
             config = utils.get_configuration()
-            config['running'] = action == 'play'  # eval to True/False
+            config['running'] = action == 'resume'  # eval to True/False
             utils.write_json(utils.CONFIG_FILE, config)
 
             result['message'] = 'Action %s executed' % action
