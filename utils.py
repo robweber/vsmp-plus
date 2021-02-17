@@ -71,6 +71,34 @@ def check_dir(value):
 def check_cron(schedule):
     return croniter.is_valid(schedule)
 
+
+def validate_configuration(config):
+
+    # check mode
+    if(config['mode'] not in ['file', 'dir']):
+        return (False, 'Incorrect mode, must be "file" or "dir"')
+
+    # check if file or dir path is correct
+    if(config['mode'] == 'file' and not check_mp4(config['path'])):
+        return (False, 'File path is not a valid file')
+
+    elif(config['mode'] == 'dir' and not check_dir(config['path'])):
+        return (False, 'Directory path is not valid')
+
+    # verify cron expression
+    if(not check_cron(config['update'])):
+        return (False, 'Cron expression for update interval is invalid')
+
+    # check that increment, end, and start are int values
+    if(not isinstance(config['increment'],int)):
+        return (False, 'Increment must be an integer value')
+    elif(not isinstance(config['start'],int)):
+        return (False, 'Start time skip must be an integer value')
+    elif(not isinstance(config['end'], int)):
+        return (False, 'End time skip must be an integer value')
+
+    return (True, 'Config Valid')
+
 # Uses ffprobe to get various play details from the video file
 def get_video_info(file):
     # get the info from ffprobe

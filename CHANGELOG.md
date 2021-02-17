@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - can update settings from web interface via ```/api/configuration``` API call
 - added ```-D``` arg to toggle debug logging on/off
+- config validation now handles checking for int values as well
 
 ### Changed
 

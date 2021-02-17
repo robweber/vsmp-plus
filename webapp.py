@@ -24,38 +24,25 @@ def webapp_thread(port_number, debugMode=False):
 
     @app.route('/api/configuration', methods=['POST'])
     def save_configuration():
-        result = {'success': False, 'message': ''}
+        result = {'success': True, 'message': 'Settings Updated'}
 
         # get the request data and do some verification
         data = request.get_json(force=True)
-
-        # check mode
-        if(data['mode'] not in ['file', 'dir']):
-            result['message'] = 'Incorrect mode, must be "file" or "dir"'
-            return jsonify(result)
-
-        # check if file or dir path is correct
-        if(data['mode'] == 'file' and not utils.check_mp4(data['path'])):
-            result['message'] = 'File path is not a valid file'
-            return jsonify(result)
-        elif(data['mode'] == 'dir' and not utils.check_dir(data['path'])):
-            result['message'] = 'Directory path is not valid'
-            return jsonify(result)
-
-        # verify cron expression
-        if(not utils.check_cron(data['update'])):
-            result['message'] = 'Cron expression for update interval is invalid'
-            return jsonify(result)
 
         # if passed get current config
         currentConfig = utils.get_configuration()
 
         # merge changed values into current and save
         currentConfig.update(data)
-        utils.write_json(utils.CONFIG_FILE, currentConfig)
 
-        result['success'] = True
-        result['message'] = 'Settings updated'
+        checkConfig = utils.validate_configuration(currentConfig)
+
+        if(checkConfig[0]):
+            utils.write_json(utils.CONFIG_FILE, currentConfig)
+        else:
+            result['success'] = False
+            result['message'] = checkConfig[1]
+
         return jsonify(result)
 
 
