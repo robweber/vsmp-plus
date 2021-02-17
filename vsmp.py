@@ -26,7 +26,7 @@ height = epd_driver.EPD_HEIGHT
 
 # function to handle when the is killed and exit gracefully
 def signal_handler(signum, frame):
-    logging.info('Exiting Program')
+    logging.debug('Exiting Program')
     epd_driver.epdconfig.module_exit()
     sys.exit(0)
 
@@ -200,6 +200,8 @@ parser.add_argument('-c', '--config', is_config_file=True,
                     help='Path to custom config file')
 parser.add_argument('-p', '--port', default=5000,
                     help="Port number to run the web server on, 5000 by default")
+parser.add_argument('-D', '--debug', action='store_true',
+                    help='If the program should run in debug mode')
 
 args = parser.parse_args()
 config = utils.get_configuration()
@@ -209,18 +211,20 @@ signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
 
 # setup the logger, log to tmp/log.log
+logLevel = 'INFO' if not args.debug else 'DEBUG'
 logging.basicConfig(filename=os.path.join(utils.TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
-                    level=getattr(logging, 'INFO'))
+                    level=getattr(logging, logLevel))
 
 logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
       (config['increment'], config['start'], config['end'], config['update']))
+logging.debug('Debug Mode On')
 
 # setup the screen
 epd = epd_driver.EPD()
 
 # start the web app
-webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port,))
+webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
 webAppThread.setDaemon(True)
 webAppThread.start()
 
@@ -247,7 +251,7 @@ while 1:
         if(config['running']):
             update_display(config, epd)
         else:
-            logging.info('Updating display paused, skipping this time')
+            logging.debug('Updating display paused, skipping this time')
         nextUpdate = cron.get_next(datetime)
         logging.info('Next update: %s' % nextUpdate)
 

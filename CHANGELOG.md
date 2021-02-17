@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - can update settings from web interface via ```/api/configuration``` API call
+- added ```-D``` arg to toggle debug logging on/off
 
 ## 2021-02-16
 
