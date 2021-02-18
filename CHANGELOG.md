@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - moved files to ```modules``` directory to keep local python source files a bit cleaner
 
+### Removed
+
+- removed legacy ```analyze.py``` file as it has been merged into the web service
+
 ## 2021-02-17
 
 ### Added
