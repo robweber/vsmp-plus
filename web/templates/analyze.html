@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+  function analyze(){
+    $('#analyze_button').prop('disabled', true);
+
+    // build the json post
+    postData = {"mode": $('#config_mode').val(),
+               "path": $('#config_path').val(),
+               "update": $('#config_update').val(),
+               "increment": parseInt($('#config_increment').val()),
+               "start": parseInt($('#config_start').val()),
+               "end": parseInt($('#config_end').val()) };
+
+    $.ajax({type: 'POST', contentType: 'application/json', url: '/api/analyze', data: JSON.stringify(postData), success: function(data, status, request){
+
+      if(data.success)
+      {
+        $('#config_table').hide();
+
+        // clear table
+        $("#result_table tr").remove();
+
+        // add results to table
+        $.each(data.data.videos, function(index, value)
+        {
+          $('#result_table').append(`<tr>
+                    <td><p>${value.file}</p></td>
+                    <td><p>${value.runtime} min</p></td>
+                    <td><p>${value.remaining_time_to_play}</p></td>
+                    <td><p>${value.total_time_to_play}</p></td>
+
+                     </tr>`);
+        });
+
+        // add the total
+        $('#result_table').append(`<tr>
+                  <td><p><b>All Files</b></p></td>
+                  <td><p></p></td>
+                  <td><p></p></td>
+                  <td><p>${data.data.total_time}</p></td>
+
+                   </tr>`);
+      }
+      else
+      {
+        showFlash(data.message, 'error');
+      }
+
+      $('#analyze_button').prop('disabled', false)
+    }});
+
+  }
+
+function toggleConfig(){
+  $('#config_table').toggle();
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="container mb-4">
+  <div class="row">
+    <div class="col-md-12">
+      Play with the settings below an hit <b>Analyze</b> to run them in a "what-if" scenerio. This will give you an indication of how long your videos will take to play on the screen.
+    </div>
+  </div>
+</div>
+<p><a href="#" onClick="toggleConfig()">Show Configuration</a></p>
+<hr />
+<div class="container" id="config_table" style="display:none">
+  <div class="row my-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+      <b>Mode</b>
+    </div>
+    <div class="col-md-6">
+      <select class="custom-select" id="config_mode">
+        <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
+        <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
+      </select>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      The current play mode, can be a specific file or a full directory
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+      <b>Path</b>
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      The full system path to either the file or directory VSMP should pull from. This will be verified to exist upon save.
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+      <b>Update Time</b>
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="config_update" class="form-control" value="{{ config['update'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      How often to update the sign, given as a <a href="http://en.wikipedia.org/wiki/Cron">cron expression</a>
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+      <b>Frames to increment</b>
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="config_increment" class="form-control" value="{{ config['increment'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      How many frames to increment on each update.
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+      <b>Start time skip</b>
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="config_start" class="form-control" value="{{ config['start'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      How many <i>seconds</i> in to the video to skip when starting a new video
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+      <b>End time skip</b>
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="config_end" class="form-control" value="{{ config['end'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      How many <i>seconds</i> in to the video to skip at the end of a video, useful for skipping credit sequences
+    </div>
+  </div>
+</div>
+<div class="my-3">
+  <div align="center">
+    <button class="btn btn-primary" id="analyze_button" onClick="analyze()">Analyze</button>
+  </div>
+</div>
+<table class="table table-striped">
+  <thead>
+    <td>File</td>
+    <td>Runtime</td>
+    <td>Remaining Time To Play</td>
+    <td>Total Time To Play</td>
+  </thead>
+  <tbody id="result_table">
+
+  </tbody>
+</table>
+{% endblock %}
