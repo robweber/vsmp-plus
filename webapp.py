@@ -1,6 +1,7 @@
 import utils
 import os
 from flask import Flask, render_template, flash, url_for, jsonify, request
+from modules.analyze import Analyzer
 
 # encapsulates the functions for the web service so they can be run in a new thread
 def webapp_thread(port_number, debugMode=False):
@@ -16,6 +17,9 @@ def webapp_thread(port_number, debugMode=False):
     def setup_view():
         return render_template('setup.html', config=utils.get_configuration())
 
+    @app.route('/analyze', methods=['GET'])
+    def setup_analyze():
+        return render_template('analyze.html', config=utils.get_configuration())
 
     @app.route('/api/configuration', methods=['GET'])
     def get_configuration():
@@ -67,6 +71,27 @@ def webapp_thread(port_number, debugMode=False):
     @app.route('/api/status', methods=['GET'])
     def status():
         return jsonify(utils.read_json(utils.LAST_PLAYED_FILE))
+
+    @app.route('/api/analyze', methods=['POST'])
+    def run_analyzer():
+        result = {'success': True, 'message': ''}
+
+        # verify the given configuration settings
+        data = request.get_json(force=True)
+        checkConfig = utils.validate_configuration(data)
+
+        if(checkConfig[0]):
+            result['message'] = 'Done'
+
+            # run the analyzer
+            analyze = Analyzer(data)
+
+            result['data'] = analyze.run()
+        else:
+            result['success'] = False
+            result['message'] = checkConfig[1]
+
+        return jsonify(result)
 
     # run the web app
     app.run(debug=debugMode, host='0.0.0.0', port=port_number, use_reloader=False)
