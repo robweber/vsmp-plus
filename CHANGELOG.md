@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-02-18
+
+### Changed
+
+- moved files to ```modules``` directory to keep local python source files a bit cleaner
+
 ## 2021-02-17
 
 ### Added

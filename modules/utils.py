@@ -9,7 +9,7 @@ from croniter import croniter
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
 # setup some helpful variables
-DIR_PATH = os.path.dirname(os.path.realpath(__file__))  # full path to the directory of this script
+DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # full path to the running directory of the program
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 LAST_PLAYED_FILE = os.path.join(TMP_DIR, 'last_played.json')
 CONFIG_FILE = os.path.join(TMP_DIR, 'config.json')

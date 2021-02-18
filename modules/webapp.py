@@ -1,4 +1,4 @@
-import utils
+import modules.utils as utils
 import os
 from flask import Flask, render_template, flash, url_for, jsonify, request
 from modules.analyze import Analyzer
