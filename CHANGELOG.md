@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - moved files to ```modules``` directory to keep local python source files a bit cleaner
+- changed menu to separate player from analyzer controls
 
 ### Removed
 

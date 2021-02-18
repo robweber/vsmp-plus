@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css" />
         <link rel="stylesheet" href="/static/css/vsmp.css" />
         <script src="/static/js/jquery.min.js"></script>
+        <script src="/static/js/popper.min.js"></script>
         <script src="/static/js/bootstrap.min.js"></script>
         <script src="/static/js/vsmp.js"></script>
         {% block header %}{% endblock %}
@@ -12,22 +13,18 @@
     <body>
         <div class="container">
         <div class="header clearfix">
-        <nav>
-          <ul class="nav nav-pills float-right">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/setup">Setup</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/analyze">Analyze</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="https://github.com/robweber/vsmp-plus">GitHub</a>
-            </li>
-          </ul>
-        </nav>
+          <a class="btn btn-secondary float-right ml-3" href="/analyze" role="button" id="analyzeMenu" aria-haspopup="false" aria-expanded="false">
+            Analyze
+          </a>
+          <div class="dropdown float-right">
+            <a class="btn btn-secondary dropdown-toggle" href="/" role="button" id="playerMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Player
+            </a>
+              <div class="dropdown-menu" aria-labelledby="playerMenu">
+                <a class="dropdown-item" href="/">Status</a>
+                <a class="dropdown-item" href="/setup">Setup</a>
+              </div>
+          </div>
         <h3 class="text-muted">VSMP+</h3>
         </div>
         {% for category,message in get_flashed_messages(with_categories=true) %}
@@ -39,7 +36,7 @@
         <div id="js-error-alert" class="alert alert-danger" style="display:none" role="alert"></div>
         {% block content %}{% endblock %}
         <footer class="footer mt-4">
-             <p><a href="">Rob Weber</a></p>
+             <p><a href="https://github.com/robweber/vsmp-plus">GitHub</a></p>
         </footer>
         </div>
     </body>
