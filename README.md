@@ -21,7 +21,7 @@ tail -f tmp/log.log
 
 ## Web Server
 
-The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. The setup page allows for the configuration of more specific parameters. This can be saved and will take effect without a program reboot. Settings do take about 1 min for the program to reload the config.
+The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. The Player Setup page allows for the configuration of more specific parameters. This can be saved and will take effect without a program reboot. Settings do take about 1 min for the program to reload the config.
 
 * Mode - File mode will play a single file whereas directory mode will play all the files in a given directory. This must be local to the Raspberry Pi.
 * Path - The absolute path to either the file or the directory
@@ -33,31 +33,9 @@ The program runs an embedded web server to control the program status and set ad
 Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. At each update time the save file will be read and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The save file and log file for the program are both stored in the ```tmp``` directory, which is created the first time the program is run.
 
 ## Find Timing
-Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? With this in mind the ```analyze.py``` file was born.
+Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
 
-The analyze program will take the same inputs as above. Using these inputs the video is analyzed and some information is displayed regarding projected play times.
-
-```
-Analyzing /home/pi/Videos/Test.Video.mp4
-Starting Frame: 2697.2999999999997, Ending Frame: 197080.7, Frame Increment: 50, Update on schedule: */5 * * * *
-Video framerate is 29.970000fps, total video is 116.098877 minutes long
-
-Entire Video:
-3941 out of 197080 frames will display
-Will take 1 week, 6 days, 16 hours to fully play
-
-Remaining Video:
-3941 out of 197080 frames will display
-Will take 1 week, 6 days, 16 hours to fully play
-
-Minutes of film displayed breakdown:
-0.333667 minutes of film per hour
-8.008008 minutes of film per day
-
-
-```
-
-Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-d``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.json``` file is the currently running file and analyze from this point forward.
+By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each will video will display separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.json``` file is the currently running file and analyze from this point forward.
 
 ## REST API
 
@@ -66,6 +44,7 @@ The built in web server uses a few API endpoints to function. These can be utili
 * /api/configuration [GET, POST] - returns the current configuration as a JSON object. Using a POST request you can update data, with settings like the file paths and cron expression being verified. Responses will include a success or failure of the update.
 * /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b> or <b>pause</b>.
 * /api/status [GET] - returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete.
+* /api/analyze [POST] - takes the same parameters as the /api/configuration POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
 
 ## Config File
 
