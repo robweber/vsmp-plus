@@ -1,4 +1,5 @@
 tmp/*
 __pycache__/*
+modules/__pycache__/*
 waveshare_lib/build/*
 waveshare_lib/dist/*
