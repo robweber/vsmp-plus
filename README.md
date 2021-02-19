@@ -23,6 +23,8 @@ tail -f tmp/log.log
 
 The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. When first run the player will be paused so you can change the settings to correct values. If running in directory mode you can also click the Next or Prev to cycle through videos in the directory. Clicking on the progress bar will seek the video to that percentage. This can be disabled in on the setup page if unwanted.
 
+![](https://github.com/robweber/vsmp-plus/blob/master/pics/web_server_player_status.png)
+
 The Player Setup page allows for the configuration of more specific parameters. This can be saved and will take effect without a program reboot. Settings do take about 1 min for the program to reload the config.
 
 * Mode - File mode will play a single file whereas directory mode will play all the files in a given directory. This must be local to the Raspberry Pi.
