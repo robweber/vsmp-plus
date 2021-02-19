@@ -28,7 +28,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 cd vsmp-plus
 
 # install required system libraries
-sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin
+sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server samba samba-common-bin
 
 # setup the waveshare library
 cd ../waveshare_lib

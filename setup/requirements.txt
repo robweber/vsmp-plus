@@ -5,3 +5,4 @@ image
 ffmpeg-python
 termcolor
 Flask
+redis
