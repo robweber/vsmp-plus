@@ -1,12 +1,21 @@
 import argparse
 import ffmpeg
-import logging
 import os
+import logging
 import json
 from croniter import croniter
 
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
+
+# setup some helpful variables
+DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # full path to the running directory of the program
+TMP_DIR = os.path.join(DIR_PATH, 'tmp')
+
+# redis keys
+DB_PLAYER_STATUS = 'player_status'
+DB_LAST_PLAYED_FILE = 'last_played_file'
+DB_CONFIGURATION = 'vsmp_configuration'
 
 intervals = (
     ('months', 2592000),  # 60 * 60 * 24 * 30
@@ -16,7 +25,6 @@ intervals = (
     ('minutes', 60),
     ('seconds', 1),
 )
-
 
 def display_time(seconds, granularity=3, timeFormat="{value} {interval_name}",
                  joiner=', ', show_zeros=False, intervals=intervals):
@@ -54,23 +62,45 @@ def seconds_to_frames(seconds, fps):
 
 # Check if a file is an mp4
 def check_mp4(value):
-    if not os.path.exists(value) or not value.endswith('.mp4'):
-        raise argparse.ArgumentTypeError("%s does not exist or is not an .mp4 file" % value)
-    return value
+    return os.path.exists(value) and value.endswith('.mp4')
 
 
 # Check if directory is valid
 def check_dir(value):
-    if(not os.path.exists(value) and not os.path.isdir(value)):
-        raise argparse.ArgumentTypeError("%s is not a directory" % value)
-    return value
+    return os.path.exists(value) and os.path.isdir(value)
 
 
 # Check if passed in value is a valid cron schedule
 def check_cron(schedule):
-    if(not croniter.is_valid(schedule)):
-        raise argparse.ArgumentTypeError("%s is not a valid cron expression" % schedule)
-    return schedule
+    return croniter.is_valid(schedule)
+
+
+def validate_configuration(config):
+
+    # check mode
+    if(config['mode'] not in ['file', 'dir']):
+        return (False, 'Incorrect mode, must be "file" or "dir"')
+
+    # check if file or dir path is correct
+    if(config['mode'] == 'file' and not check_mp4(config['path'])):
+        return (False, 'File path is not a valid file')
+
+    elif(config['mode'] == 'dir' and not check_dir(config['path'])):
+        return (False, 'Directory path is not valid')
+
+    # verify cron expression
+    if(not check_cron(config['update'])):
+        return (False, 'Cron expression for update interval is invalid')
+
+    # check that increment, end, and start are int values
+    if(not isinstance(config['increment'],int)):
+        return (False, 'Increment must be an integer value')
+    elif(not isinstance(config['start'],int)):
+        return (False, 'Start time skip must be an integer value')
+    elif(not isinstance(config['end'], int)):
+        return (False, 'End time skip must be an integer value')
+
+    return (True, 'Config Valid')
 
 # Uses ffprobe to get various play details from the video file
 def get_video_info(file):
@@ -94,6 +124,32 @@ def get_video_info(file):
     return {'frame_count': frameCount, 'fps': frameRate,
             'runtime': frameCount/frameRate, 'title': name}
 
+
+# get the configuration, use default values where custom don't exist
+def get_configuration(db):
+    # default configuration
+    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': [], 'allow_seek': True}
+
+    # merge any saved configuration
+    if(db.exists(DB_CONFIGURATION)):
+        result.update(read_db(db, DB_CONFIGURATION))
+
+    return result
+
+
+# read a key from the database, converting to dict
+def read_db(db, db_key):
+    result = {}
+
+    if(db.exists(db_key)):
+        result = json.loads(db.get(db_key))
+
+    return result
+
+
+# write a value to the datase, converting to JSON string
+def write_db(db, db_key, db_value):
+    db.set(db_key, json.dumps(db_value))
 
 # read JSON formatted file
 def read_json(file):

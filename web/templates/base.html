@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>VSMP+</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css" />
+        <link rel="stylesheet" href="/static/css/vsmp.css" />
+        <script src="/static/js/jquery.min.js"></script>
+        <script src="/static/js/popper.min.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/static/js/vsmp.js"></script>
+        {% block header %}{% endblock %}
+    </head>
+    <body>
+        <div class="container">
+        <div class="header clearfix">
+          <a class="btn btn-secondary float-right ml-3" href="/analyze" role="button" id="analyzeMenu" aria-haspopup="false" aria-expanded="false">
+            Analyze
+          </a>
+          <div class="dropdown float-right">
+            <a class="btn btn-secondary dropdown-toggle" href="/" role="button" id="playerMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Player
+            </a>
+              <div class="dropdown-menu" aria-labelledby="playerMenu">
+                <a class="dropdown-item" href="/">Status</a>
+                <a class="dropdown-item" href="/setup">Setup</a>
+              </div>
+          </div>
+        <h3 class="text-muted">VSMP+</h3>
+        </div>
+        {% for category,message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        <div id="js-success-alert" class="alert alert-success" style="display:none" role="alert"></div>
+        <div id="js-error-alert" class="alert alert-danger" style="display:none" role="alert"></div>
+        {% block content %}{% endblock %}
+        <footer class="footer mt-4">
+             <p><a href="https://github.com/robweber/vsmp-plus">GitHub</a></p>
+        </footer>
+        </div>
+    </body>
+</html>

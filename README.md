@@ -6,52 +6,48 @@ Both of the reference articles had pieces I liked and pieces I wanted to enhance
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
 ## Basic Usage
-Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a variety of arguments:
+Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a few arguments, but doesn't need any to run normally:
 
-* ```--config``` - path to a config file, see below
-* ```--file``` - the video file to pull frames from. Must be an MP4 _mutually exclusive with --dir_
-* ```--dir``` - a directory of video files to pull frames from. _mutually exclusive with --file_
-* ```--increment``` - how many frames to increment
-* ```--update``` - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron).
-* ```--start``` - the number of seconds into the video to start, if you want to skip into the video X amount
-* ```--end``` - the number of seconds to cut off the end of the video, useful for skipping credit sequences
-* ```--display``` - show the title, timecode of the frame being displayed, or both on the bottom of the display. Time in the form of HH:mm:SS.
+* ```--config``` - path to a config file where any CLI arguments can be specified, useful for when running as a service
+* ```--port``` - the port the web server will run on, default is 5000
+* ```--debug``` - when this flag is given the program will run in debug mode
 
-Once started, either with the CLI or as a service, the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. At each update time the save file will be read and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The save file and log file for the program are both stored in the ```tmp``` directory, which is created the first time the program is run.
-
-To monitor the progress of the program you can watch the log file using the command:
+Once started, either with the CLI or as a service, the program will start and the webservice will be active. You can load the web page to continue setup at http://IP:5000. To monitor the progress of the program you can watch the log file using the command:
 
 ```
 # from the vsmp-plus directory
 tail -f tmp/log.log
 ```
 
+## Web Server
+
+The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. When first run the player will be paused so you can change the settings to correct values. If running in directory mode you can also click the Next or Prev to cycle through videos in the directory. Clicking on the progress bar will seek the video to that percentage. This can be disabled in on the setup page if unwanted.
+
+The Player Setup page allows for the configuration of more specific parameters. This can be saved and will take effect without a program reboot. Settings do take about 1 min for the program to reload the config.
+
+* Mode - File mode will play a single file whereas directory mode will play all the files in a given directory. This must be local to the Raspberry Pi.
+* Path - The absolute path to either the file or the directory
+* Update Time - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron)
+* Start time skip - the number of seconds into the video to start, if you want to skip into the video X amount
+* End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
+* Display - optionally show the title, timecode of the frame being displayed, or both on the bottom of the display. Time in the form of HH:mm:SS.
+* Allow Seeking - this will enable or disable seeking when clicking on the progress bar in the web interface. Useful to disable if this is happening on accident.
+
+Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
+
 ## Find Timing
-Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? With this in mind the ```analyze.py``` file was born.
+Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
 
-The analyze program will take the same inputs as above. Using these inputs the video is analyzed and some information is displayed regarding projected play times.
+By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each will video will display separately, with a summary at the end. When looking at a whole directory the program will assume use the position of the currently playing file and analyze from this point forward.
 
-```
-Analyzing /home/pi/Videos/Test.Video.mp4
-Starting Frame: 2697.2999999999997, Ending Frame: 197080.7, Frame Increment: 50, Update on schedule: */5 * * * *
-Video framerate is 29.970000fps, total video is 116.098877 minutes long
+## REST API
 
-Entire Video:
-3941 out of 197080 frames will display
-Will take 1 week, 6 days, 16 hours to fully play
+The built in web server uses a few API endpoints to function. These can be utilized by other programs as well if you wish to automate the sign with other systems or scripts. The endpoints available are:
 
-Remaining Video:
-3941 out of 197080 frames will display
-Will take 1 week, 6 days, 16 hours to fully play
-
-Minutes of film displayed breakdown:
-0.333667 minutes of film per hour
-8.008008 minutes of film per day
-
-
-```
-
-Tweaking these values you can find the optimum settings to get your desired play time. Additionally you can specify ```-d``` instead of ```-f``` to analyze an entire directory of files. Each will show separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.json``` file is the currently running file and analyze from this point forward.
+* /api/configuration [GET, POST] - returns the current configuration as a JSON object. Using a POST request you can update data, with settings like the file paths and cron expression being verified. Responses will include a success or failure of the update.
+* /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100. 
+* /api/status [GET] - returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete.
+* /api/analyze [POST] - takes the same parameters as the /api/configuration POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
 
 ## Config File
 
@@ -60,14 +56,9 @@ Instead of passing in all the arguments on the command line you can also create 
 ```
 
 # Example Config file
-dir = /path/to/directory/
-increment = 50
-start = 100
-end = 300
+port = 8080
 
 ```
-
-Using a config file also makes it easier to test settings with the ```analyze.py``` file as you can use one file for both.
 
 ## Differences/Additions
 
@@ -80,6 +71,8 @@ I mentioned two other versions of this type of project that I took inspiration f
 5. Added ```--end``` value to skip end credits
 6. Added the ```-display``` value so you can see where the title of the video and/or the timecode for the frame displayed
 7. Can use either a configuration (.conf) file or pass in arguments via CLI
+8. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
+9. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 
 ## Problems With FFMPEG
 

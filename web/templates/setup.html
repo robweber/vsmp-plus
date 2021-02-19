@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+  function saveConfig(){
+    // build the json post
+    postData = {"mode": $('#config_mode').val(),
+               "path": $('#config_path').val(),
+               "update": $('#config_update').val(),
+               "increment": parseInt($('#config_increment').val()),
+               "start": parseInt($('#config_start').val()),
+               "end": parseInt($('#config_end').val()) };
+
+    // display represented as an array
+    display = [];
+    if($('#config_display_title').is(':checked'))
+    {
+      display.push('title');
+    }
+
+    if($('#config_display_timecode').is(':checked'))
+    {
+      display.push('timecode');
+    }
+
+    postData.display = display;
+
+    if($('#config_allow_seek').is(':checked'))
+    {
+      postData.allow_seek = true
+    }
+    else
+    {
+        postData.allow_seek = false
+    }
+
+    $.ajax({type: 'POST', contentType: 'application/json', url: '/api/configuration', data: JSON.stringify(postData), success: function(data, status, request){
+
+      if(data.success)
+      {
+        showFlash(data.message, 'success')
+      }
+      else
+      {
+        showFlash(data.message, 'error');
+      }
+    }});
+
+  }
+</script>
+{% endblock %}
+{% block content %}
+<div class="container mb-4">
+  <div class="row">
+    <div class="col-md-12">
+      Use this page to modify the setup of the display. Settings can be adjusted while the sign is running and will take effect within 1 minute of hitting the save button.
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Mode</b>
+    </div>
+    <div class="col-md-8">
+      <select class="custom-select" id="config_mode">
+        <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
+        <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
+      </select>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      The current play mode, can be a specific file or a full directory
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Path</b>
+    </div>
+    <div class="col-md-8">
+      <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      The full system path to either the file or directory VSMP should pull from. This will be verified to exist upon save.
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Update Time</b>
+    </div>
+    <div class="col-md-8">
+      <input type="text" id="config_update" class="form-control" value="{{ config['update'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      How often to update the sign, given as a <a href="http://en.wikipedia.org/wiki/Cron">cron expression</a>
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Frames to increment</b>
+    </div>
+    <div class="col-md-8">
+      <input type="text" id="config_increment" class="form-control" value="{{ config['increment'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      How many frames to increment on each update.
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Start time skip</b>
+    </div>
+    <div class="col-md-8">
+      <input type="text" id="config_start" class="form-control" value="{{ config['start'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      How many <i>seconds</i> in to the video to skip when starting a new video
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>End time skip</b>
+    </div>
+    <div class="col-md-8">
+      <input type="text" id="config_end" class="form-control" value="{{ config['end'] }}" />
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      How many <i>seconds</i> in to the video to skip at the end of a video, useful for skipping credit sequences
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Additional display options</b>
+    </div>
+    <div class="col-md-8">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_display_title" name="config_display" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
+        <label class="form-check-label" for="config_display_title">Title</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_display_timecode" name="config_display" value="timecode" {{ 'checked' if 'timecode' in config['display'] else '' }}>
+        <label class="form-check-label" for="config_display_timecode">Timecode</label>
+      </div>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      Optionally display the video title or timecode below the video on the display
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Allow seeking</b>
+    </div>
+    <div class="col-md-8">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_allow_seek" name="config_allow_seek" value="allow_seek" {{ 'checked' if config['allow_seek'] else '' }}>
+        <label class="form-check-label" for="config_allow_seek">Allow</label>
+      </div>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      Locks or unlocks seeking when clicking the progress bar in the web interface. Turning this off doesn't affect seeking using the api seek control.
+    </div>
+  </div>
+  <div class="row my-3">
+    <div class="col-md-12" align="center">
+      <button class="btn btn-primary" onClick="saveConfig()">Save</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -28,7 +28,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 cd vsmp-plus
 
 # install required system libraries
-sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 samba samba-common-bin
+sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server samba samba-common-bin
 
 # setup the waveshare library
 cd ../waveshare_lib
@@ -83,7 +83,7 @@ sudo ldconfig
 
 ### Install service
 
-You can run the program on it's own but to keep it running after you close your SSH session you'll need to install it as a service. The file to do this is in the ```setup``` folder. If you edit the service file you can pass in any arguments or the location of your configuration file. By default it will run the program with the defaults, not ideal.
+You can run the program on it's own but to keep it running after you close your SSH session you'll need to install it as a service. The file to do this is in the ```setup``` folder. If you edit the service file you can pass in any arguments or the location of your configuration file. By default it will run the program with the defaults.
 
 ```
 # install the service on the system
@@ -98,7 +98,7 @@ sudo systemctl start vsmp
 sudo systemctl stop vsmp
 ```
 
-Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile. 
+Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile.
 
 ```
 

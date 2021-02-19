@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block header %}
+<script type="text/javascript">
+function load_status(){
+  $.ajax({type: 'GET', url: '/api/status', success: function(data, status, request){
+    $('#file_title').text(data.name);
+
+    $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
+    $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
+
+    setTimeout(load_status, 30000);
+  }
+  });
+}
+
+function run_action(action){
+  $.ajax({type: 'POST', url: '/api/control/' + action, success: function(data, status, request){
+
+    if(data.success)
+    {
+      //only toggle buttons if play/pause
+      if(data.action == 'play' || data.action == 'resume')
+      {
+        // if success, toggle the buttons
+        $('#toggle_resume_button').toggle();
+        $('#toggle_pause_button').toggle();
+        $('#video_progress').toggleClass('bg-secondary');
+      }
+      else {
+        //show a message and refresh the status right away
+        showFlash(data.message, 'success')
+        load_status()
+      }
+    }
+    else
+    {
+      showFlash(data.message, 'error');
+    }
+  }
+  });
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2 id="file_title">Current Status</h2>
+    <div class="progress" id="video_progress_container" style="height: 30px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated {{'bg-secondary' if not status['running'] else ''}}" id="video_progress" role="progressbar" style="width: 0%">0%</div>
+    </div>
+</div>
+<div class="container my-2" align="center">
+  {% if(config['mode'] == 'dir'): %}
+  <button class="btn btn-secondary mr-3" id="prev_button" onClick="run_action('prev')">Prev</button>
+  {% endif %}
+  <button class="btn btn-danger" id="toggle_pause_button" onClick="run_action('pause')" style="display: {{ 'display' if status['running'] else 'none' }}">Pause</button>
+  <button class="btn btn-success" id="toggle_resume_button" onClick="run_action('resume')" style="display: {{ 'none' if status['running'] else 'display' }}">Resume</button>
+  {% if(config['mode'] == 'dir'): %}
+  <button class="btn btn-secondary ml-3" id="next_button" onClick="run_action('next')">Next</button>
+  {% endif %}
+</div>
+{% if(config['allow_seek']): %}
+<div class="container">
+  <div class="row mt-4 mb-2">
+    <div class="col-md-12">
+      Seeking when clicking on the progress bar is active. This will skip to that play mark within the video file on the next update. This can be disabled on the <a href="/setup">setup</a> page to avoid unwanted seeking.
+    </div>
+  </div>
+</div>
+{% endif %}
+<script type="text/javascript">
+$(document).ready(function () {
+    load_status()
+
+{% if(config['allow_seek']): %}
+    //add a listener for clicking on the progress bar
+    $('#video_progress_container').click(function(e){
+      var x = e.pageX - this.offsetLeft
+      var y = e.pageY - this.offsetTop
+
+      seekPercent = {"amount": x * 100 / this.offsetWidth}  //convert the clicked area to a percentage 0-100
+
+      $.ajax({type: 'POST', contentType: 'application/json', url: '/api/control/seek', data: JSON.stringify(seekPercent), success: function(data, status, request){
+        if(data.success){
+          //show a message and refresh the status right away
+          showFlash(data.message, 'success')
+          load_status()
+        }
+        else {
+          showFlash(data.message, 'error')
+        }
+      }
+      });
+
+    });
+{% endif %}
+})
+</script>
+
+{% endblock %}
