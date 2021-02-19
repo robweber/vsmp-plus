@@ -25,10 +25,11 @@ class Analyzer:
             index = 0
 
             # try and get the index of the last played file
-            try:
-                index = fileList.index(os.path.basename(lastPlayedFile['file']))
-            except ValueError:
-                index = 0
+            if('file' in lastPlayedFile):
+                try:
+                    index = fileList.index(os.path.basename(lastPlayedFile['file']))
+                except ValueError:
+                    index = 0
 
             # analyze each file
             totalFrames = 0
