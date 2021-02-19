@@ -17,15 +17,15 @@ def webapp_thread(port_number, debugMode=False):
 
     @app.route('/setup', methods=['GET'])
     def setup_view():
-        return render_template('setup.html', config=utils.get_configuration())
+        return render_template('setup.html', config=utils.get_configuration(db))
 
     @app.route('/analyze', methods=['GET'])
     def setup_analyze():
-        return render_template('analyze.html', config=utils.get_configuration())
+        return render_template('analyze.html', config=utils.get_configuration(db))
 
     @app.route('/api/configuration', methods=['GET'])
     def get_configuration():
-        return jsonify(utils.get_configuration())
+        return jsonify(utils.get_configuration(db))
 
 
     @app.route('/api/configuration', methods=['POST'])
@@ -36,7 +36,7 @@ def webapp_thread(port_number, debugMode=False):
         data = request.get_json(force=True)
 
         # if passed get current config
-        currentConfig = utils.get_configuration()
+        currentConfig = utils.get_configuration(db)
 
         # merge changed values into current and save
         currentConfig.update(data)
@@ -44,7 +44,7 @@ def webapp_thread(port_number, debugMode=False):
         checkConfig = utils.validate_configuration(currentConfig)
 
         if(checkConfig[0]):
-            utils.write_json(utils.CONFIG_FILE, currentConfig)
+            utils.write_db(db, utils.DB_CONFIGURATION, currentConfig)
         else:
             result['success'] = False
             result['message'] = checkConfig[1]

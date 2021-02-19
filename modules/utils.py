@@ -12,7 +12,6 @@ os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # full path to the running directory of the program
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 LAST_PLAYED_FILE = os.path.join(TMP_DIR, 'last_played.json')
-CONFIG_FILE = os.path.join(TMP_DIR, 'config.json')
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
@@ -128,19 +127,25 @@ def get_video_info(file):
 
 
 # get the configuration, use default values where custom don't exist
-def get_configuration():
+def get_configuration(db):
     # default configuration
     result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
 
     # merge any saved configuration
-    result.update(read_json(CONFIG_FILE))
+    if(db.exists(DB_CONFIGURATION)):
+        result.update(read_db(db, DB_CONFIGURATION))
 
     return result
 
 
 # read a key from the database, converting to dict
 def read_db(db, db_key):
-    return json.loads(db.get(db_key))
+    result = {}
+
+    if(db.exists(db_key)):
+        result = json.loads(db.get(db_key))
+
+    return result
 
 
 # write a value to the datase, converting to JSON string

@@ -206,7 +206,6 @@ parser.add_argument('-D', '--debug', action='store_true',
                     help='If the program should run in debug mode')
 
 args = parser.parse_args()
-config = utils.get_configuration()
 
 # add hooks for interrupt signal
 signal.signal(signal.SIGTERM, signal_handler)
@@ -217,9 +216,6 @@ logLevel = 'INFO' if not args.debug else 'DEBUG'
 logging.basicConfig(filename=os.path.join(utils.TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, logLevel))
-
-logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
-      (config['increment'], config['start'], config['end'], config['update']))
 logging.debug('Debug Mode On')
 
 # setup the screen and database connection
@@ -229,26 +225,31 @@ db = redis.Redis('localhost', decode_responses=True)
 if(not db.exists(utils.DB_PLAYER_STATUS)):
     utils.write_db(utils.DB_PLAYER_STATUS, {'running': True})
 
+# load the player configuration
+config = utils.get_configuration(db)
+logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
+      (config['increment'], config['start'], config['end'], config['update']))
+
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
 webAppThread.setDaemon(True)
 webAppThread.start()
 
 # initialize the cron scheduler and get the next update time
-cron = croniter(config['update'], datetime.now())
+updateExpression = config['update']
+cron = croniter(updateExpression, datetime.now())
 nextUpdate = cron.get_next(datetime)
 logging.info('Next update: %s' % nextUpdate)
 
 while 1:
     now = datetime.now()
 
-    # if the config.json file exists and was recently saved
-    if(os.path.exists(utils.CONFIG_FILE) and os.path.getmtime(utils.CONFIG_FILE) > (now - timedelta(minutes=1)).timestamp()):
-        logging.info('Refreshing configuration information')
-        config = utils.get_configuration()
+    config = utils.get_configuration(db)
 
-        # refresh next update as it may have changed
-        cron = croniter(config['update'], now)
+    # refresh update if changed
+    if(config['update'] != updateExpression):
+        updateExpression = config['update']
+        cron = croniter(updateExpression, now)
         nextUpdate = cron.get_next(datetime)
         logging.info('Next update: %s' % nextUpdate)
 
