@@ -81,6 +81,26 @@ def webapp_thread(port_number, debugMode=False):
             else:
                 result['success'] = False
                 result['message'] = 'Cannot use next/prev actions when in file mode'
+        elif(action == 'seek'):
+            # get the seek amount as a percent
+            data = request.get_json(force=True)
+
+            if('amount' in data and data['amount'] > 0 and data['amount'] <= 100):
+                nextVideo = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
+
+                if('file' in nextVideo):
+                    # see to this value
+                    info = VideoInfo(utils.get_configuration(db))
+                    nextVideo = info.seek_video(nextVideo, data['amount'])
+
+                    result['message'] = 'Seeking to %6.2f percent on next update' % data['amount']
+                    result['data'] = nextVideo
+                else:
+                    result['success'] = False
+                    result['message'] = 'No video loaded to seek'
+            else:
+                result['success'] = False
+                result['message'] = 'Value must be between 0 and 100'
         else:
             result['success'] = False
             result['message'] = 'Not a valid control action'

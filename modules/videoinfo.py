@@ -68,3 +68,17 @@ class VideoInfo:
 
         # return this video
         return self.analyze_video(os.path.join(self.config['path'], fileList[index]))
+
+    def seek_video(self, aVideo, percent):
+        # convert the percent to a frame amount
+        frames = (percent/100) * aVideo['info']['frame_count']
+
+        # check that we aren't below the min start, no need to check end as this is subtacted during analyzer above
+        startPos = float(utils.seconds_to_frames(self.config['start'], aVideo['info']['fps']))
+        if(frames < startPos):
+            frames = startPos
+
+        aVideo['pos'] = frames
+        aVideo['percent_complete'] = (aVideo['pos']/aVideo['info']['frame_count']) * 100
+
+        return aVideo
