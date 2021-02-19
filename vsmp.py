@@ -4,7 +4,7 @@ import ffmpeg
 import logging
 import os
 import modules.utils as utils
-import fnmatch
+from modules.videoinfo import VideoInfo
 import signal
 import sys
 import time
@@ -43,24 +43,6 @@ def generate_frame(in_filename, out_filename, time):
           .run(capture_stdout=True, capture_stderr=True)
 
 
-def analyze_video(config, file):
-    # save full path plus filename with no ext
-    result = {"file": file, 'name': os.path.splitext(os.path.basename(file))[0]}
-
-    # get some info about the video (frame rate, total frames, runtime)
-    result['info'] = utils.get_video_info(file)
-
-    # modify the end frame, if needed
-    result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(config['end'], result['info']['fps'])
-
-    # find the saved position and played percent
-    result['pos'] = float(utils.seconds_to_frames(config['start'], result['info']['fps']))
-
-    result['percent_complete'] = (result['pos']/result['info']['frame_count']) * 100
-
-    return result
-
-
 def find_video(config, lastPlayed, next=False):
     result = {}
 
@@ -69,7 +51,8 @@ def find_video(config, lastPlayed, next=False):
         if(config['path'] == lastPlayed['file']):
             result = lastPlayed
         else:
-            result = analyze_video(config, config['path'])
+            info = VideoInfo(config)
+            result = info.analyze_video(config['path'])
     else:
         # we're in dir mode, use the name of the last played file if it exists in the directory
         if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(config['path']) and not next):
@@ -79,31 +62,11 @@ def find_video(config, lastPlayed, next=False):
             # file might not exist (first run) just make it blank
             if('file' not in lastPlayed):
                 lastPlayed['file'] = ''
-            result = analyze_video(config, find_next_video(config['path'], lastPlayed['file']))
+
+            info = VideoInfo(config)
+            result = info.find_next_video(config['path'], lastPlayed['file'])
 
     return result
-
-
-def find_next_video(dir, lastPlayed):
-    # list all files in the directory, filter on mp4
-    fileList = sorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
-
-    index = 0
-
-    # get the index of the last played file (if exists)
-    try:
-        index = fileList.index(os.path.basename(lastPlayed))
-        index = index + 1  # get the next one
-
-    except ValueError:
-        index = 0  # just use the first one
-
-    # go back to start of list if we got to the end
-    if(index >= len(fileList)):
-        index = 0
-
-    # return this video
-    return os.path.join(dir, fileList[index])
 
 
 def update_display(config, epd, db):

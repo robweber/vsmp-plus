@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - moved the current program status, last played file status, and player configuration options to redis instead of flat files. This should help reduce read/writes to the SD filesystem
 - made the program "paused" by default on first run. This gives the user a chance to edit settings before starting
 - return some generic "no file loaded" messaging if requesting status and no last played file information
+- separated the "find video" logic into it's own class so it can be reused elsewhere
 
 ### Removed
 

@@ -1,7 +1,7 @@
 import argparse
 import ffmpeg
-import logging
 import os
+import logging
 import json
 from croniter import croniter
 
