@@ -64,7 +64,7 @@ def find_video(config, lastPlayed, next=False):
                 lastPlayed['file'] = ''
 
             info = VideoInfo(config)
-            result = info.find_next_video(config['path'], lastPlayed['file'])
+            result = info.find_next_video(lastPlayed['file'])
 
     return result
 

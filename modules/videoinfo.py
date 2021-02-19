@@ -27,9 +27,9 @@ class VideoInfo:
         return result
 
     # in a given directory find the next video that should be played
-    def find_next_video(self, dir, lastPlayed):
+    def find_next_video(self, lastPlayed):
         # list all files in the directory, filter on mp4
-        fileList = sorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
+        fileList = sorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
 
         index = 0
 
@@ -46,11 +46,11 @@ class VideoInfo:
             index = 0
 
         # return this video
-        return self.analyze_video(os.path.join(dir, fileList[index]))
+        return self.analyze_video(os.path.join(self.config['path'], fileList[index]))
 
-    def find_prev_video(dir, lastPlayed):
+    def find_prev_video(self, lastPlayed):
         # list all files in the directory, filter on mp4
-        fileList = sorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
+        fileList = sorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
 
         index = 0
 
@@ -67,4 +67,4 @@ class VideoInfo:
             index = len(fileList) - 1
 
         # return this video
-        return self.analyze_video(os.path.join(dir, fileList[index]))
+        return self.analyze_video(os.path.join(self.config['path'], fileList[index]))

@@ -2,6 +2,7 @@ import modules.utils as utils
 import os
 import redis
 import json
+from modules.videoinfo import VideoInfo
 from flask import Flask, render_template, flash, url_for, jsonify, request
 from modules.analyze import Analyzer
 
@@ -12,7 +13,7 @@ def webapp_thread(port_number, debugMode=False):
 
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html', status=utils.read_db(db, utils.DB_PLAYER_STATUS))
+        return render_template('index.html', status=utils.read_db(db, utils.DB_PLAYER_STATUS), config=utils.get_configuration(db))
 
 
     @app.route('/setup', methods=['GET'])
@@ -54,13 +55,32 @@ def webapp_thread(port_number, debugMode=False):
 
     @app.route('/api/control/<action>', methods=['POST'])
     def execute_action(action):
-        result = {'success': True, 'message': ''}
+        result = {'success': True, 'message': '', 'action': action}
 
         # get the action
         if(action in ['pause', 'resume']):
             # store the new value
             utils.write_db(db, utils.DB_PLAYER_STATUS, {'running':  action == 'resume'})  # eval to True/False
             result['message'] = 'Action %s executed' % action
+        elif(action in ['next', 'prev']):
+            config = utils.get_configuration(db)
+
+            if(config['mode'] == 'dir'):
+                nextVideo = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
+
+                # use the info parser to find the next or previous video
+                info = VideoInfo(utils.get_configuration(db))
+                if(action == 'next'):
+                    nextVideo = info.find_next_video(nextVideo['file'])
+                else:
+                    nextVideo = info.find_prev_video(nextVideo['file'])
+
+                # save the video file
+                utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextVideo)
+                result['message'] = 'Next video will be %s' % nextVideo['name']
+            else:
+                result['success'] = False
+                result['message'] = 'Cannot use next/prev actions when in file mode'
         else:
             result['success'] = False
             result['message'] = 'Not a valid control action'
