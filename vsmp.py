@@ -56,11 +56,6 @@ def analyze_video(config, file):
     # find the saved position and played percent
     result['pos'] = float(utils.seconds_to_frames(config['start'], result['info']['fps']))
 
-    saveFile = os.path.join(utils.TMP_DIR, result['name'] + '.json')
-    if(os.path.exists(saveFile)):
-        savedData = utils.read_json(saveFile)
-        result['pos'] = float(savedData['pos'])
-
     result['percent_complete'] = (result['pos']/result['info']['frame_count']) * 100
 
     return result
@@ -181,16 +176,11 @@ def update_display(config, epd, db):
     video_file['pos'] = video_file['pos'] + float(config['increment'])
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
-        # delete the old save file
-        if(os.path.exists(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'))):
-            os.remove(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'))
-
         # set 'next' to True to force new file
         video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
         logging.info('Will start %s on next run' % video_file)
 
-    # save the next position and last video played filename
-    utils.write_json(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'), video_file)
+    # save the last video played info
     utils.write_db(db, utils.DB_LAST_PLAYED_FILE, video_file)
 
     epd.sleep()

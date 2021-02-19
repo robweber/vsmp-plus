@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - made the program "paused" by default on first run. This gives the user a chance to edit settings before starting
 - return some generic "no file loaded" messaging if requesting status and no last played file information
 
+### Removed
+
+- removed saving individual video information files. These weren't read in for any real reason any more since the last played status had everything needed
+
 ## 2021-02-18
 
 ### Changed
