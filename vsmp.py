@@ -223,7 +223,7 @@ epd = epd_driver.EPD()
 db = redis.Redis('localhost', decode_responses=True)
 
 if(not db.exists(utils.DB_PLAYER_STATUS)):
-    utils.write_db(utils.DB_PLAYER_STATUS, {'running': True})
+    utils.write_db(utils.DB_PLAYER_STATUS, {'running': False})  # default to False as default settings probably won't load a video
 
 # load the player configuration
 config = utils.get_configuration(db)
