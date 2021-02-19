@@ -12,7 +12,7 @@ def webapp_thread(port_number, debugMode=False):
 
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html', status=json.loads(db.get(utils.DB_PLAYER_STATUS)))
+        return render_template('index.html', status=utils.read_db(db, utils.DB_PLAYER_STATUS))
 
 
     @app.route('/setup', methods=['GET'])
@@ -59,8 +59,7 @@ def webapp_thread(port_number, debugMode=False):
         # get the action
         if(action in ['pause', 'resume']):
             # store the new value
-            db.set(utils.DB_PLAYER_STATUS, json.dumps({'running':  action == 'resume'}))  # eval to True/False
-
+            utils.write_db(db, utils.DB_PLAYER_STATUS, {'running':  action == 'resume'})  # eval to True/False
             result['message'] = 'Action %s executed' % action
         else:
             result['success'] = False

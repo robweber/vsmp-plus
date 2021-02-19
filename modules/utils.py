@@ -17,6 +17,7 @@ CONFIG_FILE = os.path.join(TMP_DIR, 'config.json')
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
 DB_LAST_PLAYED = 'last_played_file'
+DB_CONFIGURATION = 'vsmp_configuration'
 
 intervals = (
     ('months', 2592000),  # 60 * 60 * 24 * 30
@@ -129,13 +130,22 @@ def get_video_info(file):
 # get the configuration, use default values where custom don't exist
 def get_configuration():
     # default configuration
-    result = {'running': True, 'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
+    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
 
     # merge any saved configuration
     result.update(read_json(CONFIG_FILE))
 
     return result
 
+
+# read a key from the database, converting to dict
+def read_db(db, db_key):
+    return json.loads(db.get(db_key))
+
+
+# write a value to the datase, converting to JSON string
+def write_db(db, db_key, db_value):
+    db.set(db_key, json.dumps(db_value))
 
 # read JSON formatted file
 def read_json(file):

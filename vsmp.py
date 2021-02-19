@@ -227,7 +227,7 @@ epd = epd_driver.EPD()
 db = redis.Redis('localhost', decode_responses=True)
 
 if(not db.exists(utils.DB_PLAYER_STATUS)):
-    db.set(utils.DB_PLAYER_STATUS, json.dumps({'running': True}))
+    utils.write_db(utils.DB_PLAYER_STATUS, {'running': True})
 
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
@@ -253,7 +253,7 @@ while 1:
         logging.info('Next update: %s' % nextUpdate)
 
     # check if the display should be updated
-    pStatus = json.loads(db.get(utils.DB_PLAYER_STATUS))
+    pStatus = utils.read_db(db, utils.DB_PLAYER_STATUS)
     if(nextUpdate <= now):
         if(pStatus['running']):
             update_display(config, epd)
