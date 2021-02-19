@@ -128,7 +128,7 @@ def get_video_info(file):
 # get the configuration, use default values where custom don't exist
 def get_configuration(db):
     # default configuration
-    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': []}
+    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': [], 'allow_seek': True}
 
     # merge any saved configuration
     if(db.exists(DB_CONFIGURATION)):

@@ -95,6 +95,9 @@ def webapp_thread(port_number, debugMode=False):
 
                     result['message'] = 'Seeking to %6.2f percent on next update' % data['amount']
                     result['data'] = nextVideo
+
+                    # save the new position
+                    utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextVideo)
                 else:
                     result['success'] = False
                     result['message'] = 'No video loaded to seek'

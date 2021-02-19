@@ -24,6 +24,15 @@
 
     postData.display = display;
 
+    if($('#config_allow_seek').is(':checked'))
+    {
+      postData.allow_seek = true
+    }
+    else
+    {
+        postData.allow_seek = false
+    }
+
     $.ajax({type: 'POST', contentType: 'application/json', url: '/api/configuration', data: JSON.stringify(postData), success: function(data, status, request){
 
       if(data.success)
@@ -147,6 +156,22 @@
   <div class="row my-2 bg-light">
     <div class="col-md-12">
       Optionally display the video title or timecode below the video on the display
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-4">
+      <b>Allow seeking</b>
+    </div>
+    <div class="col-md-8">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_allow_seek" name="config_allow_seek" value="allow_seek" {{ 'checked' if config['allow_seek'] else '' }}>
+        <label class="form-check-label" for="config_allow_seek">Allow</label>
+      </div>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      Locks or unlocks seeking when clicking the progress bar in the web interface. Turning this off doesn't affect seeking using the api seek control.
     </div>
   </div>
   <div class="row my-3">

@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - added redis-server and the python redis library as dependencies
 - added ```/api/control/next``` and ```/api/control/prev``` functions. These will allow you to advance through videos when in directory mode
 - added buttons to web interface for prev and next when in directory mode
+- support for seeking to a specific point in a video file using the ```/api/control/seek``` endpoint
+- new configuration setting ```allow_seek```. Will toggle the ability to seek in the web interface to avoid seeking on accident
 
 ### Changed
 
