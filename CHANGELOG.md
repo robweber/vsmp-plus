@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-02-19
+
+### Added
+
+- added redis-server and the python redis library as dependencies
+
+### Changed
+
+- moved the current program status, last played file status, and player configuration options to redis instead of flat files. This should help reduce read/writes to the SD filesystem
+- made the program "paused" by default on first run. This gives the user a chance to edit settings before starting
+- return some generic "no file loaded" messaging if requesting status and no last played file information
+
 ## 2021-02-18
 
 ### Changed
