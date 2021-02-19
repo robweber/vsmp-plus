@@ -30,12 +30,12 @@ The program runs an embedded web server to control the program status and set ad
 * End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
 * Display - optionally show the title, timecode of the frame being displayed, or both on the bottom of the display. Time in the form of HH:mm:SS.
 
-Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then a save file will be created, specific to this video file, with the next frame to display. At each update time the save file will be read and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The save file and log file for the program are both stored in the ```tmp``` directory, which is created the first time the program is run.
+Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
 
 ## Find Timing
 Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
 
-By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each will video will display separately, with a summary at the end. When looking at a whole directory the program will assume the current value of the ```last_played.json``` file is the currently running file and analyze from this point forward.
+By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each will video will display separately, with a summary at the end. When looking at a whole directory the program will assume use the position of the currently playing file and analyze from this point forward.
 
 ## REST API
 
@@ -69,6 +69,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 6. Added the ```-display``` value so you can see where the title of the video and/or the timecode for the frame displayed
 7. Can use either a configuration (.conf) file or pass in arguments via CLI
 8. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
+9. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 
 ## Problems With FFMPEG
 

@@ -12,15 +12,13 @@ class Analyzer:
     def __init__(self, config):
         self.config = config
 
-    def run(self):
+    def run(self, lastPlayedFile):
         result = {'videos': []}
 
         if(self.config['mode'] == 'file'):
             result['videos'].append(self.analyze_video(self.config['path'], self.config['start'], self.config['end'], self.config['increment'], self.config['update']))
             result['total_time'] = self.time_to_play(result['videos'][0]['frames_left'], self.config['increment'], self.config['update'])
         else:
-            # get the currently playing file, if exists
-            lastPlayedFile = utils.read_json(utils.LAST_PLAYED_FILE)
 
             # read in all files from the directory
             fileList = sorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))

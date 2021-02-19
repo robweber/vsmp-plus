@@ -111,12 +111,12 @@ def find_next_video(dir, lastPlayed):
     return os.path.join(dir, fileList[index])
 
 
-def update_display(config, epd):
+def update_display(config, epd, db):
     # Initialize the screen
     epd.init()
 
     # set the video file information
-    video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE))
+    video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
@@ -125,7 +125,7 @@ def update_display(config, epd):
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to true to force new video file
-        video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE), True)
+        video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
 
     # calculate the percent percent_complete
     video_file['percent_complete'] = (video_file['pos']/video_file['info']['frame_count']) * 100
@@ -186,12 +186,12 @@ def update_display(config, epd):
             os.remove(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'))
 
         # set 'next' to True to force new file
-        video_file = find_video(config, utils.read_json(utils.LAST_PLAYED_FILE), True)
+        video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
         logging.info('Will start %s on next run' % video_file)
 
     # save the next position and last video played filename
     utils.write_json(os.path.join(utils.TMP_DIR, video_file['name'] + '.json'), video_file)
-    utils.write_json(utils.LAST_PLAYED_FILE, video_file)
+    utils.write_db(db, utils.DB_LAST_PLAYED_FILE, video_file)
 
     epd.sleep()
 
@@ -257,7 +257,7 @@ while 1:
     pStatus = utils.read_db(db, utils.DB_PLAYER_STATUS)
     if(nextUpdate <= now):
         if(pStatus['running']):
-            update_display(config, epd)
+            update_display(config, epd, db)
         else:
             logging.debug('Updating display paused, skipping this time')
         nextUpdate = cron.get_next(datetime)

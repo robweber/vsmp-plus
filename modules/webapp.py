@@ -70,7 +70,17 @@ def webapp_thread(port_number, debugMode=False):
 
     @app.route('/api/status', methods=['GET'])
     def status():
-        return jsonify(utils.read_json(utils.LAST_PLAYED_FILE))
+        lastPlayed = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
+
+        # set some dummy values if no file loaded
+        if('file' not in lastPlayed):
+            lastPlayed['file'] = ''
+            lastPlayed['name'] = 'No file loaded'
+            lastPlayed['percent_complete'] = 0
+            lastPlayed['pos'] = 0
+            lastPlayed['info'] = {}
+
+        return jsonify(lastPlayed)
 
     @app.route('/api/analyze', methods=['POST'])
     def run_analyzer():
@@ -86,7 +96,7 @@ def webapp_thread(port_number, debugMode=False):
             # run the analyzer
             analyze = Analyzer(data)
 
-            result['data'] = analyze.run()
+            result['data'] = analyze.run(utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
         else:
             result['success'] = False
             result['message'] = checkConfig[1]

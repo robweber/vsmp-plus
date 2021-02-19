@@ -11,11 +11,10 @@ os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 # setup some helpful variables
 DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # full path to the running directory of the program
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
-LAST_PLAYED_FILE = os.path.join(TMP_DIR, 'last_played.json')
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
-DB_LAST_PLAYED = 'last_played_file'
+DB_LAST_PLAYED_FILE = 'last_played_file'
 DB_CONFIGURATION = 'vsmp_configuration'
 
 intervals = (
