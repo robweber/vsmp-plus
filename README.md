@@ -42,7 +42,7 @@ By default the analyze program loads the current settings. These can be tweaked 
 The built in web server uses a few API endpoints to function. These can be utilized by other programs as well if you wish to automate the sign with other systems or scripts. The endpoints available are:
 
 * /api/configuration [GET, POST] - returns the current configuration as a JSON object. Using a POST request you can update data, with settings like the file paths and cron expression being verified. Responses will include a success or failure of the update.
-* /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b> or <b>pause</b>.
+* /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, and <b>prev</b>. Note that next and prev functions will return an error when not in diretory mode. 
 * /api/status [GET] - returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete.
 * /api/analyze [POST] - takes the same parameters as the /api/configuration POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
 
