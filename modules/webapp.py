@@ -1,16 +1,18 @@
 import modules.utils as utils
 import os
+import redis
+import json
 from flask import Flask, render_template, flash, url_for, jsonify, request
 from modules.analyze import Analyzer
 
 # encapsulates the functions for the web service so they can be run in a new thread
 def webapp_thread(port_number, debugMode=False):
     app = Flask(import_name="vsmp-plus", static_folder=os.path.join(utils.DIR_PATH, 'web', 'static'), template_folder=os.path.join(utils.DIR_PATH, 'web', 'templates'))
-
+    db = redis.Redis('localhost', decode_responses=True)
 
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html', config=utils.get_configuration())
+        return render_template('index.html', status=json.loads(db.get(utils.DB_PLAYER_STATUS)))
 
 
     @app.route('/setup', methods=['GET'])
@@ -56,9 +58,8 @@ def webapp_thread(port_number, debugMode=False):
 
         # get the action
         if(action in ['pause', 'resume']):
-            config = utils.get_configuration()
-            config['running'] = action == 'resume'  # eval to True/False
-            utils.write_json(utils.CONFIG_FILE, config)
+            # store the new value
+            db.set(utils.DB_PLAYER_STATUS, json.dumps({'running':  action == 'resume'}))  # eval to True/False
 
             result['message'] = 'Action %s executed' % action
         else:

@@ -36,12 +36,12 @@ function run_action(action){
 <div class="page-header">
     <h2 id="file_title">Current Status</h2>
     <div class="progress" style="height: 30px;">
-      <div class="progress-bar progress-bar-striped progress-bar-animated {{'bg-secondary' if not config['running'] else ''}}" id="video_progress" role="progressbar" style="width: 0%">0%</div>
+      <div class="progress-bar progress-bar-striped progress-bar-animated {{'bg-secondary' if not status['running'] else ''}}" id="video_progress" role="progressbar" style="width: 0%">0%</div>
     </div>
 </div>
 <div class="container my-2" align="center">
-  <button class="btn btn-danger" id="toggle_pause_button" onClick="run_action('pause')" style="display: {{ 'display' if config['running'] else 'none' }}">Pause</button>
-  <button class="btn btn-success" id="toggle_resume_button" onClick="run_action('resume')" style="display: {{ 'none' if config['running'] else 'display' }}">Resume</button>
+  <button class="btn btn-danger" id="toggle_pause_button" onClick="run_action('pause')" style="display: {{ 'display' if status['running'] else 'none' }}">Pause</button>
+  <button class="btn btn-success" id="toggle_resume_button" onClick="run_action('resume')" style="display: {{ 'none' if status['running'] else 'display' }}">Resume</button>
 </div>
 <script type="text/javascript">
 $(document).ready(function () {

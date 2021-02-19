@@ -14,6 +14,10 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 LAST_PLAYED_FILE = os.path.join(TMP_DIR, 'last_played.json')
 CONFIG_FILE = os.path.join(TMP_DIR, 'config.json')
 
+# redis keys
+DB_PLAYER_STATUS = 'player_status'
+DB_LAST_PLAYED = 'last_played_file'
+
 intervals = (
     ('months', 2592000),  # 60 * 60 * 24 * 30
     ('weeks', 604800),  # 60 * 60 * 24 * 7

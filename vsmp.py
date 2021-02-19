@@ -9,6 +9,8 @@ import signal
 import sys
 import time
 import threading
+import json
+import redis
 import modules.webapp as webapp
 from croniter import croniter
 from datetime import datetime, timedelta
@@ -220,8 +222,12 @@ logging.info('Starting with options Frame Increment: %s frames, Video start: %s 
       (config['increment'], config['start'], config['end'], config['update']))
 logging.debug('Debug Mode On')
 
-# setup the screen
+# setup the screen and database connection
 epd = epd_driver.EPD()
+db = redis.Redis('localhost', decode_responses=True)
+
+if(not db.exists(utils.DB_PLAYER_STATUS)):
+    db.set(utils.DB_PLAYER_STATUS, json.dumps({'running': True}))
 
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
@@ -247,8 +253,9 @@ while 1:
         logging.info('Next update: %s' % nextUpdate)
 
     # check if the display should be updated
+    pStatus = json.loads(db.get(utils.DB_PLAYER_STATUS))
     if(nextUpdate <= now):
-        if(config['running']):
+        if(pStatus['running']):
             update_display(config, epd)
         else:
             logging.debug('Updating display paused, skipping this time')
