@@ -19,7 +19,7 @@ function run_action(action){
     if(data.success)
     {
       //only toggle buttons if play/pause
-      if(data.action == 'play' || data.action == 'resume')
+      if(data.action == 'pause' || data.action == 'resume')
       {
         // if success, toggle the buttons
         $('#toggle_resume_button').toggle();
