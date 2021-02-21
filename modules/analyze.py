@@ -4,6 +4,7 @@ import os
 import modules.utils as utils
 from croniter import croniter, croniter_range
 from datetime import datetime, timedelta
+from natsort import natsorted
 
 class Analyzer:
     config = None
@@ -21,7 +22,7 @@ class Analyzer:
         else:
 
             # read in all files from the directory
-            fileList = sorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
+            fileList = natsorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
             index = 0
 
             # try and get the index of the last played file

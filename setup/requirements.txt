@@ -4,5 +4,6 @@ spidev
 image
 ffmpeg-python
 termcolor
+natsort
 Flask
 redis

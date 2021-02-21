@@ -1,6 +1,7 @@
 import modules.utils as utils
 import fnmatch
 import os
+from natsort import natsorted
 
 # helper classes to find the right video to play and analyze it if needed
 class VideoInfo:
@@ -29,7 +30,7 @@ class VideoInfo:
     # in a given directory find the next video that should be played
     def find_next_video(self, lastPlayed):
         # list all files in the directory, filter on mp4
-        fileList = sorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
+        fileList = natsorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
 
         index = 0
 
@@ -50,7 +51,7 @@ class VideoInfo:
 
     def find_prev_video(self, lastPlayed):
         # list all files in the directory, filter on mp4
-        fileList = sorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
+        fileList = natsorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
 
         index = 0
 
