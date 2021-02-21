@@ -2,6 +2,7 @@
 {% block header %}
 <script type="text/javascript">
   function analyze(){
+    showFlash('Analyzer started - please wait', 'success')
     $('#analyze_button').prop('disabled', true);
 
     // build the json post

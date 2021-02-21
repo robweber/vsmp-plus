@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - fixed button toggle on "pause" in ```index.html``` file
+- added natsort to help with sorting videos better in a directory
 
 ## 2021-02-19
 
