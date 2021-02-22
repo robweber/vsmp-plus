@@ -77,17 +77,36 @@ def find_video(config, lastPlayed, next=False):
 
 
 def update_display(config, epd, db):
+    # Initialize the screen
+    epd.init()
+
     # get the video file information
     video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
     # check if we have a properly analyzed video file
     if(not 'file' in video_file):
-        # display an error message
+        # log an error message
         logging.error('No video file to load')
-        return
 
-    # Initialize the screen
-    epd.init()
+        # display config message on display
+        font24 = ImageFont.truetype(os.path.join(utils.DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 24)
+
+        message = 'Configure at http://%s:%d' % (get_local_ip(), args.port)
+
+        background_image = Image.new('1', (width, height), 255)  # 255: clear the frame
+        draw = ImageDraw.Draw(background_image)
+        tw, th = draw.textsize(message)
+
+        draw.text(((width-50)/2, height/2), 'No Video', font = font24, fill = 0)
+        draw.text(((width-tw-120)/2, height/2 + 50), message, font = font24, fill = 0)
+        epd.display(epd.getbuffer(background_image))
+
+        epd.sleep()
+
+        # set to "paused" so this isn't constantly Updating
+        utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
+
+        return
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
