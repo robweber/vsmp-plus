@@ -23,7 +23,7 @@ function load_status(){
       dateString = nextRun.toLocaleDateString('en-US', {dateStyle: 'short'}) + " " + dateString
     }
 
-    $('#file_title').text(data.name);
+    $('#file_title').text(data.info.title);
 
     $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
     $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
