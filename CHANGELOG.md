@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added Device IP as a valid display option as part of the configuration. Helpful when trying to find the device on the network.
 - when no video loaded display message with address of web management page on display
+- player status (paused or running) included as part of ```/api/status``` command
 
 ### Fixed
 

@@ -1,12 +1,27 @@
 {% extends "base.html" %}
 {% block header %}
 <script type="text/javascript">
+var pStatus = {{ status['running'] | string | lower }};  //the current player status
+
+function toggle_player_status(){
+  //toggle the buttons
+  $('#toggle_resume_button').toggle();
+  $('#toggle_pause_button').toggle();
+  $('#video_progress').toggleClass('bg-secondary');
+}
+
 function load_status(){
   $.ajax({type: 'GET', url: '/api/status', success: function(data, status, request){
     $('#file_title').text(data.name);
 
     $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
     $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
+
+    // update the player status
+    if(data.player.running != pStatus){
+      pStatus = data.player.running
+      toggle_player_status();
+    }
 
     setTimeout(load_status, 30000);
   }
@@ -21,10 +36,10 @@ function run_action(action){
       //only toggle buttons if play/pause
       if(data.action == 'pause' || data.action == 'resume')
       {
-        // if success, toggle the buttons
-        $('#toggle_resume_button').toggle();
-        $('#toggle_pause_button').toggle();
-        $('#video_progress').toggleClass('bg-secondary');
+        // update the player status
+        pStatus = data.action == 'resume';
+
+        toggle_player_status();
       }
       else {
         //show a message and refresh the status right away
@@ -95,5 +110,7 @@ $(document).ready(function () {
 {% endif %}
 })
 </script>
+<div id="status">
 
+</div>
 {% endblock %}
