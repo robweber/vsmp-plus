@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
-- added Device IP as a valid display option as part of the configuration. Helpful when trying to find the device on the network. 
+- added Device IP as a valid display option as part of the configuration. Helpful when trying to find the device on the network.
+
+### Fixed
+
+- fixed crash when no video file loaded due to empty directory or bad file location
 
 ## 2021-02-20
 

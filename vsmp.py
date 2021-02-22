@@ -77,11 +77,17 @@ def find_video(config, lastPlayed, next=False):
 
 
 def update_display(config, epd, db):
+    # get the video file information
+    video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
+
+    # check if we have a properly analyzed video file
+    if(not 'file' in video_file):
+        # display an error message
+        logging.error('No video file to load')
+        return
+
     # Initialize the screen
     epd.init()
-
-    # set the video file information
-    video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
