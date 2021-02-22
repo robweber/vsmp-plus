@@ -22,6 +22,11 @@
       display.push('timecode');
     }
 
+    if($('#config_display_ip').is(':checked'))
+    {
+      display.push('ip');
+    }
+
     postData.display = display;
 
     if($('#config_allow_seek').is(':checked'))
@@ -151,11 +156,15 @@
         <input class="form-check-input" type="checkbox" id="config_display_timecode" name="config_display" value="timecode" {{ 'checked' if 'timecode' in config['display'] else '' }}>
         <label class="form-check-label" for="config_display_timecode">Timecode</label>
       </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_display_ip" name="config_display" value="ip" {{ 'checked' if 'ip' in config['display'] else '' }}>
+        <label class="form-check-label" for="config_display_ip">Device IP</label>
+      </div>
     </div>
   </div>
   <div class="row my-2 bg-light">
     <div class="col-md-12">
-      Optionally display the video title or timecode below the video on the display
+      Optionally display the video title, timecode, or device IP address below the video on the display. The device IP is useful for finding the device on the network.
     </div>
   </div>
   <div class="row my-1">

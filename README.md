@@ -32,7 +32,7 @@ The Player Setup page allows for the configuration of more specific parameters. 
 * Update Time - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron)
 * Start time skip - the number of seconds into the video to start, if you want to skip into the video X amount
 * End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
-* Display - optionally show the title, timecode of the frame being displayed, or both on the bottom of the display. Time in the form of HH:mm:SS.
+* Display - optionally show any combination of the title, timecode of the frame being displayed, or the device IP on the bottom of the display. Time in the form of HH:mm:SS. Device IP is useful in trying to find the device on the network on initial setup. 
 * Allow Seeking - this will enable or disable seeking when clicking on the progress bar in the web interface. Useful to disable if this is happening on accident.
 
 Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
@@ -47,7 +47,7 @@ By default the analyze program loads the current settings. These can be tweaked 
 The built in web server uses a few API endpoints to function. These can be utilized by other programs as well if you wish to automate the sign with other systems or scripts. The endpoints available are:
 
 * /api/configuration [GET, POST] - returns the current configuration as a JSON object. Using a POST request you can update data, with settings like the file paths and cron expression being verified. Responses will include a success or failure of the update.
-* /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100. 
+* /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100.
 * /api/status [GET] - returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete.
 * /api/analyze [POST] - takes the same parameters as the /api/configuration POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
 

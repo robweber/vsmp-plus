@@ -11,6 +11,7 @@ import time
 import threading
 import json
 import redis
+import socket
 import modules.webapp as webapp
 from croniter import croniter
 from datetime import datetime, timedelta
@@ -32,6 +33,12 @@ def signal_handler(signum, frame):
     epd_driver.epdconfig.module_exit()
     sys.exit(0)
 
+
+# helper method to get the local IP address of this machine, uses CloudFlare DNS to initiate connection so internet must work
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('1.1.1.1', 1))  # connect() for UDP doesn't send packets
+    return s.getsockname()[0]
 
 def generate_frame(in_filename, out_filename, time):
     ffmpeg.input(in_filename, ss=time) \
@@ -109,6 +116,9 @@ def update_display(config, epd, db):
 
         if('title' in config['display']):
             title = video_file['info']['title']
+
+        if('ip' in config['display']):
+            title = '(IP: %s) %s' % (get_local_ip(), title)
 
         if('timecode' in config['display']):
             # show the timecode of the video in the format HH:mm:SS
