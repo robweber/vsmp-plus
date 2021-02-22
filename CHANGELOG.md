@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - player status (paused or running) included as part of ```/api/status``` command
 - show next run time as part of ```/api/status```
 - include next run time on web display
+- use boot strap icons to show some icons in various areas
 
 ### Fixed
 

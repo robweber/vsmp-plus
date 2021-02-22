@@ -27,7 +27,7 @@ function load_status(){
 
     $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
     $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
-    $('#next_update').text('Next Update: ' + dateString);
+    $('#next_update_text').text(dateString);
 
     // update the player status
     if(data.player.running != pStatus){
@@ -71,11 +71,11 @@ function run_action(action){
 {% block content %}
 <div class="container">
     <div class="row align-items-end">
-      <div class="col-8">
+      <div class="col-lg-8">
         <h2 id="file_title">Current Status</h2>
       </div>
-      <div class="col-4 text-right mb-1" id="next_update" style="display: {{ 'display' if status['running'] else 'none' }}">
-        Next Update:
+      <div class="col-sm-4 text-right mb-1" id="next_update" style="display: {{ 'display' if status['running'] else 'none' }}">
+        <i class="bi-alarm mr-2"></i><span id="next_update_text"></span>
       </div>
     </div>
     <div class="row">
