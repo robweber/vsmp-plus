@@ -16,6 +16,7 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 DB_PLAYER_STATUS = 'player_status'
 DB_LAST_PLAYED_FILE = 'last_played_file'
 DB_CONFIGURATION = 'vsmp_configuration'
+DB_NEXT_RUN = 'vsmp_next_run'
 
 intervals = (
     ('months', 2592000),  # 60 * 60 * 24 * 30

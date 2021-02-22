@@ -8,14 +8,26 @@ function toggle_player_status(){
   $('#toggle_resume_button').toggle();
   $('#toggle_pause_button').toggle();
   $('#video_progress').toggleClass('bg-secondary');
+  $('#next_update').toggle();
+
 }
 
 function load_status(){
   $.ajax({type: 'GET', url: '/api/status', success: function(data, status, request){
+    var nextRun = new Date(data.player.next_run * 1000);  //convert unix timestamp to datefmt
+    var dateString = nextRun.toLocaleTimeString('en-US', {timeStyle: 'short'});
+
+    //only show date if not updating yet today
+    if(nextRun.toLocaleDateString() != new Date().toLocaleDateString())
+    {
+      dateString = nextRun.toLocaleDateString('en-US', {dateStyle: 'short'}) + " " + dateString
+    }
+
     $('#file_title').text(data.name);
 
     $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
     $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
+    $('#next_update').text('Next Update: ' + dateString);
 
     // update the player status
     if(data.player.running != pStatus){
@@ -57,10 +69,21 @@ function run_action(action){
 </script>
 {% endblock %}
 {% block content %}
-<div class="page-header">
-    <h2 id="file_title">Current Status</h2>
-    <div class="progress" id="video_progress_container" style="height: 30px;">
-      <div class="progress-bar progress-bar-striped progress-bar-animated {{'bg-secondary' if not status['running'] else ''}}" id="video_progress" role="progressbar" style="width: 0%">0%</div>
+<div class="container">
+    <div class="row align-items-end">
+      <div class="col-8">
+        <h2 id="file_title">Current Status</h2>
+      </div>
+      <div class="col-4 text-right mb-1" id="next_update" style="display: {{ 'display' if status['running'] else 'none' }}">
+        Next Update:
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="progress" id="video_progress_container" style="height: 30px;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated {{'bg-secondary' if not status['running'] else ''}}" id="video_progress" role="progressbar" style="width: 0%">0%</div>
+        </div>
+      </div>
     </div>
 </div>
 <div class="container my-2" align="center">

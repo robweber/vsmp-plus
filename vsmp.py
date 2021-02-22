@@ -228,6 +228,7 @@ webAppThread.start()
 updateExpression = config['update']
 cron = croniter(updateExpression, datetime.now())
 nextUpdate = cron.get_next(datetime)
+utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
 logging.info('Next update: %s' % nextUpdate)
 
 while 1:
@@ -240,6 +241,7 @@ while 1:
         updateExpression = config['update']
         cron = croniter(updateExpression, now)
         nextUpdate = cron.get_next(datetime)
+        utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
         logging.info('Next update: %s' % nextUpdate)
 
     # check if the display should be updated
@@ -250,6 +252,7 @@ while 1:
         else:
             logging.debug('Updating display paused, skipping this time')
         nextUpdate = cron.get_next(datetime)
+        utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
         logging.info('Next update: %s' % nextUpdate)
 
     # sleep for one minute

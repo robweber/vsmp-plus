@@ -116,7 +116,10 @@ def webapp_thread(port_number, debugMode=False):
         lastPlayed = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
 
         # set the player status
-        lastPlayed['player'] = utils.read_db(db, utils.DB_PLAYER_STATUS)
+        pStatus = utils.read_db(db, utils.DB_PLAYER_STATUS)
+        pStatus.update(utils.read_db(db, utils.DB_NEXT_RUN))
+
+        lastPlayed['player'] = pStatus
 
         # set some dummy values if no file loaded
         if('file' not in lastPlayed):
