@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - fixed crash when no video file loaded due to empty directory or bad file location
 - error when setting up player status on first run
+- use title tag instead of name tag for video title display, this is pulled from meta data
 
 ## 2021-02-20
 
