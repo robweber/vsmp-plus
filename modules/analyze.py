@@ -8,10 +8,11 @@ from natsort import natsorted
 
 class Analyzer:
     config = None
+    db = None
 
-
-    def __init__(self, config):
+    def __init__(self, config, db):
         self.config = config
+        self.db = db
 
     def run(self, lastPlayedFile):
         result = {'videos': []}
@@ -65,10 +66,9 @@ class Analyzer:
 
         # check if we have a "save" file
         currentPosition = startFrame
-        saveFile = os.path.join(utils.TMP_DIR, video_name + '.json')
-        if(os.path.exists(saveFile)):
-            saveData = utils.read_json(saveFile)
-            currentPosition = float(saveData['pos'])
+        saveFile = utils.read_db(self.db, utils.DB_LAST_PLAYED_FILE)
+        if(file == saveFile['file']):
+            currentPosition = float(saveFile['pos'])
 
             if(currentPosition < startFrame):
                 currentPosition = startFrame

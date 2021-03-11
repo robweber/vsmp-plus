@@ -143,7 +143,7 @@ def webapp_thread(port_number, debugMode=False):
             result['message'] = 'Done'
 
             # run the analyzer
-            analyze = Analyzer(data)
+            analyze = Analyzer(data, db)
 
             result['data'] = analyze.run(utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
         else:

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-03-11
+
+### Fixed
+
+- fixed issue with analyzer where Remaining Time To Play wasn't loading current position of video correctly
+
 ## 2021-02-22
 
 ### Added
