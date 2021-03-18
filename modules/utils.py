@@ -3,6 +3,8 @@ import ffmpeg
 import os
 import logging
 import json
+import fnmatch
+from natsort import natsorted
 from croniter import croniter
 
 # set path to ffmpeg
@@ -137,6 +139,8 @@ def get_configuration(db):
 
     return result
 
+def list_video_files(dir):
+    return natsorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
 
 # read a key from the database, converting to dict
 def read_db(db, db_key):

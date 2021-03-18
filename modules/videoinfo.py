@@ -1,7 +1,6 @@
 import modules.utils as utils
-import fnmatch
 import os
-from natsort import natsorted
+
 
 # helper classes to find the right video to play and analyze it if needed
 class VideoInfo:
@@ -36,7 +35,7 @@ class VideoInfo:
 
         if(os.path.exists(self.config['path'])):
             # list all files in the directory, filter on mp4
-            fileList = natsorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
+            fileList = utils.list_video_files(self.config['path'])
 
         if(len(fileList) == 0):
             return {}  # return nothing, no files to find
@@ -63,7 +62,7 @@ class VideoInfo:
 
         if(os.path.exists(self.config['path'])):
             # list all files in the directory, filter on mp4
-            fileList = natsorted(fnmatch.filter(os.listdir(self.config['path']), '*.mp4'))
+            fileList = utils.list_video_files(self.config['path'])
 
         if(len(fileList) == 0):
             return {}  # return nothing, no files to find
