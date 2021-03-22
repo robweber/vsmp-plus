@@ -152,5 +152,18 @@ def webapp_thread(port_number, debugMode=False):
 
         return jsonify(result)
 
+    @app.route('/api/browse_files/<mode>/', methods=['GET'], defaults={'browse_path': ''})
+    @app.route('/api/browse_files/<mode>/<path:browse_path>', methods=['GET'])
+    def list_directory(mode, browse_path):
+        browse_path = '/%s' % browse_path
+
+        # get a list of all the directories
+        dirs = sorted([ name for name in os.listdir(browse_path) if os.path.isdir(os.path.join(browse_path, name)) ])
+
+        # get a list of all the files
+        files = utils.list_video_files(browse_path)
+
+        return jsonify({'success': True, 'dirs': dirs, 'files': files, 'path': browse_path})
+
     # run the web app
     app.run(debug=debugMode, host='0.0.0.0', port=port_number, use_reloader=False)

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block header %}
 <script type="text/javascript">
+
   function saveConfig(){
     // build the json post
     postData = {"mode": $('#config_mode').val(),
@@ -51,23 +52,97 @@
     }});
 
   }
+
+  function openFileBrowser(){
+    $('#file_browser').show();
+  }
+
+  function closeFileBrowser(){
+    $('#file_browser').hide();
+  }
+
+  function selectPath(path){
+    if($('#config_mode').val() == 'dir')
+    {
+      // use the current dir path
+      path =  $('#file_path').html();
+    }
+
+    $('#config_path').val(path);
+
+    // close the file browser
+    closeFileBrowser();
+  }
+
+  function toggleDirSelect(){
+    $('#directory_select_button').toggle();
+
+    if($('#file_browser').is(':visible')){
+      // if currently browsing, refresh the file list
+      loadFiles($('#file_path').html());
+    }
+  }
+
+  function makePathLink(path, name, funcName = 'loadFiles'){
+    return '<a href="#" onClick="return ' + funcName + '(\'' + path + '\')">' + name + '</a>';
+  }
+
+  function loadFiles(path){
+    //get the Mode
+    mode = $('#config_mode').val();
+
+    $.ajax({type: 'GET', contentType: 'application/json', url: '/api/browse_files/' + mode + "/" + path, success: function(data, status, request){
+
+      if(data.success)
+      {
+
+        $('#file_path').html(data.path)
+
+        fileList = "";
+
+        //create the UP Level icon, if not at root
+        if(data.path != '/'){
+          splitPath = data.path.split('/');
+          splitPath.pop();
+
+          fileList = makePathLink(splitPath.join('/'),'..') + "<br />";
+        }
+
+        //build the html list
+        for(i = 0; i < data.dirs.length; i++)
+        {
+          fileList = fileList + makePathLink(data.path + '/' + data.dirs[i], data.dirs[i]) + '<br />';
+        }
+
+        //build the html list
+        for(i = 0; i < data.files.length; i++)
+        {
+          if(mode == 'file')
+          {
+            fileList = fileList + makePathLink(data.path + '/' + data.files[i], data.files[i], 'selectPath') + '<br />';
+          }
+          else
+          {
+            fileList = fileList + data.files[i] + '<br />';
+          }
+        }
+
+        $('#file_list').html(fileList);
+      }
+    }});
+
+    return false;
+  }
 </script>
 {% endblock %}
 {% block content %}
-<div class="container mb-4">
-  <div class="row">
-    <div class="col-md-12">
-      Use this page to modify the setup of the display. Settings can be adjusted while the sign is running and will take effect within 1 minute of hitting the save button.
-    </div>
-  </div>
-</div>
 <div class="container">
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Mode</b>
     </div>
     <div class="col-md-8">
-      <select class="custom-select" id="config_mode">
+      <select class="custom-select" id="config_mode" onChange="toggleDirSelect()">
         <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
         <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
       </select>
@@ -79,11 +154,30 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Path</b>
     </div>
+    <div class="col-md-6">
+      <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" readonly />
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary" onClick="openFileBrowser()">Browse</button>
+    </div>
+  </div>
+  <div class="row my-1" id="file_browser" style="display:none">
+    <div class="col-md-4">
+      <!-- nothing here -->
+    </div>
     <div class="col-md-8">
-      <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" />
+      <div class="p-2 font-weight-bold">
+        Path: <span id="file_path">{{ config['path'] }}</span>
+      </div>
+      <div id="file_list" class="m-2 p-2 border border-secondary">
+      </div>
+      <div align="center" class="my-1">
+        <button id="directory_select_button" class="btn btn-secondary" onClick="selectPath('')">Select Directory</button>
+        <button class="btn btn-danger" onClick="closeFileBrowser()">Close</button>
+      </div>
     </div>
   </div>
   <div class="row my-2 bg-light">
@@ -92,7 +186,7 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Update Time</b>
     </div>
     <div class="col-md-8">
@@ -105,7 +199,7 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Frames to increment</b>
     </div>
     <div class="col-md-8">
@@ -118,7 +212,7 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Start time skip</b>
     </div>
     <div class="col-md-8">
@@ -131,7 +225,7 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>End time skip</b>
     </div>
     <div class="col-md-8">
@@ -144,7 +238,7 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Additional display options</b>
     </div>
     <div class="col-md-8">
@@ -168,7 +262,7 @@
     </div>
   </div>
   <div class="row my-1">
-    <div class="col-md-4">
+    <div class="col-md-4 align-self-center">
       <b>Allow seeking</b>
     </div>
     <div class="col-md-8">
@@ -189,4 +283,9 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+$(document).ready(function () {
+    loadFiles("{{ config['path'] }}");
+})
+</script>
 {% endblock %}
