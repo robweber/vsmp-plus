@@ -32,7 +32,7 @@ The Player Setup page allows for the configuration of more specific parameters. 
 * Update Time - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron)
 * Start time skip - the number of seconds into the video to start, if you want to skip into the video X amount
 * End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
-* Display - optionally show any combination of the title, timecode of the frame being displayed, or the device IP on the bottom of the display. Time in the form of HH:mm:SS. Device IP is useful in trying to find the device on the network on initial setup. 
+* Display - optionally show any combination of the title, timecode of the frame being displayed, or the device IP on the bottom of the display. Time in the form of HH:mm:SS. Device IP is useful in trying to find the device on the network on initial setup.
 * Allow Seeking - this will enable or disable seeking when clicking on the progress bar in the web interface. Useful to disable if this is happening on accident.
 
 Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
@@ -40,7 +40,7 @@ Once applied the given cron expression will be used to update the display starti
 ## Find Timing
 Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
 
-By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each will video will display separately, with a summary at the end. When looking at a whole directory the program will assume use the position of the currently playing file and analyze from this point forward.
+By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each video will display separately, with a summary at the end. When looking at a whole directory the program will use the position of the currently playing file and analyze from this point forward.
 
 ## REST API
 
@@ -50,6 +50,7 @@ The built in web server uses a few API endpoints to function. These can be utili
 * /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100.
 * /api/status [GET] - returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete.
 * /api/analyze [POST] - takes the same parameters as the /api/configuration POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
+* /api/browse_files/{{path}} [GET] - returns a list of directories and files within the given file path. Files are filtered to include only valid video files. Used by the web interface file browser.
 
 ## Config File
 

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-03-22
+
+### Added
+
+- added API endpoint ```/api/browse_files/<path>``` to return a listing of files and folders in a given directory
+- using browse_files endpoint added file browser to setup page instead of having to type full path to files/folders
+
 ## 2021-03-11
 
 ### Fixed
