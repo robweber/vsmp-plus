@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - added API endpoint ```/api/browse_files/<path>``` to return a listing of files and folders in a given directory
-- using browse_files endpoint added file browser to setup page instead of having to type full path to files/folders
+- using browse_files endpoint added file browser to setup and analyzer pages instead of having to type full path to files/folders
 - tooltip showing percent on seek bar to eliminate guesswork when clicking
 
 ### Fixed
