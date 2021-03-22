@@ -50,12 +50,19 @@ function saveConfig(){
 
 }
 
-function openFileBrowser(){
-  $('#file_browser').show();
-}
+function toggleFileBrowser(){
+  if($('#file_browser').is(':visible'))
+  {
+    $('#file_browser').hide();
 
-function closeFileBrowser(){
-  $('#file_browser').hide();
+    $('#file_browse_button').html('Browse').removeClass('btn-danger');
+  }
+  else
+  {
+    $('#file_browser').show();
+
+    $('#file_browse_button').html('Close').addClass('btn-danger');
+  }
 }
 
 function selectPath(path){
@@ -70,7 +77,7 @@ function selectPath(path){
   $('#config_path').val(path);
 
   // close the file browser
-  closeFileBrowser();
+  toggleFileBrowser();
 }
 
 function toggleDirSelect(){

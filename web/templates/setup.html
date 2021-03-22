@@ -28,7 +28,7 @@
       <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" readonly />
     </div>
     <div class="col-md-2">
-      <button class="btn btn-primary" onClick="openFileBrowser()">Browse</button>
+      <button class="btn btn-primary" id="file_browse_button" onClick="toggleFileBrowser()">Browse</button>
     </div>
   </div>
   <div class="row my-1" id="file_browser" style="display:none">
@@ -43,7 +43,6 @@
       </div>
       <div align="center" class="my-1">
         <button id="directory_select_button" class="btn btn-secondary" onClick="selectPath('')">Select Directory</button>
-        <button class="btn btn-danger" onClick="closeFileBrowser()">Close</button>
       </div>
     </div>
   </div>
