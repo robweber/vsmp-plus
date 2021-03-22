@@ -95,11 +95,9 @@ function makePathLink(path, name, funcName = 'loadFiles'){
 }
 
 function loadFiles(path){
-  //get the Mode
-  mode = $('#config_mode').val();
 
   // send request to load file listings
-  $.ajax({type: 'GET', contentType: 'application/json', url: '/api/browse_files/' + mode + "/" + path, success: function(data, status, request){
+  $.ajax({type: 'GET', contentType: 'application/json', url: '/api/browse_files/' + path, success: function(data, status, request){
 
     if(data.success)
     {
@@ -126,7 +124,7 @@ function loadFiles(path){
       //build the html list
       for(i = 0; i < data.files.length; i++)
       {
-        if(mode == 'file')
+        if($('#config_mode').val() == 'file')
         {
           fileList = fileList + makePathLink(data.path + '/' + data.files[i], data.files[i], 'selectPath');
         }

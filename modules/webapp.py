@@ -152,9 +152,9 @@ def webapp_thread(port_number, debugMode=False):
 
         return jsonify(result)
 
-    @app.route('/api/browse_files/<mode>/', methods=['GET'], defaults={'browse_path': ''})
-    @app.route('/api/browse_files/<mode>/<path:browse_path>', methods=['GET'])
-    def list_directory(mode, browse_path):
+    @app.route('/api/browse_files/', methods=['GET'], defaults={'browse_path': ''})
+    @app.route('/api/browse_files/<path:browse_path>', methods=['GET'])
+    def list_directory(browse_path):
         browse_path = '/%s' % browse_path  # add slash to start path from root
 
         # if path is a file, get directory
