@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block header %}
+<script src="/static/js/vsmp_file_browser.js"></script>
 <script type="text/javascript">
   function analyze(){
     showFlash('Analyzer started - please wait', 'success')
@@ -95,8 +96,26 @@ function toggleConfig(){
           <div class="col-md-4">
             <b>Path</b>
           </div>
+          <div class="col-md-6">
+            <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" readonly />
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary" id="file_browse_button" onClick="toggleFileBrowser()">Browse</button>
+          </div>
+        </div>
+        <div class="row my-1" id="file_browser" style="display:none">
+          <div class="col-md-4">
+            <!-- nothing here -->
+          </div>
           <div class="col-md-8">
-            <input type="text" id="config_path" class="form-control" value="{{ config['path'] }}" />
+            <div class="p-2 font-weight-bold">
+              Path: <span id="file_path">{{ config['path'] }}</span>
+            </div>
+            <div id="file_list" class="m-2 p-2 border border-secondary">
+            </div>
+            <div align="center" class="my-1">
+              <button id="directory_select_button" class="btn btn-secondary" onClick="selectPath('')" style="{{ 'display:none' if config['mode'] == 'file' else '' }}">Select Directory</button>
+            </div>
           </div>
         </div>
         <div class="row my-2 bg-light">
@@ -176,4 +195,9 @@ function toggleConfig(){
 
   </tbody>
 </table>
+<script type="text/javascript">
+$(document).ready(function () {
+    loadFiles("{{ config['path'][1:] }}");
+})
+</script>
 {% endblock %}
