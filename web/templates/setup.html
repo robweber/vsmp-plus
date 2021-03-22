@@ -39,6 +39,7 @@
         postData.allow_seek = false
     }
 
+    // post to api endpoint
     $.ajax({type: 'POST', contentType: 'application/json', url: '/api/configuration', data: JSON.stringify(postData), success: function(data, status, request){
 
       if(data.success)
@@ -62,12 +63,14 @@
   }
 
   function selectPath(path){
+
+    // use passed in path if file mode, or current dir if directory mode
     if($('#config_mode').val() == 'dir')
     {
-      // use the current dir path
       path =  $('#file_path').html();
     }
 
+    // set path in form input
     $('#config_path').val(path);
 
     // close the file browser
@@ -91,21 +94,23 @@
     //get the Mode
     mode = $('#config_mode').val();
 
+    // send request to load file listings
     $.ajax({type: 'GET', contentType: 'application/json', url: '/api/browse_files/' + mode + "/" + path, success: function(data, status, request){
 
       if(data.success)
       {
 
+        // set the current full path
         $('#file_path').html(data.path)
 
-        fileList = "";
+        fileList = "";  // string with html to display contents of directory
 
         //create the UP Level icon, if not at root
         if(data.path != '/'){
           splitPath = data.path.split('/');
           splitPath.pop();
 
-          fileList = makePathLink(splitPath.join('/'),'..') + "<br />";
+          fileList = makePathLink(splitPath.join('/'), '..') + "<br />";
         }
 
         //build the html list
