@@ -81,7 +81,7 @@ function toggleConfig(){
             <b>Mode</b>
           </div>
           <div class="col-md-8">
-            <select class="custom-select" id="config_mode">
+            <select class="custom-select" id="config_mode" onChange="toggleDirSelect()">
               <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
               <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
             </select>
