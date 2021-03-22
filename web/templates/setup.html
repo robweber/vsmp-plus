@@ -42,7 +42,7 @@
       <div id="file_list" class="m-2 p-2 border border-secondary">
       </div>
       <div align="center" class="my-1">
-        <button id="directory_select_button" class="btn btn-secondary" onClick="selectPath('')">Select Directory</button>
+        <button id="directory_select_button" class="btn btn-secondary" onClick="selectPath('')" style="{{ 'display:none' if config['mode'] == 'file' else '' }}">Select Directory</button>
       </div>
     </div>
   </div>
@@ -151,7 +151,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function () {
-    loadFiles("{{ config['path'] }}");
+    loadFiles("{{ config['path'][1:] }}");
 })
 </script>
 {% endblock %}

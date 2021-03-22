@@ -157,6 +157,10 @@ def webapp_thread(port_number, debugMode=False):
     def list_directory(mode, browse_path):
         browse_path = '/%s' % browse_path  # add slash to start path from root
 
+        # if path is a file, get directory
+        if(os.path.isfile(browse_path)):
+            browse_path = os.path.dirname(browse_path)
+
         # get a list of all the directories
         dirs = sorted([ name for name in os.listdir(browse_path) if os.path.isdir(os.path.join(browse_path, name)) ])
 
