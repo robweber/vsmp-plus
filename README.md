@@ -1,18 +1,18 @@
 # VSMP+ (Very Slow Media Player Plus)
 I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of this project.
 
-Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. That is what this project seeks to do. Combing piece of both of them I ended up with the following, which is both the same and different from their designs.
+Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these is a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any of parameters or change running files. 
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
 ## Basic Usage
-Once the requirements are in place (See Install document) the program itself is contained in the ```vsmp.py``` file. This file can take a few arguments, but doesn't need any to run normally:
+Once the requirements are in place (See [Install](https://github.com/robweber/vsmp-plus/blob/master/INSTALL.md) document) the program itself is contained in the ```vsmp.py``` file. This file can take a few arguments, but doesn't need any to run normally:
 
 * ```--config``` - path to a config file where any CLI arguments can be specified, useful for when running as a service
 * ```--port``` - the port the web server will run on, default is 5000
 * ```--debug``` - when this flag is given the program will run in debug mode
 
-Once started, either with the CLI or as a service, the program will start and the webservice will be active. You can load the web page to continue setup at http://IP:5000. To monitor the progress of the program you can watch the log file using the command:
+Once started, either with the CLI or as a service, the program will start and the web service will be active. You can load the web page to continue setup at http://IP:5000. To monitor the progress of the program you can watch the log file using the command:
 
 ```
 # from the vsmp-plus directory
@@ -76,6 +76,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 7. Can use either a configuration (.conf) file or pass in arguments via CLI
 8. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
 9. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
+10. Added ability to jump to a specific time in the video (via web UI)
 
 ## Problems With FFMPEG
 
