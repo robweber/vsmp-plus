@@ -1,7 +1,8 @@
 # VSMP+ (Very Slow Media Player Plus)
+
 I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of this project.
 
-Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these is a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any of parameters or change running files. 
+Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these is a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any of parameters or change running files.
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
@@ -46,11 +47,101 @@ By default the analyze program loads the current settings. These can be tweaked 
 
 The built in web server uses a few API endpoints to function. These can be utilized by other programs as well if you wish to automate the sign with other systems or scripts. The endpoints available are:
 
-* /api/configuration [GET, POST] - returns the current configuration as a JSON object. Using a POST request you can update data, with settings like the file paths and cron expression being verified. Responses will include a success or failure of the update.
-* /api/control/{{action}} [POST] - initiate a control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100.
-* /api/status [GET] - returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete.
-* /api/analyze [POST] - takes the same parameters as the /api/configuration POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
-* /api/browse_files/{{path}} [GET] - returns a list of directories and files within the given file path. Files are filtered to include only valid video files. Used by the web interface file browser.
+### /api/configuration [GET, POST]
+This returns the current configuration as a JSON object. Using a POST request you can update data, with settings like the file paths and cron expression being verified. Responses will include a success or failure of the update.
+
+__Example__
+
+```
+curl http://localhost:5000/api/configuration
+
+{
+  "allow_seek": false,
+  "display": ["timecode"],
+  "end": 300,
+  "increment": 50,
+  "mode": "dir",
+  "path": "/media/usb/Videos",
+  "start":100,
+  "update":"*/5 7-15 * * 1-5"
+}
+
+```
+
+### /api/control/{{action}} [POST]
+Initiate a player control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100.
+
+__Examples__
+
+```
+# Pause Play
+curl http://localhost:5000/api/action/pause
+
+{
+  "action": "pause",
+  "message": "Action pause executed",
+  "success": true
+}
+
+# Seek
+curl http://localhost:5000/api/control/seek -d '{"amount": 20}' -X POST
+{
+  "action":"seek",
+  "data": ...same as /api/status...,
+  "message": "Seeking to  20.00 percent on next update",
+  "success":true
+}
+```
+
+### /api/status [GET]
+
+Returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete. The ```pos``` key value is the current frame being displayed.
+
+__Example__
+```
+curl http://localhost:5000/api/status
+
+{
+  "file": "/media/usb/Videos/Path.To.Video.mp4",
+  "info":  {
+    "fps": 29.97,
+    "frame_count": 60725.0,
+    "runtime": 2326.192859526193,
+    "title":"Friendly Name of Video"
+   },
+  "name": "Video.File.Name.No.Ext",
+  "percent_complete": 20.5,
+  "pos": 12145.0
+}
+```
+
+### /api/analyze [POST]
+
+Takes the same parameters as the ```/api/configuration``` POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.
+
+### /api/browse_files/{{path}} [GET]
+
+Returns a list of directories and files within the given file path. Files are filtered to include only valid video files. Used by the web interface file browser. The user running the ```vsmp.py``` file must have READ access to the directories to list them.
+
+__Example__
+
+```
+curl http://localhost:5000/api/browse_files/media/usb/Videos
+
+{
+  "dirs":[
+    "Dir 1",
+    "Dir 2"
+  ],
+  "files": [
+    "Video.File.1.mp4",
+    "Video.File.2.mp4"
+  ],
+  "path": "/media/usb/Videos",
+  "success": true
+}
+
+```
 
 ## Config File
 
