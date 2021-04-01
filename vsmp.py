@@ -91,7 +91,7 @@ def update_display(config, epd, db):
         # display config message on display
         font24 = ImageFont.truetype(os.path.join(utils.DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 24)
 
-        message = 'Configure at http://%s:%d' % (get_local_ip(), args.port)
+        message = f"Configure at http://{get_local_ip()}:{args.port}"
 
         background_image = Image.new('1', (width, height), 255)  # 255: clear the frame
         draw = ImageDraw.Draw(background_image)
@@ -111,7 +111,7 @@ def update_display(config, epd, db):
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
 
-    logging.info('Loading %s' % video_file['file'])
+    logging.info(f"Loading {video_file['file']}")
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to true to force new video file
@@ -124,7 +124,7 @@ def update_display(config, epd, db):
     frame = video_file['pos']
 
     # Convert that frame to ms from start of video (frame/fps) * 1000
-    msTimecode = "%dms" % (utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000)
+    msTimecode = f"{utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000}ms"
 
     # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
     generate_frame(video_file['file'], grabFile, msTimecode)
@@ -135,7 +135,6 @@ def update_display(config, epd, db):
     if(len(config['display']) > 0):
         font18 = ImageFont.truetype(os.path.join(utils.DIR_PATH, 'waveshare_lib', 'pic', 'Font.ttc'), 18)
 
-        message = '%s %s'
         title = ''
         timecode = ''
 
@@ -143,7 +142,7 @@ def update_display(config, epd, db):
             title = video_file['info']['title']
 
         if('ip' in config['display']):
-            title = '(IP: %s) %s' % (get_local_ip(), title)
+            title = f"(IP: {get_local_ip()}) {title}"
 
         if('timecode' in config['display']):
             # show the timecode of the video in the format HH:mm:SS
@@ -154,7 +153,7 @@ def update_display(config, epd, db):
                                           show_zeros=True,
                                           intervals=utils.intervals[3:])
 
-        message = message % (title, timecode)
+        message = f"{title} {timecode}"
 
         # get a draw object
         draw = ImageDraw.Draw(pil_im)
@@ -168,7 +167,7 @@ def update_display(config, epd, db):
 
     # display the image
     epd.display(epd.getbuffer(pil_im))
-    logging.info('Diplaying frame %d (%d seconds) of %s' % (frame, utils.frames_to_seconds(frame, video_file['info']['fps']), video_file['name']))
+    logging.info(f"Diplaying frame {frame} ({utils.frames_to_seconds(frame, video_file['info']['fps'])} seconds) of {video_file['name']}")
 
     # save the next position
     video_file['pos'] = video_file['pos'] + float(config['increment'])
@@ -176,7 +175,7 @@ def update_display(config, epd, db):
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to True to force new file
         video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
-        logging.info('Will start %s on next run' % video_file)
+        logging.info(f"Will start {video_file} on next run")
 
     # save the last video played info
     utils.write_db(db, utils.DB_LAST_PLAYED_FILE, video_file)
@@ -216,8 +215,7 @@ if(not db.exists(utils.DB_PLAYER_STATUS)):
 # load the player configuration
 config = utils.get_configuration(db)
 
-logging.info('Starting with options Frame Increment: %s frames, Video start: %s seconds, Ending Cutoff: %s seconds, Updating on schedule: %s' %
-      (config['increment'], config['start'], config['end'], config['update']))
+logging.info(f"Starting with options Frame Increment: {config['increment']} frames, Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, Updating on schedule: {config['update']}")
 
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
@@ -229,7 +227,7 @@ updateExpression = config['update']
 cron = croniter(updateExpression, datetime.now())
 nextUpdate = cron.get_next(datetime)
 utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
-logging.info('Next update: %s' % nextUpdate)
+logging.info(f"Next update: {nextUpdate}")
 
 while 1:
     now = datetime.now()
@@ -242,7 +240,7 @@ while 1:
         cron = croniter(updateExpression, now)
         nextUpdate = cron.get_next(datetime)
         utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
-        logging.info('Next update: %s' % nextUpdate)
+        logging.info(f"Next update: {nextUpdate}")
 
     # check if the display should be updated
     pStatus = utils.read_db(db, utils.DB_PLAYER_STATUS)
@@ -253,7 +251,7 @@ while 1:
             logging.debug('Updating display paused, skipping this time')
         nextUpdate = cron.get_next(datetime)
         utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
-        logging.info('Next update: %s' % nextUpdate)
+        logging.info(f"Next update: {nextUpdate}")
 
     # sleep for one minute
     time.sleep(60 - datetime.now().second)

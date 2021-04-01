@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-04-01
+
+### Changed
+
+- use f-strings instead of % formatting
+
+## 2021-03-29
+
+### Added
+
+- added API examples to README
+
 ## 2021-03-22
 
 ### Added

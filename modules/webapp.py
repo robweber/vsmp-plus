@@ -61,7 +61,7 @@ def webapp_thread(port_number, debugMode=False):
         if(action in ['pause', 'resume']):
             # store the new value
             utils.write_db(db, utils.DB_PLAYER_STATUS, {'running':  action == 'resume'})  # eval to True/False
-            result['message'] = 'Action %s executed' % action
+            result['message'] = f"Action {action} executed"
         elif(action in ['next', 'prev']):
             config = utils.get_configuration(db)
 
@@ -77,7 +77,7 @@ def webapp_thread(port_number, debugMode=False):
 
                 # save the video file
                 utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextVideo)
-                result['message'] = 'Next video will be %s' % nextVideo['name']
+                result['message'] = f"Next video will be {nextVideo['name']}"
             else:
                 result['success'] = False
                 result['message'] = 'Cannot use next/prev actions when in file mode'
@@ -93,7 +93,7 @@ def webapp_thread(port_number, debugMode=False):
                     info = VideoInfo(utils.get_configuration(db))
                     nextVideo = info.seek_video(nextVideo, data['amount'])
 
-                    result['message'] = 'Seeking to %6.2f percent on next update' % data['amount']
+                    result['message'] = f"Seeking to {data['amount']:.2f} percent on next update"
                     result['data'] = nextVideo
 
                     # save the new position
@@ -155,7 +155,7 @@ def webapp_thread(port_number, debugMode=False):
     @app.route('/api/browse_files/', methods=['GET'], defaults={'browse_path': ''})
     @app.route('/api/browse_files/<path:browse_path>', methods=['GET'])
     def list_directory(browse_path):
-        browse_path = '/%s' % browse_path  # add slash to start path from root
+        browse_path = f"/{browse_path}"  # add slash to start path from root
 
         # if path is a file, get directory
         if(os.path.isfile(browse_path)):

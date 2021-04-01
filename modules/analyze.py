@@ -54,7 +54,7 @@ class Analyzer:
         videoInfo['frame_count'] = videoInfo['frame_count'] - utils.seconds_to_frames(end, videoInfo['fps'])
 
         # print some initial information
-        logging.info('Analyzing %s' % file)
+        logging.info(f"Analyzing {file}")
         result['fps'] = videoInfo['fps']
         result['runtime'] = videoInfo['runtime']/60
 

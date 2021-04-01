@@ -163,7 +163,7 @@ def read_json(file):
     try:
         result = json.loads(read_file(file))
     except Exception:
-        logging.error('error parsing json from file %s' % file)
+        logging.error(f"error parsing json from file {file}")
 
     return result
 
@@ -180,7 +180,7 @@ def read_file(file):
         with open(file) as f:
             result = f.read()
     except Exception:
-        logging.error('error opening file %s' % file)
+        logging.error(f"error opening file {file}")
 
     return result
 
