@@ -1,20 +1,21 @@
 import modules.utils as utils
 import os
 import redis
-import json
 from modules.videoinfo import VideoInfo
-from flask import Flask, render_template, flash, url_for, jsonify, request
+from flask import Flask, render_template, jsonify, request
 from modules.analyze import Analyzer
+
 
 # encapsulates the functions for the web service so they can be run in a new thread
 def webapp_thread(port_number, debugMode=False):
-    app = Flask(import_name="vsmp-plus", static_folder=os.path.join(utils.DIR_PATH, 'web', 'static'), template_folder=os.path.join(utils.DIR_PATH, 'web', 'templates'))
+    app = Flask(import_name="vsmp-plus", static_folder=os.path.join(utils.DIR_PATH, 'web', 'static'),
+                template_folder=os.path.join(utils.DIR_PATH, 'web', 'templates'))
     db = redis.Redis('localhost', decode_responses=True)
 
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html', status=utils.read_db(db, utils.DB_PLAYER_STATUS), config=utils.get_configuration(db))
-
+        return render_template('index.html', status=utils.read_db(db, utils.DB_PLAYER_STATUS),
+                               config=utils.get_configuration(db))
 
     @app.route('/setup', methods=['GET'])
     def setup_view():
@@ -27,7 +28,6 @@ def webapp_thread(port_number, debugMode=False):
     @app.route('/api/configuration', methods=['GET'])
     def get_configuration():
         return jsonify(utils.get_configuration(db))
-
 
     @app.route('/api/configuration', methods=['POST'])
     def save_configuration():
@@ -51,7 +51,6 @@ def webapp_thread(port_number, debugMode=False):
             result['message'] = checkConfig[1]
 
         return jsonify(result)
-
 
     @app.route('/api/control/<action>', methods=['POST'])
     def execute_action(action):
@@ -110,7 +109,6 @@ def webapp_thread(port_number, debugMode=False):
 
         return jsonify(result)
 
-
     @app.route('/api/status', methods=['GET'])
     def status():
         lastPlayed = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
@@ -162,7 +160,7 @@ def webapp_thread(port_number, debugMode=False):
             browse_path = os.path.dirname(browse_path)
 
         # get a list of all the directories
-        dirs = sorted([ name for name in os.listdir(browse_path) if os.path.isdir(os.path.join(browse_path, name)) ])
+        dirs = sorted([name for name in os.listdir(browse_path) if os.path.isdir(os.path.join(browse_path, name))])
 
         # get a list of all the files, filter on valid video files
         files = utils.list_video_files(browse_path)
