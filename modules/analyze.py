@@ -4,6 +4,7 @@ import modules.utils as utils
 from croniter import croniter, croniter_range
 from datetime import datetime, timedelta
 
+
 class Analyzer:
     config = None
     db = None
@@ -16,8 +17,10 @@ class Analyzer:
         result = {'videos': []}
 
         if(self.config['mode'] == 'file'):
-            result['videos'].append(self.analyze_video(self.config['path'], self.config['start'], self.config['end'], self.config['increment'], self.config['update']))
-            result['total_time'] = self.time_to_play(result['videos'][0]['frames_left'], self.config['increment'], self.config['update'])
+            result['videos'].append(self.analyze_video(self.config['path'], self.config['start'],
+                                    self.config['end'], self.config['increment'], self.config['update']))
+            result['total_time'] = self.time_to_play(result['videos'][0]['frames_left'],
+                                                     self.config['increment'], self.config['update'])
         else:
 
             # read in all files from the directory
@@ -34,7 +37,9 @@ class Analyzer:
             # analyze each file
             totalFrames = 0
             for i in range(index, len(fileList)):
-                analyzedVideo = self.analyze_video(os.path.join(self.config['path'], fileList[i]), self.config['start'], self.config['end'], self.config['increment'], self.config['update'])
+                analyzedVideo = self.analyze_video(os.path.join(self.config['path'], fileList[i]),
+                                                   self.config['start'], self.config['end'],
+                                                   self.config['increment'], self.config['update'])
                 totalFrames = totalFrames + analyzedVideo['frames_left']
 
                 result['videos'].append(analyzedVideo)
@@ -73,11 +78,11 @@ class Analyzer:
 
         # find total time to play entire movie
         result['total_time_to_play'] = self.time_to_play(videoInfo['frame_count'] - startFrame,
-                                        float(increment), update_expression)
+                                                         float(increment), update_expression)
 
         # find time to play what's left
         result['remaining_time_to_play'] = self.time_to_play(videoInfo['frame_count'] - currentPosition,
-                                              float(increment), update_expression)
+                                                             float(increment), update_expression)
 
         # figure out how many 'real time' minutes per hour
         now = datetime.now()
@@ -86,7 +91,8 @@ class Analyzer:
         for i in croniter_range(now, tomorrow, update_expression):
             day_total = day_total + 1
         secondsPerIncrement = utils.frames_to_seconds(increment, videoInfo['fps'])
-        framesPerSecond = secondsPerIncrement/(60/(day_total/24)*60)  # this is how many "seconds" of film actually shown per second of realtime
+        # this is how many "seconds" of film actually shown per second of realtime
+        framesPerSecond = secondsPerIncrement/(60/(day_total/24)*60)
 
         minutesPerHour = (framesPerSecond * 60)
         result['minutes_per_hour'] = minutesPerHour
