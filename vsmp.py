@@ -9,12 +9,11 @@ import signal
 import sys
 import time
 import threading
-import json
 import redis
 import socket
 import modules.webapp as webapp
 from croniter import croniter
-from datetime import datetime, timedelta
+from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
@@ -34,11 +33,12 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 
-# helper method to get the local IP address of this machine, uses CloudFlare DNS to initiate connection so internet must work
+# helper method to get the local IP address of this machine, uses CloudFlare DNS so internet must work
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('1.1.1.1', 1))  # connect() for UDP doesn't send packets
     return s.getsockname()[0]
+
 
 def generate_frame(in_filename, out_filename, time):
     ffmpeg.input(in_filename, ss=time) \
@@ -84,7 +84,7 @@ def update_display(config, epd, db):
     video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
     # check if we have a properly analyzed video file
-    if(not 'file' in video_file):
+    if('file' not in video_file):
         # log an error message
         logging.error('No video file to load')
 
@@ -97,8 +97,8 @@ def update_display(config, epd, db):
         draw = ImageDraw.Draw(background_image)
         tw, th = draw.textsize(message)
 
-        draw.text(((width-50)/2, height/2), 'No Video', font = font24, fill = 0)
-        draw.text(((width-tw-120)/2, height/2 + 50), message, font = font24, fill = 0)
+        draw.text(((width-50)/2, height/2), 'No Video', font=font24, fill=0)
+        draw.text(((width-tw-120)/2, height/2 + 50), message, font=font24, fill=0)
         epd.display(epd.getbuffer(background_image))
 
         epd.sleep()
@@ -167,7 +167,8 @@ def update_display(config, epd, db):
 
     # display the image
     epd.display(epd.getbuffer(pil_im))
-    logging.info(f"Diplaying frame {frame} ({utils.frames_to_seconds(frame, video_file['info']['fps'])} seconds) of {video_file['name']}")
+    secondsOfVideo = utils.frames_to_seconds(frame, video_file['info']['fps'])
+    logging.info(f"Diplaying frame {frame} ({secondsOfVideo} seconds) of {video_file['name']}")
 
     # save the next position
     video_file['pos'] = video_file['pos'] + float(config['increment'])
@@ -209,13 +210,16 @@ logging.debug('Debug Mode On')
 epd = epd_driver.EPD()
 db = redis.Redis('localhost', decode_responses=True)
 
+# default to False as default settings probably won't load a video
 if(not db.exists(utils.DB_PLAYER_STATUS)):
-    utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})  # default to False as default settings probably won't load a video
+    utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
 
 # load the player configuration
 config = utils.get_configuration(db)
 
-logging.info(f"Starting with options Frame Increment: {config['increment']} frames, Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, Updating on schedule: {config['update']}")
+logging.info(f"Starting with options Frame Increment: {config['increment']} frames, " +
+             "Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, "
+             "Updating on schedule: {config['update']}")
 
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
