@@ -20,7 +20,8 @@ class VideoInfo:
             result['info'] = utils.get_video_info(file)
 
             # modify the end frame, if needed
-            result['info']['frame_count'] = result['info']['frame_count'] - utils.seconds_to_frames(self.config['end'], result['info']['fps'])
+            framesOfVideo = utils.seconds_to_frames(self.config['end'], result['info']['fps'])
+            result['info']['frame_count'] = result['info']['frame_count'] - framesOfVideo
 
             # find the saved position and played percent
             result['pos'] = float(utils.seconds_to_frames(self.config['start'], result['info']['fps']))
