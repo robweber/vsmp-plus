@@ -1,4 +1,3 @@
-import argparse
 import ffmpeg
 import os
 import logging
@@ -10,8 +9,9 @@ from croniter import croniter
 # set path to ffmpeg
 os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 
-# setup some helpful variables
-DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # full path to the running directory of the program
+# full path to the running directory of the program
+DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# path to temp directory
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 
 # redis keys
@@ -28,6 +28,7 @@ intervals = (
     ('minutes', 60),
     ('seconds', 1),
 )
+
 
 def display_time(seconds, granularity=3, timeFormat="{value} {interval_name}",
                  joiner=', ', show_zeros=False, intervals=intervals):
@@ -96,14 +97,15 @@ def validate_configuration(config):
         return (False, 'Cron expression for update interval is invalid')
 
     # check that increment, end, and start are int values
-    if(not isinstance(config['increment'],int)):
+    if(not isinstance(config['increment'], int)):
         return (False, 'Increment must be an integer value')
-    elif(not isinstance(config['start'],int)):
+    elif(not isinstance(config['start'], int)):
         return (False, 'Start time skip must be an integer value')
     elif(not isinstance(config['end'], int)):
         return (False, 'End time skip must be an integer value')
 
     return (True, 'Config Valid')
+
 
 # Uses ffprobe to get various play details from the video file
 def get_video_info(file):
@@ -131,7 +133,9 @@ def get_video_info(file):
 # get the configuration, use default values where custom don't exist
 def get_configuration(db):
     # default configuration
-    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4, 'update': '* * * * *', 'start': 1, 'end': 0, 'display': ['ip'], 'allow_seek': True}
+    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4,
+              'update': '* * * * *', 'start': 1, 'end': 0, 'display': ['ip'],
+              'allow_seek': True}
 
     # merge any saved configuration
     if(db.exists(DB_CONFIGURATION)):
@@ -139,8 +143,10 @@ def get_configuration(db):
 
     return result
 
+
 def list_video_files(dir):
     return natsorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
+
 
 # read a key from the database, converting to dict
 def read_db(db, db_key):
@@ -155,6 +161,7 @@ def read_db(db, db_key):
 # write a value to the datase, converting to JSON string
 def write_db(db, db_key, db_value):
     db.set(db_key, json.dumps(db_value))
+
 
 # read JSON formatted file
 def read_json(file):
