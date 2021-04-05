@@ -17,3 +17,4 @@ jobs:
         uses: py-actions/flake8@v1
         with:
           exclude: "waveshare_lib/"
+          max-line-length: "120"
