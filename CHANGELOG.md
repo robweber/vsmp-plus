@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-04-07
+
+### Removed
+
+- Don't need waveshare lib any more in this repo, modified instructions to build from source
+
 ## 2021-04-05
 
 ### Added
