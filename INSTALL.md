@@ -25,15 +25,17 @@ sudo raspi-config
 
 # clone this repo
 git clone https://github.com/robweber/vsmp-plus.git
-cd vsmp-plus
+
 
 # install required system libraries
 sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server samba samba-common-bin
 
 # setup the waveshare library
-cd ../waveshare_lib
+git clone https://github.com/waveshare/e-Paper
+cd e-Paper/RaspberryPi_JetsonNano/python/
 sudo python setup.py install
-cd ..
+cd /home/pi
+
 ```
 
 You must then set python 3 as the default for the system. Use the following commands to do this, adjust directories to python 3.8 or 3.9 as needed.
@@ -50,7 +52,7 @@ sudo update-alternatives --config python
 Next install some python libraries needed.
 
 ```
-
+cd vsmp-plus
 sudo pip3 install -r setup/requirements.txt
 
 ```
@@ -61,7 +63,7 @@ This next step is optional but it is probably a good idea at this point to check
 ```
 
 # OPTIONAL - check if the e-paper sign is working properly
-python waveshare_lib/examples/epd_7in5_V2_test.py
+python /home/pi/e-Paper/examples/epd_7in5_V2_test.py
 
 ```
 
@@ -69,8 +71,6 @@ python waveshare_lib/examples/epd_7in5_V2_test.py
 Now we have to build the FFMPEG library. If using a NOOBS install you may already have this installed but on a base system you have to compile it yourself. __This will take a long time__. Be patient.
 
 ```
-# get out of the waveshare lib
-cd ..
 
 # run the ffmpeg installer
 sudo ./setup/ffmpeg-rpi-4.sh
