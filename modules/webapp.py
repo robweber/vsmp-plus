@@ -1,15 +1,30 @@
 import modules.utils as utils
 import os
 import redis
+import logging
 from modules.videoinfo import VideoInfo
 from flask import Flask, render_template, jsonify, request
 from modules.analyze import Analyzer
 
 
 # encapsulates the functions for the web service so they can be run in a new thread
-def webapp_thread(port_number, debugMode=False):
+def webapp_thread(port_number, debugMode=False, logHandlers=[]):
     app = Flask(import_name="vsmp-plus", static_folder=os.path.join(utils.DIR_PATH, 'web', 'static'),
                 template_folder=os.path.join(utils.DIR_PATH, 'web', 'templates'))
+
+    # add handlers for this app
+    for h in logHandlers:
+        app.logger.addHandler(h)
+
+    # set log level
+    logLevel = 'INFO' if not debugMode else 'DEBUG'
+    app.logger.setLevel(getattr(logging, logLevel))
+
+    # turn of web server logging if not in debug mode
+    if(not debugMode):
+        werkzeug = logging.getLogger('werkzeug')
+        werkzeug.disabled = True
+
     db = redis.Redis('localhost', decode_responses=True)
 
     @app.route('/', methods=['GET'])

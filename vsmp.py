@@ -201,9 +201,15 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # setup the logger, log to tmp/log.log
 logLevel = 'INFO' if not args.debug else 'DEBUG'
-logging.basicConfig(filename=os.path.join(utils.TMP_DIR, 'log.log'), datefmt='%m/%d %H:%M',
+logHandlers = [logging.FileHandler(os.path.join(utils.TMP_DIR, 'log.log'))]
+
+if(args.debug):
+    logHandlers.append(logging.StreamHandler(sys.stdout))
+
+logging.basicConfig(datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
-                    level=getattr(logging, logLevel))
+                    level=getattr(logging, logLevel),
+                    handlers=logHandlers)
 logging.debug('Debug Mode On')
 
 # setup the screen and database connection
@@ -222,7 +228,7 @@ logging.info(f"Starting with options Frame Increment: {config['increment']} fram
              "Updating on schedule: {config['update']}")
 
 # start the web app
-webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug))
+webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug, logHandlers))
 webAppThread.setDaemon(True)
 webAppThread.start()
 
