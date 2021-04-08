@@ -29,6 +29,7 @@ height = epd_driver.EPD_HEIGHT
 # function to handle when the is killed and exit gracefully
 def signal_handler(signum, frame):
     logging.debug('Exiting Program')
+    epd_driver.epdconfig.module_init()
     epd_driver.epdconfig.module_exit()
     sys.exit(0)
 

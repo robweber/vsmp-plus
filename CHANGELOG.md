@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## 2021-04-08
 
+### Changed
+
+- changed logging behavior, console logging enabled when in debug mode and web server logging disabled when not in debug mode (stop spamming journal)
+
 ### Fixed
 
 - changed path to Font files to match new location of waveshare repository
