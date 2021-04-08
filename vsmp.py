@@ -224,8 +224,8 @@ if(not db.exists(utils.DB_PLAYER_STATUS)):
 config = utils.get_configuration(db)
 
 logging.info(f"Starting with options Frame Increment: {config['increment']} frames, " +
-             "Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, "
-             "Updating on schedule: {config['update']}")
+             f"Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, "
+             f"Updating on schedule: {config['update']}")
 
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug, logHandlers))
