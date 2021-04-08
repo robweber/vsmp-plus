@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-04-08
+
+### Fixed
+
+- changed path to Font files to match new location of waveshare repository
+
 ## 2021-04-07
 
 ### Removed
