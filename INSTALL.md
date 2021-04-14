@@ -18,6 +18,15 @@ The display itself connects to the GPIO pins of the Pi. There are some pictures 
 
 I won't get into the details of installing the Raspberry Pi OS. There are other good guides on that if you're unsure. Just make sure you have it installed with SSH enabled. Once you have access to the system you can run the following commands to get the software components working.
 
+The quikest way to get this done is just to run the following command but if you want to install manually you can follow these instructions.
+
+```
+
+# install script, performs everything listed below
+curl https://raw.githubusercontent.com/robweber/vsmp-plus/master/setup/install.sh | bash
+
+```
+
 ### Clone Repo and Install Libraries
 ```
 # enable SPI - very important https://www.raspberrypi-spy.co.uk/2014/08/enabling-the-spi-interface-on-the-raspberry-pi/
@@ -28,13 +37,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 
 
 # install required system libraries
-sudo apt-get install ffmpeg python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server samba samba-common-bin
-
-# setup the waveshare library
-git clone https://github.com/waveshare/e-Paper
-cd e-Paper/RaspberryPi_JetsonNano/python/
-sudo python setup.py install
-cd /home/pi
+sudo apt-get install ffmpeg git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server samba samba-common-bin
 
 ```
 
@@ -55,6 +58,13 @@ Next install some python libraries needed.
 cd vsmp-plus
 sudo pip3 install -r setup/requirements.txt
 
+# build the waveshare Libraries - this takes some time
+cd ..
+git clone https://github.com/waveshare/e-Paper
+cd ePaper/RaspberryPi_JetsonNano/python/
+sudo python3 setup.py install
+cd /home/pi
+
 ```
 
 ### Test E-Ink Display
@@ -67,7 +77,7 @@ python /home/pi/e-Paper/examples/epd_7in5_V2_test.py
 
 ```
 
-### Build FFmpeg
+### Build FFmpeg - not needed if installing from apt-get above
 Now we have to build the FFMPEG library. If using a NOOBS install you may already have this installed but on a base system you have to compile it yourself. __This will take a long time__. Be patient.
 
 ```

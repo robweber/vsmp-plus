@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+2021-04-14
+
+### Added
+
+- added install.sh script
+
+### Changed
+
+- updated Install file with current instructions
+
 ## 2021-04-08
 
 ### Changed
