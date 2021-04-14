@@ -12,25 +12,21 @@ import threading
 import redis
 import socket
 import modules.webapp as webapp
+from vsmp_epd import displayfactory
 from croniter import croniter
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
-from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
+#from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
 # create the tmp directory if it doesn't exist
 if (not os.path.exists(utils.TMP_DIR)):
     os.mkdir(utils.TMP_DIR)
 
-# pull width/height from driver
-width = epd_driver.EPD_WIDTH
-height = epd_driver.EPD_HEIGHT
-
 
 # function to handle when the is killed and exit gracefully
 def signal_handler(signum, frame):
     logging.debug('Exiting Program')
-    epd_driver.epdconfig.module_init()
-    epd_driver.epdconfig.module_exit()
+    epd.close()
     sys.exit(0)
 
 
@@ -79,7 +75,7 @@ def find_video(config, lastPlayed, next=False):
 
 def update_display(config, epd, db):
     # Initialize the screen
-    epd.init()
+    epd.prepare()
 
     # get the video file information
     video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
@@ -101,7 +97,7 @@ def update_display(config, epd, db):
 
         draw.text(((width-50)/2, height/2), 'No Video', font=font24, fill=0)
         draw.text(((width-tw-120)/2, height/2 + 50), message, font=font24, fill=0)
-        epd.display(epd.getbuffer(background_image))
+        epd.display(background_image)
 
         epd.sleep()
 
@@ -169,7 +165,7 @@ def update_display(config, epd, db):
     pil_im = pil_im.convert(mode='1', dither=Image.FLOYDSTEINBERG)
 
     # display the image
-    epd.display(epd.getbuffer(pil_im))
+    epd.display(pil_im)
     secondsOfVideo = utils.frames_to_seconds(frame, video_file['info']['fps'])
     logging.info(f"Diplaying frame {frame} ({secondsOfVideo} seconds) of {video_file['name']}")
 
@@ -216,7 +212,12 @@ logging.basicConfig(datefmt='%m/%d %H:%M',
 logging.debug('Debug Mode On')
 
 # setup the screen and database connection
-epd = epd_driver.EPD()
+epd = displayfactory.load_display_driver('waveshare_epd.epd7in5_V2')
+
+# pull width/height from driver
+width = epd.width
+height = epd.height
+
 db = redis.Redis('localhost', decode_responses=True)
 
 # default to False as default settings probably won't load a video
