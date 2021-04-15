@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
-- added `vsmp-epd` as dependency for abastracting displays, multiple displays now supported
+- added `vsmp-epd` as dependency for abstracting displays, multiple displays now supported
 
 ### Changed
 
