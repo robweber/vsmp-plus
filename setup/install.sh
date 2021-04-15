@@ -180,4 +180,6 @@ install_service
 sudo cp setup/systemd-udevd.service /lib/systemd/system/systemd-udevd.service
 
 cd $LOCAL_DIR
+cp setup/vsmp.conf ./custom-conf.conf
+
 echo -e "VSMP+ install complete"

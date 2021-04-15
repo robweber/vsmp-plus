@@ -4,7 +4,7 @@ Description=Very Slow Media Player Plus
 [Service]
 User=pi
 WorkingDirectory=/home/pi/vsmp-plus
-ExecStart=/usr/bin/python3 /home/pi/vsmp-plus/vsmp.py
+ExecStart=/usr/bin/python3 /home/pi/vsmp-plus/vsmp.py -c /home/pi/vsmp-plus/custom-conf.conf
 
 [Install]
 WantedBy=multi-user.target

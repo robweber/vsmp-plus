@@ -7,3 +7,4 @@ termcolor
 natsort
 Flask
 redis
+vsmp-epd

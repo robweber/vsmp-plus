@@ -4,7 +4,7 @@ I installed this on a base install of [Raspberry Pi OS](https://www.raspberrypi.
 
 ## Hardware
 
-Most of this hardware is identical to the build by Tom Whitwell, although I used a different picture frame. Any frame you can modify will work.
+Most of this hardware is identical to the build by Tom Whitwell, although I used a different picture frame. Any frame you can modify will work. The Electronic Paper Display (EPD) can be any display known to work with the [vsmp-epd abstraction library](https://github.com/robweber/vsmp-epd). Most Waveshare displays are compatible. 
 
 * RaspberyPi 4 with SD card and power suppply
 * 7.5 inch e-paper screen [link](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm)
@@ -18,7 +18,7 @@ The display itself connects to the GPIO pins of the Pi. There are some pictures 
 
 I won't get into the details of installing the Raspberry Pi OS. There are other good guides on that if you're unsure. Just make sure you have it installed with SSH enabled. Once you have access to the system you can run the following commands to get the software components working.
 
-The quikest way to get this done is just to run the following command but if you want to install manually you can follow these instructions.
+The quickest way to get this done is just to run the following command but if you want to install manually you can follow these instructions.
 
 ```
 
@@ -72,7 +72,7 @@ This next step is optional but it is probably a good idea at this point to check
 
 ```
 
-# OPTIONAL - check if the e-paper sign is working properly
+# OPTIONAL - check if the e-paper sign is working properly, substitute your own display type here
 python /home/pi/e-Paper/examples/epd_7in5_V2_test.py
 
 ```
@@ -90,6 +90,18 @@ sudo cp setup/ffmpeglibs.conf /etc/ld.so.conf.d/ffmpeglibs.conf
 sudo ldconfig
 
 ```
+
+### Modify the Configuration File
+
+By default the service file looks for a configuration file in `/home/pi/vsmp-plus/custom-conf.conf`. You can modify the service file if you want to store it somewhere else. Copy the conf file to avoid errors on startup:
+
+```
+
+cp setup/vsmp.conf ./custom-conf.conf
+
+```
+
+Check the README file for valid values to change in this file. This is necessary if you wish to change the port or EPD driver being loaded at startup.
 
 ### Install service
 

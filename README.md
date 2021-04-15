@@ -12,6 +12,7 @@ Once the requirements are in place (See [Install](https://github.com/robweber/vs
 
 * ```--config``` - path to a config file where any CLI arguments can be specified, useful for when running as a service
 * ```--port``` - the port the web server will run on, default is 5000
+* ```--epd``` - the EPD driver to use. Valid drivers can be [found here](https://github.com/robweber/vsmp-epd/blob/main/README.md). __waveshare_epd.epd7in5_V2__ is the default.
 * ```--debug``` - when this flag is given the program will run in debug mode
 
 Once started, either with the CLI or as a service, the program will start and the web service will be active. You can load the web page to continue setup at http://IP:5000. To monitor the progress of the program you can watch the log file using the command:
@@ -169,6 +170,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 8. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
 9. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 10. Added ability to jump to a specific time in the video (via web UI)
+11. Added an abstraction library to load multiple types of e-ink displays 
 
 ## Problems With FFMPEG
 
