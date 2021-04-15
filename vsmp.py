@@ -188,7 +188,9 @@ parser = configargparse.ArgumentParser(description='VSMP Settings')
 parser.add_argument('-c', '--config', is_config_file=True,
                     help='Path to custom config file')
 parser.add_argument('-p', '--port', default=5000,
-                    help="Port number to run the web server on, 5000 by default")
+                    help="Port number to run the web server on, %(default)d by default")
+parser.add_argument('-e', '--epd', default='waveshare_epd.epd7in5_V2',
+                    help="The type of EPD driver to use, default is %(default)s")
 parser.add_argument('-D', '--debug', action='store_true',
                     help='If the program should run in debug mode')
 
@@ -211,8 +213,19 @@ logging.basicConfig(datefmt='%m/%d %H:%M',
                     handlers=logHandlers)
 logging.debug('Debug Mode On')
 
+# check the epd driver
+validEpds = displayfactory.list_supported_displays()
+
+if(args.epd not in validEpds):
+    # can't find the driver
+    logging.error(f"{args.epd} is not a valid EPD name, valid names are:")
+    logging.error("\n".join(map(str, validEpds)))
+
+    # can't get past this
+    exit(1)
+
 # setup the screen and database connection
-epd = displayfactory.load_display_driver('waveshare_epd.epd7in5_V2')
+epd = displayfactory.load_display_driver(args.epd)
 
 # pull width/height from driver
 width = epd.width
