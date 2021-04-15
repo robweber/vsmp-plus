@@ -16,7 +16,6 @@ from vsmp_epd import displayfactory
 from croniter import croniter
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
-#from waveshare_epd import epd7in5_V2 as epd_driver  # ensure this is the correct import for your screen
 
 # create the tmp directory if it doesn't exist
 if (not os.path.exists(utils.TMP_DIR)):
