@@ -3,7 +3,7 @@
 
 I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of this project.
 
-Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these is a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any parameters or change running files.
+Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these are the ability to specify different displays and a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any parameters or change running files.
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
@@ -12,6 +12,7 @@ Once the requirements are in place (See [Install](https://github.com/robweber/vs
 
 * ```--config``` - path to a config file where any CLI arguments can be specified, useful for when running as a service
 * ```--port``` - the port the web server will run on, default is 5000
+* ```--epd``` - the e-ink display driver to use. Valid displays can be [found here](https://github.com/robweber/vsmp-epd/blob/main/README.md). __waveshare_epd.epd7in5_V2__ is the default.
 * ```--debug``` - when this flag is given the program will run in debug mode
 
 Once started, either with the CLI or as a service, the program will start and the web service will be active. You can load the web page to continue setup at http://IP:5000. To monitor the progress of the program you can watch the log file using the command:
@@ -20,6 +21,10 @@ Once started, either with the CLI or as a service, the program will start and th
 # from the vsmp-plus directory
 tail -f tmp/log.log
 ```
+
+### Display Hardware
+
+Display hardware is a big choice for this project. I used the [Waveshare 7.5in E-ink display](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). Using the `--epd` argument from above you can specify any display that works with the EPD abstraction library. This allows dynamic loading of different display types depending on what you've purchased. You can see [an exhaustive list](https://github.com/robweber/vsmp-epd/blob/main/README.md) here. In general, most Waveshare displays are compatible.
 
 ## Web Server
 
@@ -169,6 +174,7 @@ I mentioned two other versions of this type of project that I took inspiration f
 8. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
 9. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 10. Added ability to jump to a specific time in the video (via web UI)
+11. Added an abstraction library to load multiple types of e-ink displays
 
 ## Problems With FFMPEG
 
@@ -178,6 +184,6 @@ One common problem when installed FFMPEG from source is that the libraries need 
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/arm-linux-gnueabihf/:/usr/local/lib/
 ```
 
-## Notes
+## License
 
-The waveshare files are modified from the original repository: [https://github.com/waveshare/e-Paper](https://github.com/waveshare/e-Paper)
+[MIT](/LICENSE)
