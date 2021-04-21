@@ -7,4 +7,4 @@ termcolor
 natsort
 Flask
 redis
-vsmp-epd
+git+https://github.com/robweber/omni-epd.git#egg=omni-epd

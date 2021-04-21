@@ -1,4 +1,3 @@
-
 import configargparse
 import ffmpeg
 import logging
@@ -12,7 +11,7 @@ import threading
 import redis
 import socket
 import modules.webapp as webapp
-from vsmp_epd import displayfactory
+from omni_epd import displayfactory
 from croniter import croniter
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
