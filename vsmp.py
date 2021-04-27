@@ -148,7 +148,7 @@ def update_display(config, epd, db):
                                           show_zeros=True,
                                           intervals=utils.intervals[3:])
 
-        message = f"{title} {timecode}"
+        message = f"{title} - {timecode}"
 
         # get a draw object
         draw = ImageDraw.Draw(pil_im)
