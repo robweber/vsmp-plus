@@ -18,7 +18,7 @@ SERVICE_FILE=vsmp.service
 function install_linux_packages(){
   sudo apt-get update
 
-  sudo apt-get install -y ffmpeg git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server usbmount
+  sudo apt-get install -y ffmpeg fonts-freefont-ttf git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server usbmount
 
 }
 
@@ -33,23 +33,7 @@ function install_python_packages(){
 }
 
 function build_python_libraries(){
-  WAVESHARE_DIR=/home/pi/e-Paper
-
-  if [ -d "${WAVESHARE_DIR}" ]; then
-    echo -e "Updating Waveshare Drivers"
-    cd $WAVESHARE_DIR
-    git fetch
-    git pull
-  else
-    echo -e "Installing Waveshare Drivers"
-    git clone https://github.com/waveshare/e-Paper
-  fi
-
-  echo -e "${YELLOW}Be patient — this takes time${RESET}"
-  cd $WAVESHARE_DIR/RaspberryPi_JetsonNano/python/
-  sudo python3 setup.py install
-
-  # return to home directory
+  # leave this here as a placeholder, currently all libs in requirements.txt
   cd /home/pi
 }
 

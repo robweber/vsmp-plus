@@ -4,7 +4,7 @@ I installed this on a base install of [Raspberry Pi OS](https://www.raspberrypi.
 
 ## Hardware
 
-Most of this hardware is identical to the build by Tom Whitwell, although I used a different picture frame. Any frame you can modify will work. The Electronic Paper Display (EPD) can be any display known to work with the [vsmp-epd abstraction library](https://github.com/robweber/vsmp-epd). Most Waveshare displays are compatible. 
+Most of this hardware is identical to the build by Tom Whitwell, although I used a different picture frame. Any frame you can modify will work. The Electronic Paper Display (EPD) can be any display known to work with the [vsmp-epd abstraction library](https://github.com/robweber/vsmp-epd). Most Waveshare displays are compatible.
 
 * RaspberyPi 4 with SD card and power suppply
 * 7.5 inch e-paper screen [link](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm)
@@ -37,7 +37,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 
 
 # install required system libraries
-sudo apt-get install ffmpeg git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server samba samba-common-bin
+sudo apt-get install ffmpeg fonts-freefont-ttf git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server
 
 ```
 
@@ -56,14 +56,9 @@ Next install some python libraries needed.
 
 ```
 cd vsmp-plus
-sudo pip3 install -r setup/requirements.txt
 
-# build the waveshare Libraries - this takes some time
-cd ..
-git clone https://github.com/waveshare/e-Paper
-cd ePaper/RaspberryPi_JetsonNano/python/
-sudo python3 setup.py install
-cd /home/pi
+# this will build libraries for any supported displays (see omni-epd for more info)
+sudo pip3 install -r setup/requirements.txt
 
 ```
 

@@ -13,6 +13,8 @@ os.environ['PATH'] += os.pathsep + '/usr/local/bin/'
 DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 # path to temp directory
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
+# path to font file
+FONT_PATH = os.path.join('/usr/share/fonts/truetype/freefont', 'FreeSans.ttf')
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'

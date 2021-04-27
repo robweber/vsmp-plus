@@ -84,8 +84,7 @@ def update_display(config, epd, db):
         logging.error('No video file to load')
 
         # display config message on display
-        font24 = ImageFont.truetype(os.path.join('/home/pi/e-Paper',
-                                    'RaspberryPi_JetsonNano', 'python', 'pic', 'Font.ttc'), 24)
+        font24 = ImageFont.truetype(utils.FONT_PATH, 24)
 
         message = f"Configure at http://{get_local_ip()}:{args.port}"
 
@@ -129,8 +128,7 @@ def update_display(config, epd, db):
     pil_im = Image.open(grabFile)
 
     if(len(config['display']) > 0):
-        font18 = ImageFont.truetype(os.path.join('/home/pi/e-Paper',
-                                    'RaspberryPi_JetsonNano', 'python', 'pic', 'Font.ttc'), 18)
+        font18 = ImageFont.truetype(utils.FONT_PATH, 18)
 
         title = ''
         timecode = ''
