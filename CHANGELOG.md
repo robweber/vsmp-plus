@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-04-27
+
+### Added
+
+- added OS dependency for [Free Fonts](http://savannah.gnu.org/projects/freefont/) instead of using waveshare bundled font
+
+### Removed
+
+- removed requirement to clone Waveshare lib manually
+
 ## 2021-04-21
 
 ### Changed
