@@ -71,7 +71,7 @@ def find_video(config, lastPlayed, next=False):
     return result
 
 
-def show_startup(epd, title, messages = []):
+def show_startup(epd, messages = []):
     epd.prepare()
 
     # display startup message on the display
@@ -86,11 +86,12 @@ def show_startup(epd, title, messages = []):
     draw = ImageDraw.Draw(background_image)
 
     # calculate the size of the text we're going to draw
+    title = "VSMP+"
     tw, th = draw.textsize(title, font=font30)
 
     draw.text(((width-tw)/2, (height-th)/4), title, font=font30, fill=0)
 
-    offset = th * 1.8  # initial offset is height of title * 1.8
+    offset = th * 1.5  # initial offset is height of title plus spacer
     for m in messages:
         mw, mh = draw.textsize(m, font=font24)
         draw.text(((width-mw)/2, (height-mh)/4 + offset), m, font=font24, fill=0)
@@ -111,7 +112,7 @@ def update_display(config, epd, db):
         # log an error message
         logging.error('No video file to load')
 
-        show_startup(epd, "No Video Loaded")
+        show_startup(epd, ["No Video Loaded"])
 
         # set to "paused" so this isn't constantly Updating
         utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
@@ -282,7 +283,7 @@ logging.info(f"Next Update: {nextUpdate} based on last update {datetime.fromtime
 # show the startup screen for 1 min before proceeding
 if(config['startup_screen']):
     logging.info("Showing startup screen")
-    show_startup(epd, "VSMP+")
+    show_startup(epd, [f"Next Update: {nextUpdate.strftime('%m/%d at %H:%M')}"])
     time.sleep(60)
 
 # reset cronitor to current time
