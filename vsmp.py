@@ -95,7 +95,7 @@ def show_startup(epd, messages = []):
     for m in messages:
         mw, mh = draw.textsize(m, font=font24)
         draw.text(((width-mw)/2, (height-mh)/4 + offset), m, font=font24, fill=0)
-        offset = offset + (th * 1.8)
+        offset = offset + (th * 1.5)
 
     epd.display(background_image)
 
