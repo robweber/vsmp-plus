@@ -71,13 +71,14 @@ def find_video(config, lastPlayed, next=False):
     return result
 
 
-def show_startup(epd, title):
+def show_startup(epd, title, messages = []):
     epd.prepare()
 
     # display startup message on the display
+    font30 = ImageFont.truetype(utils.FONT_PATH, 30)
     font24 = ImageFont.truetype(utils.FONT_PATH, 24)
 
-    message = f"Configure at http://{get_local_ip()}:{args.port}"
+    messages.append(f"Configure at http://{get_local_ip()}:{args.port}")
 
     # load a background image
     background_image = Image.open(os.path.join(utils.DIR_PATH, "web", "static", "images", "splash.jpg")).resize((width, height))
@@ -85,11 +86,16 @@ def show_startup(epd, title):
     draw = ImageDraw.Draw(background_image)
 
     # calculate the size of the text we're going to draw
-    tw, th = draw.textsize(title, font=font24)
-    mw, mh = draw.textsize(message, font=font24)
+    tw, th = draw.textsize(title, font=font30)
 
-    draw.text(((width-tw)/2, (height-th)/4), title, font=font24, fill=0)
-    draw.text(((width-mw)/2, (height-mh)/4 + (th * 1.8)), message, font=font24, fill=0)
+    draw.text(((width-tw)/2, (height-th)/4), title, font=font30, fill=0)
+
+    offset = th * 1.8  # initial offset is height of title * 1.8
+    for m in messages:
+        mw, mh = draw.textsize(m, font=font24)
+        draw.text(((width-mw)/2, (height-mh)/4 + offset), m, font=font24, fill=0)
+        offset = offset + (th * 1.8)
+
     epd.display(background_image)
 
     epd.sleep()
