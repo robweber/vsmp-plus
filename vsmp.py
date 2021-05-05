@@ -243,6 +243,7 @@ db = redis.Redis('localhost', decode_responses=True)
 # default to False as default settings probably won't load a video
 if(not db.exists(utils.DB_PLAYER_STATUS)):
     utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
+    utils.write_db(db, utils.DB_LAST_RUN, {'last_run': 0})
 
 # load the player configuration
 config = utils.get_configuration(db)
@@ -287,6 +288,7 @@ while 1:
     if(nextUpdate <= now):
         if(pStatus['running']):
             update_display(config, epd, db)
+            utils.write_db(db, utils.DB_LAST_RUN, {'last_run': now.timestamp()})
         else:
             logging.debug('Updating display paused, skipping this time')
         nextUpdate = cron.get_next(datetime)

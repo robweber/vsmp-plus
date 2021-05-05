@@ -131,6 +131,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
         # set the player status
         pStatus = utils.read_db(db, utils.DB_PLAYER_STATUS)
         pStatus.update(utils.read_db(db, utils.DB_NEXT_RUN))
+        pStatus.update(utils.read_db(db, utils.DB_LAST_RUN))
 
         lastPlayed['player'] = pStatus
 
