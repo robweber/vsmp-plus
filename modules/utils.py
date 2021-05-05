@@ -117,10 +117,17 @@ def get_video_info(file):
     probeInfo = ffmpeg.probe(file)
     vidStream = probeInfo["streams"][0]
 
-    frameCount = int(vidStream['nb_frames'])
-
     # use the average frame rate
     frameRate = float(Fraction(vidStream["avg_frame_rate"]))
+
+    runtime = float(probeInfo["format"]["duration"])
+
+    # pull the frame count or calculate it
+    try:
+        frameCount = int(vidStream["nb_frames"])
+    except KeyError:
+        # for some types of video files may need to be manually calculated
+        frameCount = int(runtime * frameRate)
 
     # get the filename to show as a title
     name = os.path.splitext(os.path.basename(file))[0]
@@ -131,7 +138,7 @@ def get_video_info(file):
         name = name.replace('.', ' ')
 
     return {'frame_count': frameCount, 'fps': frameRate,
-            'runtime': frameCount/frameRate, 'title': name}
+            'runtime': runtime, 'title': name}
 
 
 # get the configuration, use default values where custom don't exist
