@@ -70,6 +70,7 @@ def find_video(config, lastPlayed, next=False):
 
     return result
 
+
 def show_startup(epd, title):
     epd.prepare()
 
