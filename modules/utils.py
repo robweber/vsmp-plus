@@ -16,7 +16,7 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 # path to font file
 FONT_PATH = os.path.join('/usr/share/fonts/truetype/freefont', 'FreeSans.ttf')
 # valid video file types
-VIDEO_FILE_TYPES = (".mp4")
+VIDEO_FILE_TYPES = (".avi", ".m4v", ".mkv", ".mov", ".mp4")
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
