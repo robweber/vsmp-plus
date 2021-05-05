@@ -115,6 +115,11 @@ curl http://localhost:5000/api/status
     "runtime": 2326.192859526193,
     "title":"Friendly Name of Video"
    },
+   "player": {
+     "last_run": 1620242760.1,
+     "next_run": 1620242880.0,
+     "running": true
+   }
   "name": "Video.File.Name.No.Ext",
   "percent_complete": 20.5,
   "pos": 12145.0
