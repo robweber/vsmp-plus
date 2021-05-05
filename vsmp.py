@@ -70,10 +70,30 @@ def find_video(config, lastPlayed, next=False):
 
     return result
 
+def show_startup(epd, title):
+    epd.prepare()
+
+    # display startup message on the display
+    font24 = ImageFont.truetype(utils.FONT_PATH, 24)
+
+    message = f"Configure at http://{get_local_ip()}:{args.port}"
+
+    background_image = Image.new('1', (width, height), 255)  # 255: clear the frame
+    draw = ImageDraw.Draw(background_image)
+    tw, th = draw.textsize(message)
+
+    # calculate the size of the text we're going to draw
+    tw, th = draw.textsize(title, font=font24)
+    mw, mh = draw.textsize(message, font=font24)
+
+    draw.text(((width-tw)/2, (height-th)/2), title, anchor="ms", font=font24, fill=0)
+    draw.text(((width-mw)/2, (height-mh)/2 + (th * 1.8)), message, anchor="ms", font=font24, fill=0)
+    epd.display(background_image)
+
+    epd.sleep()
+
 
 def update_display(config, epd, db):
-    # Initialize the screen
-    epd.prepare()
 
     # get the video file information
     video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
@@ -83,25 +103,15 @@ def update_display(config, epd, db):
         # log an error message
         logging.error('No video file to load')
 
-        # display config message on display
-        font24 = ImageFont.truetype(utils.FONT_PATH, 24)
-
-        message = f"Configure at http://{get_local_ip()}:{args.port}"
-
-        background_image = Image.new('1', (width, height), 255)  # 255: clear the frame
-        draw = ImageDraw.Draw(background_image)
-        tw, th = draw.textsize(message)
-
-        draw.text(((width-50)/2, height/2), 'No Video', font=font24, fill=0)
-        draw.text(((width-tw-120)/2, height/2 + 50), message, font=font24, fill=0)
-        epd.display(background_image)
-
-        epd.sleep()
+        show_startup(epd, "No Video Loaded")
 
         # set to "paused" so this isn't constantly Updating
         utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
 
         return
+
+    # Initialize the screen
+    epd.prepare()
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
@@ -244,6 +254,12 @@ logging.info(f"Starting with options Frame Increment: {config['increment']} fram
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug, logHandlers))
 webAppThread.setDaemon(True)
 webAppThread.start()
+
+# show the startup screen for 1 min before proceeding
+if(config['startup_screen']):
+    logging.info("Showing startup screen")
+    show_startup(epd, "VSMP+")
+    time.sleep(60)
 
 # initialize the cron scheduler and get the next update time
 updateExpression = config['update']

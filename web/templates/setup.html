@@ -144,6 +144,22 @@
       Locks or unlocks seeking when clicking the progress bar in the web interface. Turning this off doesn't affect seeking using the api seek control.
     </div>
   </div>
+  <div class="row my-1">
+    <div class="col-md-4 align-self-center">
+      <b>Show Startup Screen</b>
+    </div>
+    <div class="col-md-8">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_startup_screen" name="config_startup_screen" value="startup_screen" {{ 'checked' if config['startup_screen'] else '' }}>
+        <label class="form-check-label" for="config_startup_screen">Enabled</label>
+      </div>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      Show a startup screen that includes the current IP of the device before playing video file
+    </div>
+  </div>
   <div class="row my-3">
     <div class="col-md-12" align="center">
       <button class="btn btn-primary" onClick="saveConfig()">Save</button>

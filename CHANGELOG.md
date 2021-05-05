@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## 2021-05-05
 
+### Added
+
+- added support for additional video formats, AVI, MKV, M4V, and MOV
+- added configuration option for a startup screen on first boot
+
 ### Removed
 
 - removed fnmatch dependency, use python `filter` method instead

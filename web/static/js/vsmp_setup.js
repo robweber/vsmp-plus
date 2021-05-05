@@ -35,6 +35,15 @@ function saveConfig(){
       postData.allow_seek = false
   }
 
+  if($('#config_startup_screen').is(':checked'))
+  {
+    postData.startup_screen = true
+  }
+  else
+  {
+      postData.startup_screen = false
+  }
+
   // post to api endpoint
   $.ajax({type: 'POST', contentType: 'application/json', url: '/api/configuration', data: JSON.stringify(postData), success: function(data, status, request){
 
