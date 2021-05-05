@@ -263,12 +263,17 @@ if(config['startup_screen']):
     show_startup(epd, "VSMP+")
     time.sleep(60)
 
-# initialize the cron scheduler and get the next update time
+# initialize the cron scheduler and get the next update time - based on the previous time
 updateExpression = config['update']
-cron = croniter(updateExpression, datetime.now())
+lastUpdate = utils.read_db(db, utils.DB_LAST_RUN)
+
+cron = croniter(updateExpression, datetime.fromtimestamp(lastUpdate['last_run']))
 nextUpdate = cron.get_next(datetime)
 utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
-logging.info(f"Next update: {nextUpdate}")
+logging.info(f"Next Update: {nextUpdate} based on last update {datetime.fromtimestamp(lastUpdate['last_run'])}")
+
+# reset cronitor to current time
+cron = croniter(updateExpression, datetime.now())
 
 while 1:
     now = datetime.now()
