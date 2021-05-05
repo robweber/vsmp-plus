@@ -13,7 +13,7 @@ import socket
 import modules.webapp as webapp
 from omni_epd import displayfactory
 from croniter import croniter
-from datetime import datetime
+from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 
 # create the tmp directory if it doesn't exist
@@ -258,11 +258,8 @@ webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, arg
 webAppThread.setDaemon(True)
 webAppThread.start()
 
-# show the startup screen for 1 min before proceeding
-if(config['startup_screen']):
-    logging.info("Showing startup screen")
-    show_startup(epd, "VSMP+")
-    time.sleep(60)
+# set to now, or now + 60 depending on if we are showing the splash screen
+now = datetime.now() if not config['startup_screen'] else datetime.now() + timedelta(seconds=60)
 
 # initialize the cron scheduler and get the next update time - based on the previous time
 updateExpression = config['update']
@@ -270,8 +267,17 @@ lastUpdate = utils.read_db(db, utils.DB_LAST_RUN)
 
 cron = croniter(updateExpression, datetime.fromtimestamp(lastUpdate['last_run']))
 nextUpdate = cron.get_next(datetime)
+if(nextUpdate < now):
+    nextUpdate = now  # we may have missed a previous update
+
 utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
 logging.info(f"Next Update: {nextUpdate} based on last update {datetime.fromtimestamp(lastUpdate['last_run'])}")
+
+# show the startup screen for 1 min before proceeding
+if(config['startup_screen']):
+    logging.info("Showing startup screen")
+    show_startup(epd, "VSMP+")
+    time.sleep(60)
 
 # reset cronitor to current time
 cron = croniter(updateExpression, datetime.now())
