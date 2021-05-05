@@ -2,6 +2,7 @@ import ffmpeg
 import os
 import logging
 import json
+from fractions import Fraction
 from natsort import natsorted
 from croniter import croniter
 
@@ -114,12 +115,12 @@ def validate_configuration(config):
 def get_video_info(file):
     # get the info from ffprobe
     probeInfo = ffmpeg.probe(file)
+    vidStream = probeInfo["streams"][0]
 
-    frameCount = int(probeInfo['streams'][0]['nb_frames'])
+    frameCount = int(vidStream['nb_frames'])
 
-    # calculate the fps
-    frameRateStr = probeInfo['streams'][0]['r_frame_rate'].split('/')
-    frameRate = float(frameRateStr[0])/float(frameRateStr[1])
+    # use the average frame rate
+    frameRate = float(Fraction(vidStream["avg_frame_rate"]))
 
     # get the filename to show as a title
     name = os.path.splitext(os.path.basename(file))[0]
