@@ -2,7 +2,6 @@ import ffmpeg
 import os
 import logging
 import json
-import fnmatch
 from natsort import natsorted
 from croniter import croniter
 
@@ -15,6 +14,8 @@ DIR_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 # path to font file
 FONT_PATH = os.path.join('/usr/share/fonts/truetype/freefont', 'FreeSans.ttf')
+# valid video file types
+VIDEO_FILE_TYPES = (".mp4")
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
@@ -67,8 +68,8 @@ def seconds_to_frames(seconds, fps):
 
 
 # Check if a file is an mp4
-def check_mp4(value):
-    return os.path.exists(value) and value.endswith('.mp4')
+def check_vid(value):
+    return os.path.exists(value) and value.endswith(VIDEO_FILE_TYPES)
 
 
 # Check if directory is valid
@@ -88,7 +89,7 @@ def validate_configuration(config):
         return (False, 'Incorrect mode, must be "file" or "dir"')
 
     # check if file or dir path is correct
-    if(config['mode'] == 'file' and not check_mp4(config['path'])):
+    if(config['mode'] == 'file' and not check_vid(config['path'])):
         return (False, 'File path is not a valid file')
 
     elif(config['mode'] == 'dir' and not check_dir(config['path'])):
@@ -147,7 +148,7 @@ def get_configuration(db):
 
 
 def list_video_files(dir):
-    return natsorted(fnmatch.filter(os.listdir(dir), '*.mp4'))
+    return natsorted(filter(lambda f: check_vid(os.path.join(dir, f)), os.listdir(dir)))
 
 
 # read a key from the database, converting to dict
