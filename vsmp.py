@@ -79,16 +79,17 @@ def show_startup(epd, title):
 
     message = f"Configure at http://{get_local_ip()}:{args.port}"
 
-    background_image = Image.new('1', (width, height), 255)  # 255: clear the frame
+    # load a background image
+    background_image = Image.open(os.path.join(utils.DIR_PATH, "web", "static", "images", "splash.jpg")).resize((width, height))
+
     draw = ImageDraw.Draw(background_image)
-    tw, th = draw.textsize(message)
 
     # calculate the size of the text we're going to draw
     tw, th = draw.textsize(title, font=font24)
     mw, mh = draw.textsize(message, font=font24)
 
-    draw.text(((width-tw)/2, (height-th)/2), title, anchor="ms", font=font24, fill=0)
-    draw.text(((width-mw)/2, (height-mh)/2 + (th * 1.8)), message, anchor="ms", font=font24, fill=0)
+    draw.text(((width-tw)/2, (height-th)/4), title, font=font24, fill=0)
+    draw.text(((width-mw)/2, (height-mh)/4 + (th * 1.8)), message, font=font24, fill=0)
     epd.display(background_image)
 
     epd.sleep()

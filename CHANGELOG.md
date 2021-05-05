@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added support for additional video formats, AVI, MKV, M4V, and MOV
 - added configuration option for a startup screen on first boot
+- added `last_run` as part of player status, used to calculate if an update was missed when sign was missing and force update on startup
 
 ### Removed
 

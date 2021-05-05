@@ -24,7 +24,7 @@ tail -f tmp/log.log
 
 ### Display Hardware
 
-Display hardware is a big choice for this project. I used the [Waveshare 7.5in E-ink display](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). Using the `--epd` argument from above you can specify any display that works with the EPD abstraction library. This allows dynamic loading of different display types depending on what you've purchased. You can see [an exhaustive list](https://github.com/robweber/vsmp-epd/blob/main/README.md) here. In general, most Waveshare displays are compatible.
+Display hardware is a big choice for this project. I used the [Waveshare 7.5in E-ink display](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). Using the `--epd` argument from above you can specify any display that works with the [EPD abstraction library](https://github.com/robweber/omni-epd). This allows dynamic loading of different display types depending on what you've purchased. You can see [an exhaustive list](https://github.com/robweber/omni-epd#displays-implemented) here. In general, most Waveshare displays are compatible.
 
 ## Web Server
 
@@ -41,6 +41,7 @@ The Player Setup page allows for the configuration of more specific parameters. 
 * End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
 * Display - optionally show any combination of the title, timecode of the frame being displayed, or the device IP on the bottom of the display. Time in the form of HH:mm:SS. Device IP is useful in trying to find the device on the network on initial setup.
 * Allow Seeking - this will enable or disable seeking when clicking on the progress bar in the web interface. Useful to disable if this is happening on accident.
+* Show Startup Screen - enables or disables the display of a startup screen showing the IP of the device when VSMP+ starts.
 
 Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
 
@@ -69,7 +70,8 @@ curl http://localhost:5000/api/configuration
   "mode": "dir",
   "path": "/media/usb/Videos",
   "start":100,
-  "update":"*/5 7-15 * * 1-5"
+  "update":"*/5 7-15 * * 1-5",
+  "show_startup": true
 }
 
 ```
