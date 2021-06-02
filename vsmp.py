@@ -71,7 +71,7 @@ def find_video(config, lastPlayed, next=False):
     return result
 
 
-def show_startup(epd, messages = []):
+def show_startup(epd, messages=[]):
     epd.prepare()
 
     # display startup message on the display
@@ -81,7 +81,8 @@ def show_startup(epd, messages = []):
     messages.append(f"Configure at http://{get_local_ip()}:{args.port}")
 
     # load a background image
-    background_image = Image.open(os.path.join(utils.DIR_PATH, "web", "static", "images", "splash.jpg")).resize((width, height))
+    splash_image = os.path.join(utils.DIR_PATH, "web", "static", "images", "splash.jpg")
+    background_image = Image.open(splash_image).resize((width, height))
 
     draw = ImageDraw.Draw(background_image)
 
