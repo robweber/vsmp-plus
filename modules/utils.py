@@ -114,8 +114,8 @@ def validate_configuration(config):
 
 # Uses ffprobe to get various play details from the video file
 def get_video_info(file):
-    # get the info from ffprobe
-    probeInfo = ffmpeg.probe(file)
+    # get the info from ffprobe, select video stream only
+    probeInfo = ffmpeg.probe(file, select_streams="v")
     vidStream = probeInfo["streams"][0]
 
     # use the average frame rate
