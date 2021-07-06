@@ -28,11 +28,20 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 
-# helper method to get the local IP address of this machine, uses CloudFlare DNS so internet must work
+# helper method to get the local IP address of this machine, doesn't matter if test address is "real"
 def get_local_ip():
+    result = "127.0.0.1"  # if no network return this
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('1.1.1.1', 1))  # connect() for UDP doesn't send packets
-    return s.getsockname()[0]
+
+    try:
+        s.connect(('192.168.0.255', 1))  # connect() for UDP doesn't send packets
+        result = s.getsockname()[0]
+    except Exception:
+        logging.warning("No LAN address found")
+    finally:
+        s.close()
+
+    return result
 
 
 def generate_frame(in_filename, out_filename, time):
