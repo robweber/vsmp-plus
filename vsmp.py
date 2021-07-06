@@ -44,6 +44,21 @@ def get_local_ip():
     return result
 
 
+def changed_ip_check(config, db):
+    # test if IP has changed
+    saved_ip = utils.read_db(db, utils.CURRENT_IP)
+    current_ip = get_local_ip()
+
+    if(saved_ip['ip'] != current_ip):
+        # the ip address has changed
+        utils.write_db(db, utils.CURRENT_IP, {'ip': current_ip})
+
+        # modify the UI to display this new IP visually
+        if('ip' not in config['display']):
+            config['display'].append('ip')
+            utils.write_db(db, utils.DB_CONFIGURATION, config)
+
+
 def generate_frame(in_filename, out_filename, time):
     ffmpeg.input(in_filename, ss=time) \
           .filter('scale', 'iw*sar', 'ih') \
@@ -328,6 +343,9 @@ while 1:
         nextUpdate = cron.get_next(datetime)
         utils.write_db(db, utils.DB_NEXT_RUN, {'next_run': nextUpdate.timestamp()})
         logging.info(f"Next update: {nextUpdate}")
+
+        # check if the IP address has changed
+        changed_ip_check(config, db)
 
     # sleep for one minute
     time.sleep(60 - datetime.now().second)
