@@ -71,14 +71,15 @@ def find_video(config, lastPlayed, next=False):
     return result
 
 
-def show_startup(epd, messages=[]):
+def show_startup(epd, db, messages=[]):
     epd.prepare()
 
     # display startup message on the display
     font30 = ImageFont.truetype(utils.FONT_PATH, 30)
     font24 = ImageFont.truetype(utils.FONT_PATH, 24)
 
-    messages.append(f"Configure at http://{get_local_ip()}:{args.port}")
+    current_ip = utils.read_db(db, utils.CURRENT_IP)
+    messages.append(f"Configure at http://{current_ip['ip']}:{args.port}")
 
     # load a background image
     splash_image = os.path.join(utils.DIR_PATH, "web", "static", "images", "splash.jpg")
@@ -113,7 +114,7 @@ def update_display(config, epd, db):
         # log an error message
         logging.error('No video file to load')
 
-        show_startup(epd, ["No Video Loaded"])
+        show_startup(epd, db, ["No Video Loaded"])
 
         # set to "paused" so this isn't constantly Updating
         utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
@@ -157,7 +158,8 @@ def update_display(config, epd, db):
             title = video_file['info']['title']
 
         if('ip' in config['display']):
-            title = f"(IP: {get_local_ip()}) {title}"
+            current_ip = utils.read_db(db, utils.CURRENT_IP)
+            title = f"(IP: {current_ip['ip']}) {title}"
 
         if('timecode' in config['display']):
             # show the timecode of the video in the format HH:mm:SS
@@ -261,6 +263,9 @@ logging.info(f"Starting with options Frame Increment: {config['increment']} fram
              f"Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, "
              f"Updating on schedule: {config['update']}")
 
+# get the current ip address
+utils.write_db(db, utils.CURRENT_IP, {'ip': get_local_ip()})
+
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug, logHandlers))
 webAppThread.setDaemon(True)
@@ -284,7 +289,7 @@ logging.info(f"Next Update: {nextUpdate} based on last update {datetime.fromtime
 # show the startup screen for 1 min before proceeding
 if(config['startup_screen']):
     logging.info("Showing startup screen")
-    show_startup(epd, [f"Next Update: {nextUpdate.strftime('%m/%d at %H:%M')}"])
+    show_startup(epd, db, [f"Next Update: {nextUpdate.strftime('%m/%d at %H:%M')}"])
     time.sleep(60)
 
 # reset cronitor to current time
