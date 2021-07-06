@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-07-06
+
+### Added
+
+- if IP changes while running toggle IP display setting so it shows visually, prevents DHCP from creating a lost player
+
 ## 2021-06-02
 
 ### Changed
