@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-08-13
+
+### Added
+
+- added dependency to vsmp service file, the service now depends on redis and will wait for it to be available
+
 ## 2021-07-06
 
 ### Added
