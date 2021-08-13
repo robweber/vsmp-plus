@@ -1,5 +1,6 @@
 [Unit]
 Description=Very Slow Media Player Plus
+Requires=redis-server.service
 
 [Service]
 User=pi
