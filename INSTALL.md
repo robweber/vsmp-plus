@@ -63,12 +63,11 @@ sudo pip3 install -r setup/requirements.txt
 ```
 
 ### Test E-Ink Display
-This next step is optional but it is probably a good idea at this point to check that the e-ink display is working.
+This next step is optional but it is probably a good idea at this point to check that the e-ink display is working. Substitute your own display type with the `-e` argument from (the device list)[https://github.com/robweber/omni-epd#displays-implemented].
 
-```
+``` 
 
-# OPTIONAL - check if the e-paper sign is working properly, substitute your own display type here
-python /home/pi/e-Paper/examples/epd_7in5_V2_test.py
+omni-epd-test -e epd.type
 
 ```
 
