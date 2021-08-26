@@ -28,7 +28,7 @@ function install_python_packages(){
   sudo update-alternatives --set python /usr/bin/python${PYTHON_VERSION}
 
   sudo pip3 install setuptools -U
-  sudo pip3 install -r $LOCAL_DIR/Install/requirements.txt
+  sudo pip3 install -r $LOCAL_DIR/setup/requirements.txt
 
 }
 
