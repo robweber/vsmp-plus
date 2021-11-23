@@ -177,8 +177,8 @@ def update_display(config, epd, db):
         # Open grab.jpg in PIL
         pil_im = Image.open(grabFile)
 
-        # check if image is all black
-        validImg = pil_im.getbbox() is not None  # if NONE image is all black
+        # image not valid if skipping blank (None == blank)
+        validImg = (not config['skip_blank']) or (pil_im.getbbox() is not None and config['skip_blank'])
 
         if(not validImg):
             logging.info('Image is all black, try again')

@@ -144,6 +144,24 @@
       Locks or unlocks seeking when clicking the progress bar in the web interface. Turning this off doesn't affect seeking using the api seek control.
     </div>
   </div>
+
+  <div class="row my-1">
+    <div class="col-md-4 align-self-center">
+      <b>Skip Blank Frames</b>
+    </div>
+    <div class="col-md-8">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_skip_blank" name="config_skip_blank" value="skip_blank" {{ 'checked' if config['skip_blank'] else '' }}>
+        <label class="form-check-label" for="config_skip_blank">Enabled</label>
+      </div>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      When enabled frames that are all black (blank) will not be displayed. Useful for black screens at the start, end, or even middle of video files.
+    </div>
+  </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Show Startup Screen</b>
