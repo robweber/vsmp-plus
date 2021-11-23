@@ -2,7 +2,8 @@
 {% block header %}
 <script type="text/javascript">
 var pStatus = {{ status['running'] | string | lower }};  //the current player status
-var hoverPercent = 0
+var vInfo = null;  //info about the current video
+var hoverPercent = 0;
 
 function toggle_player_status(){
   //toggle the buttons
@@ -36,6 +37,9 @@ function load_status(){
       toggle_player_status();
     }
 
+    // set the video info
+    vInfo = data.info
+
     setTimeout(load_status, 30000);
   }
   });
@@ -68,8 +72,25 @@ function run_action(action){
   });
 }
 
+function calcSeconds(percent){
+  localeOptions = {minimumIntegerDigits: 2, maximumFractionDigits: 0};
+
+  //get the position from the given percent
+  pos = percent * vInfo.frame_count;
+
+  //turn pos into seconds/minutes/hours of video
+  seconds = ((pos/vInfo.fps) % 60) % 60;
+  minutes = ((pos/vInfo.fps)/60) % 60;
+  hours = (pos/vInfo.fps)/60/60;
+
+  //return hours.min of video
+  return hours.toLocaleString('en-US', localeOptions) + ":" +
+         minutes.toLocaleString('en-US', localeOptions) + ":" +
+         seconds.toLocaleString('en-US', localeOptions);
+}
+
 function showPercent(){
-  return hoverPercent.toFixed(2) + "%";
+  return hoverPercent.toFixed(2) + "% - " + calcSeconds(hoverPercent.toFixed(2)/100);
 }
 </script>
 {% endblock %}

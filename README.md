@@ -73,7 +73,8 @@ curl http://localhost:5000/api/configuration
   "path": "/media/usb/Videos",
   "start":100,
   "update":"*/5 7-15 * * 1-5",
-  "show_startup": true
+  "show_startup": true,
+  "skip_blank": false
 }
 
 ```
@@ -181,7 +182,8 @@ I mentioned two other versions of this type of project that I took inspiration f
 6. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
 7. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 8. Added ability to jump to a specific time in the video (via web UI)
-9. Added an abstraction library to load multiple types of e-ink displays
+9. Added blank frame (black screen) detection
+10. Added an abstraction library to load multiple types of e-ink displays
 
 ## Problems With FFMPEG
 
