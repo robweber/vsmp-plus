@@ -21,6 +21,7 @@
       The current play mode, can be a specific file or a full directory
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Path</b>
@@ -32,6 +33,7 @@
       <button class="btn btn-primary" id="file_browse_button" onClick="toggleFileBrowser()">Browse</button>
     </div>
   </div>
+
   <div class="row my-1" id="file_browser" style="display:none">
     <div class="col-md-4">
       <!-- nothing here -->
@@ -52,6 +54,7 @@
       The full system path to either the file or directory VSMP should pull from. This will be verified to exist upon save.
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Update Time</b>
@@ -65,6 +68,7 @@
       How often to update the sign, given as a <a href="http://en.wikipedia.org/wiki/Cron">cron expression</a>
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Frames to increment</b>
@@ -78,6 +82,7 @@
       How many frames to increment on each update.
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Start time skip</b>
@@ -91,6 +96,7 @@
       How many <i>seconds</i> in to the video to skip when starting a new video
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>End time skip</b>
@@ -104,6 +110,7 @@
       How many <i>seconds</i> in to the video to skip at the end of a video, useful for skipping credit sequences
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Additional display options</b>
@@ -128,6 +135,7 @@
       Optionally display the video title, timecode, or device IP address below the video on the display. The device IP is useful for finding the device on the network. The device IP will turn itself on automatically if the system IP changes while VSMP is running so it can be found again.
     </div>
   </div>
+
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Allow seeking</b>
@@ -178,6 +186,7 @@
       Show a startup screen that includes the current IP of the device before playing video file
     </div>
   </div>
+  
   <div class="row my-3">
     <div class="col-md-12" align="center">
       <button class="btn btn-primary" onClick="saveConfig()">Save</button>
