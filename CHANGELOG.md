@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2021-11-23
+
+### Added
+
+- new setting Skip Blank Frames uses [Pillow](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.getbbox) to check if frame is all black and tries to get the next one
+- display timecode on progress slider on homepage (HH:MM:SS)
+
 ## 2021-08-13
 
 ### Added

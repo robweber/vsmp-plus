@@ -5,7 +5,7 @@ function saveConfig(){
              "update": $('#config_update').val(),
              "increment": parseInt($('#config_increment').val()),
              "start": parseInt($('#config_start').val()),
-             "end": parseInt($('#config_end').val()) };
+             "end": parseInt($('#config_end').val())};
 
   // display represented as an array
   display = [];
@@ -33,6 +33,15 @@ function saveConfig(){
   else
   {
       postData.allow_seek = false
+  }
+
+  if($('#config_skip_blank').is(':checked'))
+  {
+    postData.skip_blank = true
+  }
+  else
+  {
+      postData.skip_blank = false
   }
 
   if($('#config_startup_screen').is(':checked'))

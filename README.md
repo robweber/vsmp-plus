@@ -41,6 +41,7 @@ The Player Setup page allows for the configuration of more specific parameters. 
 * End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
 * Display - optionally show any combination of the title, timecode of the frame being displayed, or the device IP on the bottom of the display. Time in the form of HH:mm:SS. The device IP will automatically toggle itself on if the IP address of the system changes while the player is running. This helps prevents a "lost" player on the network due to DHCP.
 * Allow Seeking - this will enable or disable seeking when clicking on the progress bar in the web interface. Useful to disable if this is happening on accident.
+* Skip Blank Frames - when enabled frames that are all black (blank) will not be displayed. Useful for black screens at the start, end, or even middle of video files.
 * Show Startup Screen - enables or disables the display of a startup screen when VSMP+ starts.
 
 Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
@@ -72,7 +73,8 @@ curl http://localhost:5000/api/configuration
   "path": "/media/usb/Videos",
   "start":100,
   "update":"*/5 7-15 * * 1-5",
-  "show_startup": true
+  "show_startup": true,
+  "skip_blank": false
 }
 
 ```
@@ -180,7 +182,8 @@ I mentioned two other versions of this type of project that I took inspiration f
 6. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
 7. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 8. Added ability to jump to a specific time in the video (via web UI)
-9. Added an abstraction library to load multiple types of e-ink displays
+9. Added blank frame (black screen) detection
+10. Added an abstraction library to load multiple types of e-ink displays
 
 ## Problems With FFMPEG
 

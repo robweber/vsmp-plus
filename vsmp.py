@@ -150,27 +150,38 @@ def update_display(config, epd, db):
 
     # save grab file in memory as a bitmap
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
+    validImg = False
 
-    logging.info(f"Loading {video_file['file']}")
+    while(not validImg):
+        logging.info(f"Loading {video_file['file']}")
 
-    if(video_file['pos'] >= video_file['info']['frame_count']):
-        # set 'next' to true to force new video file
-        video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
+        if(video_file['pos'] >= video_file['info']['frame_count']):
+            # set 'next' to true to force new video file
+            video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
 
-    # calculate the percent percent_complete
-    video_file['percent_complete'] = (video_file['pos']/video_file['info']['frame_count']) * 100
+        # calculate the percent percent_complete
+        video_file['percent_complete'] = (video_file['pos']/video_file['info']['frame_count']) * 100
 
-    # set the position we want to use
-    frame = video_file['pos']
+        # set the position we want to use
+        frame = video_file['pos']
 
-    # Convert that frame to ms from start of video (frame/fps) * 1000
-    msTimecode = f"{utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000}ms"
+        # Convert that frame to ms from start of video (frame/fps) * 1000
+        msTimecode = f"{utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000}ms"
 
-    # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
-    generate_frame(video_file['file'], grabFile, msTimecode)
+        # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
+        generate_frame(video_file['file'], grabFile, msTimecode)
 
-    # Open grab.jpg in PIL
-    pil_im = Image.open(grabFile)
+        # save the next position
+        video_file['pos'] = video_file['pos'] + float(config['increment'])
+
+        # Open grab.jpg in PIL
+        pil_im = Image.open(grabFile)
+
+        # image not valid if skipping blank (None == blank)
+        validImg = (not config['skip_blank']) or (pil_im.getbbox() is not None and config['skip_blank'])
+
+        if(not validImg):
+            logging.info('Image is all black, try again')
 
     if(len(config['display']) > 0):
         font18 = ImageFont.truetype(utils.FONT_PATH, 18)
@@ -210,9 +221,6 @@ def update_display(config, epd, db):
     epd.display(pil_im)
     secondsOfVideo = utils.frames_to_seconds(frame, video_file['info']['fps'])
     logging.info(f"Diplaying frame {frame} ({secondsOfVideo} seconds) of {video_file['name']}")
-
-    # save the next position
-    video_file['pos'] = video_file['pos'] + float(config['increment'])
 
     if(video_file['pos'] >= video_file['info']['frame_count']):
         # set 'next' to True to force new file
