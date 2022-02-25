@@ -214,9 +214,6 @@ def update_display(config, epd, db):
         # draw timecode, centering on the middle
         draw.text(((width-tw)/2, height-20), message, font=font18, fill=(255, 255, 255))
 
-    # Dither the image into a 1 bit bitmap (Just zeros and ones)
-    pil_im = pil_im.convert(mode='1', dither=Image.FLOYDSTEINBERG)
-
     # display the image
     epd.display(pil_im)
     secondsOfVideo = utils.frames_to_seconds(frame, video_file['info']['fps'])
