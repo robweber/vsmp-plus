@@ -171,6 +171,9 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
     def list_directory(browse_path):
         browse_path = f"/{browse_path}"  # add slash to start path from root
 
+        while(not os.path.exists(browse_path)):
+            browse_path = os.path.dirname(browse_path)
+
         # if path is a file, get directory
         if(os.path.isfile(browse_path)):
             browse_path = os.path.dirname(browse_path)
