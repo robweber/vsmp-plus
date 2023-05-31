@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2023-05-31
+
+### Fixed
+
+- issue with the file browser when at the root `/` of the filesystem
+
 ## 2023-02-10
 
 ### Fixed

@@ -39,6 +39,13 @@ function toggleDirSelect(){
 
 // creates an onClick method based on a file path and name, optionally can change javascript function
 function makePathLink(path, name, funcName = 'loadFiles'){
+
+  // sometimes a double slash comes through when at the root
+  if(path.startsWith('//'))
+  {
+    path = path.substring(1);
+  }
+
   return '<a href="#" onClick="return ' + funcName + '(\'' + path + '\')">' + name + '</a><br />';
 }
 
