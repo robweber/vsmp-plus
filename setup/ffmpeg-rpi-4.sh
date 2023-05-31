@@ -113,7 +113,6 @@ git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git "${TMPDIR}/FFmpeg" && c
     --enable-gpl \
     --enable-libaom \
     --enable-libass \
-    --enable-libdav1d \
     --enable-libfdk-aac \
     --enable-libfreetype \
     --enable-libkvazaar \
