@@ -63,7 +63,7 @@ def display_time(seconds, granularity=3, timeFormat="{value} {interval_name}",
 
 
 def frames_to_seconds(frames, fps):
-    return int(frames)/fps
+    return int(frames) / fps
 
 
 def seconds_to_frames(seconds, fps):

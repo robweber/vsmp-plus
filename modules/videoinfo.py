@@ -26,7 +26,7 @@ class VideoInfo:
             # find the saved position and played percent
             result['pos'] = float(utils.seconds_to_frames(self.config['start'], result['info']['fps']))
 
-            result['percent_complete'] = (result['pos']/result['info']['frame_count']) * 100
+            result['percent_complete'] = (result['pos'] / result['info']['frame_count']) * 100
 
         return result
 
@@ -87,7 +87,7 @@ class VideoInfo:
 
     def seek_video(self, aVideo, percent):
         # convert the percent to a frame amount
-        frames = (percent/100) * aVideo['info']['frame_count']
+        frames = (percent / 100) * aVideo['info']['frame_count']
 
         # check that we aren't below the min start, no need to check end as this is subtacted during analyzer above
         startPos = float(utils.seconds_to_frames(self.config['start'], aVideo['info']['fps']))
@@ -95,6 +95,6 @@ class VideoInfo:
             frames = startPos
 
         aVideo['pos'] = frames
-        aVideo['percent_complete'] = (aVideo['pos']/aVideo['info']['frame_count']) * 100
+        aVideo['percent_complete'] = (aVideo['pos'] / aVideo['info']['frame_count']) * 100
 
         return aVideo

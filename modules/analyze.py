@@ -61,7 +61,7 @@ class Analyzer:
         # print some initial information
         logging.info(f"Analyzing {file}")
         result['fps'] = videoInfo['fps']
-        result['runtime'] = videoInfo['runtime']/60
+        result['runtime'] = videoInfo['runtime'] / 60
 
         # video name, no ext
         video_name = os.path.splitext(os.path.basename(file))[0]
@@ -92,7 +92,7 @@ class Analyzer:
             day_total = day_total + 1
         secondsPerIncrement = utils.frames_to_seconds(increment, videoInfo['fps'])
         # this is how many "seconds" of film actually shown per second of realtime
-        framesPerSecond = secondsPerIncrement/(60/(day_total/24)*60)
+        framesPerSecond = secondsPerIncrement / (60 / (day_total / 24) * 60)
 
         minutesPerHour = (framesPerSecond * 60)
         result['minutes_per_hour'] = minutesPerHour
@@ -105,7 +105,7 @@ class Analyzer:
 
     def time_to_play(self, total_frames, increment, update_expression):
         # find out how many frames will display
-        frames = total_frames/increment
+        frames = total_frames / increment
 
         # find out how expression matches until frames = 0
         cron = croniter(update_expression, datetime.now())

@@ -115,12 +115,12 @@ def show_startup(epd, db, messages=[]):
     title = "VSMP+"
     tw, th = draw.textsize(title, font=font30)
 
-    draw.text(((width-tw)/2, (height-th)/4), title, font=font30, fill=0)
+    draw.text(((width - tw) / 2, (height - th) / 4), title, font=font30, fill=0)
 
     offset = th * 1.5  # initial offset is height of title plus spacer
     for m in messages:
         mw, mh = draw.textsize(m, font=font24)
-        draw.text(((width-mw)/2, (height-mh)/4 + offset), m, font=font24, fill=0)
+        draw.text(((width - mw) / 2, (height - mh) / 4 + offset), m, font=font24, fill=0)
         offset = offset + (th * 1.5)
 
     epd.display(background_image)
@@ -160,7 +160,7 @@ def update_display(config, epd, db):
             video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
 
         # calculate the percent percent_complete
-        video_file['percent_complete'] = (video_file['pos']/video_file['info']['frame_count']) * 100
+        video_file['percent_complete'] = (video_file['pos'] / video_file['info']['frame_count']) * 100
 
         # set the position we want to use
         frame = video_file['pos']
@@ -212,7 +212,7 @@ def update_display(config, epd, db):
         tw, th = draw.textsize(message)  # gets the width and height of the text drawn
 
         # draw timecode, centering on the middle
-        draw.text(((width-tw)/2, height-20), message, font=font18, fill=(255, 255, 255))
+        draw.text(((width - tw) / 2, height - 20), message, font=font18, fill=(255, 255, 255))
 
     # display the image
     epd.display(pil_im)
@@ -288,7 +288,7 @@ if(not db.exists(utils.DB_PLAYER_STATUS)):
 # load the player configuration
 config = utils.get_configuration(db)
 
-logging.info(f"Starting with options Frame Increment: {config['increment']} frames, " +
+logging.info(f"Starting with options Frame Increment: {config['increment']} frames, "
              f"Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, "
              f"Updating on schedule: {config['update']}")
 

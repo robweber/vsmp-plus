@@ -74,7 +74,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
         # get the action
         if(action in ['pause', 'resume']):
             # store the new value
-            utils.write_db(db, utils.DB_PLAYER_STATUS, {'running':  action == 'resume'})  # eval to True/False
+            utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': action == 'resume'})  # eval to True/False
             result['message'] = f"Action {action} executed"
         elif(action in ['next', 'prev']):
             config = utils.get_configuration(db)
