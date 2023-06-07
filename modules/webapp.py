@@ -36,6 +36,10 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
     def setup_view():
         return render_template('setup.html', config=utils.get_configuration(db))
 
+    @app.route('/screenshot', methods=['GET'])
+    def screenshot():
+        return render_template('screenshot.html')
+
     @app.route('/analyze', methods=['GET'])
     def setup_analyze():
         return render_template('analyze.html', config=utils.get_configuration(db))

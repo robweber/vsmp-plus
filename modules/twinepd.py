@@ -1,5 +1,7 @@
 from omni_epd import displayfactory
 
+# twins a real EPD so output can be drawn to it and a mock (file) at the same time
+# main omni-epd methods are used so this is a 1:1 replacement in code
 class TwinEpd:
     epd_list = None
     width = 0
