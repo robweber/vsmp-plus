@@ -38,7 +38,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
 
     @app.route('/screenshot', methods=['GET'])
     def screenshot():
-        return render_template('screenshot.html')
+        return render_template('screenshot.html', file_info=utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
     @app.route('/analyze', methods=['GET'])
     def setup_analyze():
