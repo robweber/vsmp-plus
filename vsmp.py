@@ -188,15 +188,11 @@ def update_display(config, epd, db):
     if(len(config['display']) > 0):
         font18 = ImageFont.truetype(utils.FONT_PATH, 18)
 
-        title = ''
+        message = ''
         timecode = ''
 
         if('title' in config['display']):
-            title = video_file['info']['title']
-
-        if('ip' in config['display']):
-            current_ip = utils.read_db(db, utils.CURRENT_IP)
-            title = f"(IP: {current_ip['ip']}) {title}"
+            message = f"{video_file['info']['title']}"
 
         if('timecode' in config['display']):
             # show the timecode of the video in the format HH:mm:SS
@@ -207,7 +203,14 @@ def update_display(config, epd, db):
                                           show_zeros=True,
                                           intervals=utils.intervals[3:])
 
-        message = f"{title} - {timecode}"
+            if(message):
+                message = f"{message} - {timecode}"
+            else:
+                message = timecode
+
+        if('ip' in config['display']):
+            current_ip = utils.read_db(db, utils.CURRENT_IP)
+            message = f"{message} (IP: {current_ip['ip']})"
 
         # get a draw object
         draw = ImageDraw.Draw(pil_im)
