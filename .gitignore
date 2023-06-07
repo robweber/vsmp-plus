@@ -1,5 +1,6 @@
 *.pyc
 tmp/*
+web/static/images/screenshot.png
 __pycache__/*
 modules/__pycache__/*
 waveshare_lib/build/*
