@@ -4,6 +4,7 @@ import logging
 import os
 import modules.utils as utils
 from modules.videoinfo import VideoInfo
+from modules.twinepd import TwinEpd
 import signal
 import sys
 import time
@@ -271,8 +272,8 @@ if(args.epd not in validEpds):
     # can't get past this
     exit(1)
 
-# setup the screen and database connection
-epd = displayfactory.load_display_driver(args.epd)
+# setup the epds and database connection
+epd = TwinEpd(displayfactory.load_display_driver(args.epd))
 
 # pull width/height from driver
 width = epd.width
