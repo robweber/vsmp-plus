@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## 2023-06-07
 
+### Changed
+
+- the additional display options are now listed as `title - timecode (ip)` instead of `(ip) title - timecode` for better readability
+
 ### Fixed
 
-- fixed `textsize()` deprecation and removal planned for [Pillow 10](https://pillow.readthedocs.io/en/stable/deprecations.html#font-size-and-offset-methods). Using `textbbox()` instead. 
+- fixed `textsize()` deprecation and removal planned for [Pillow 10](https://pillow.readthedocs.io/en/stable/deprecations.html#font-size-and-offset-methods). Using `textbbox()` instead.
 
 ## 2023-05-31
 
