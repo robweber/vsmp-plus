@@ -113,13 +113,15 @@ def show_startup(epd, db, messages=[]):
 
     # calculate the size of the text we're going to draw
     title = "VSMP+"
-    tw, th = draw.textsize(title, font=font30)
+    left, top, right, bottom = draw.textbbox((0, 0), text=title, font=font30)
+    tw, th = right - left, bottom - top
 
     draw.text(((width - tw) / 2, (height - th) / 4), title, font=font30, fill=0)
 
     offset = th * 1.5  # initial offset is height of title plus spacer
     for m in messages:
-        mw, mh = draw.textsize(m, font=font24)
+        left, top, right, bottom = draw.textbbox((0, 0), text=m, font=font24)
+        mw, mh = right - left, bottom - top
         draw.text(((width - mw) / 2, (height - mh) / 4 + offset), m, font=font24, fill=0)
         offset = offset + (th * 1.5)
 
@@ -209,10 +211,10 @@ def update_display(config, epd, db):
 
         # get a draw object
         draw = ImageDraw.Draw(pil_im)
-        tw, th = draw.textsize(message)  # gets the width and height of the text drawn
-
+        left, top, right, bottom = draw.textbbox((0, 0), text=message, font=font18)
+        tw, th = right - left, bottom - top  # gets the width and height of the text drawn
         # draw timecode, centering on the middle
-        draw.text(((width - tw) / 2, height - 20), message, font=font18, fill=(255, 255, 255))
+        draw.text(((width - tw) / 2, height - th), message, font=font18, fill=(255, 255, 255))
 
     # display the image
     epd.display(pil_im)
