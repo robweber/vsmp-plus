@@ -131,6 +131,10 @@ curl http://localhost:5000/api/status
 }
 ```
 
+## /api/screenshot [GET]
+
+Returns the currently displayed image from the video file. This is a binary PNG file. Can be saved directly via something like `curl` or embedded in another web application.
+
 ### /api/analyze [POST]
 
 Takes the same parameters as the ```/api/configuration``` POST method, however this will run the analyzer on the proposed configuration. The response includes a break down of each video analyzed.

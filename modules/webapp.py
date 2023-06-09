@@ -3,7 +3,7 @@ import os
 import redis
 import logging
 from modules.videoinfo import VideoInfo
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
 from modules.analyze import Analyzer
 
 
@@ -37,7 +37,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
         return render_template('setup.html', config=utils.get_configuration(db))
 
     @app.route('/screenshot', methods=['GET'])
-    def screenshot():
+    def screenshot_view():
         return render_template('screenshot.html', file_info=utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
     @app.route('/analyze', methods=['GET'])
@@ -127,6 +127,11 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
             result['message'] = 'Not a valid control action'
 
         return jsonify(result)
+
+    @app.route('/api/screenshot', methods=['GET'])
+    def screenshot():
+        # load the image from tmp directory and output as response
+        return send_file(os.path.join(utils.TMP_DIR, 'screenshot.png'), mimetype="image/png")
 
     @app.route('/api/status', methods=['GET'])
     def status():
