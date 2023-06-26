@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block header %}
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>{{ file_info['info']['title'] }} - {{ file_info['percent_complete'] | int }}%</h2>
+    </div>
+  </div>
+  <div class="row mb-2 mt-2">
+    <div class="col-lg text-center">
+      <img src="/api/screenshot" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg">
+      <p>This is the image that should currently be displayed on the real EPD. To perform adjustments on this image you must edit the <code>omni-epd.ini</code> file.</p>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  function reload_page(){
+    location.reload();
+  }
+  $(document).ready(function () {
+    setTimeout(reload_page, 30000);
+  });
+</script>
+{% endblock %}
