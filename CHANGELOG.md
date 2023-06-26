@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2023-06-26
+
+### Added
+
+- new `/api/screenshot` API call to stream image currently displayed on EPD
+- added screenshot page to web interface that mirrors image shown on screen
+
+### Changed
+
+- renamed __Status__ to __Controls__ in menu to better reflect use
+
 ## 2023-06-07
 
 ### Changed
