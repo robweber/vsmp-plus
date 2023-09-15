@@ -61,13 +61,16 @@ def changed_ip_check(config, db):
 
 
 def generate_frame(in_filename, out_filename, time):
-    ffmpeg.input(in_filename, ss=time) \
-          .filter('scale', 'iw*sar', 'ih') \
-          .filter('scale', width, height, force_original_aspect_ratio=1) \
-          .filter('pad', width, height, -1, -1) \
-          .output(out_filename, vframes=1) \
-          .overwrite_output() \
-          .run(capture_stdout=True, capture_stderr=True)
+    try:
+        ffmpeg.input(in_filename, ss=time) \
+              .filter('scale', 'iw*sar', 'ih') \
+              .filter('scale', width, height, force_original_aspect_ratio=1) \
+              .filter('pad', width, height, -1, -1) \
+              .output(out_filename, vframes=1) \
+              .overwrite_output() \
+              .run(capture_stdout=True, capture_stderr=True)
+    except ffmpeg.Error as e:
+        logging.error(e.stderr.decode('utf-8'))
 
 
 def find_video(config, lastPlayed, next=False):
