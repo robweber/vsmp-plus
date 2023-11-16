@@ -5,7 +5,7 @@ Requires=redis-server.service
 [Service]
 User=pi
 WorkingDirectory=/home/pi/vsmp-plus
-ExecStart=/usr/bin/python3 /home/pi/vsmp-plus/vsmp.py -c /home/pi/vsmp-plus/custom-conf.conf
+ExecStart=/home/pi/vsmp-plus/.venv/bin/python3 /home/pi/vsmp-plus/vsmp.py -c /home/pi/vsmp-plus/custom-conf.conf
 
 [Install]
 WantedBy=multi-user.target

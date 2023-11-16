@@ -1,6 +1,6 @@
 # Install
 
-I installed this on a base install of [Raspberry Pi OS](https://www.raspberrypi.org/downloads/) (formally Raspbian). If you use some other method some of this libraries may already exist but this is assuming you have a fresh OS.
+I installed this on a base install of [Raspberry Pi OS 12](https://www.raspberrypi.org/downloads/) (formally Raspbian). If you use some other method some of these libraries may already exist but this is assuming you have a fresh OS.
 
 ## Hardware
 
@@ -37,18 +37,7 @@ git clone https://github.com/robweber/vsmp-plus.git
 
 
 # install required system libraries
-sudo apt-get install ffmpeg fonts-freefont-ttf git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server
-
-```
-
-You must then set python 3 as the default for the system. Use the following commands to do this, adjust directories to python 3.8 or 3.9 as needed.
-
-```
-
-# set python3 as default https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 2
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-sudo update-alternatives --config python
+sudo apt-get install ffmpeg fonts-freefont-ttf git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff6 redis-server
 
 ```
 
@@ -57,31 +46,22 @@ Next install some python libraries needed.
 ```
 cd vsmp-plus
 
+# create the virtual environment - use site packages for numpy
+python3 -m venv --system-site-packages .venv
+source .venv/bin/activate
+
 # this will build libraries for any supported displays (see omni-epd for more info)
-sudo pip3 install -r setup/requirements.txt
+pip3 install setuptools -U
+pip3 install -r setup/requirements.txt
 
 ```
 
 ### Test E-Ink Display
 This next step is optional but it is probably a good idea at this point to check that the e-ink display is working. Substitute your own display type with the `-e` argument from (the device list)[https://github.com/robweber/omni-epd#displays-implemented].
 
-``` 
+```
 
 omni-epd-test -e epd.type
-
-```
-
-### Build FFmpeg - not needed if installing from apt-get above
-Now we have to build the FFMPEG library. If using a NOOBS install you may already have this installed but on a base system you have to compile it yourself. __This will take a long time__. Be patient.
-
-```
-
-# run the ffmpeg installer
-sudo ./setup/ffmpeg-rpi-4.sh
-
-# set the path to the av libs
-sudo cp setup/ffmpeglibs.conf /etc/ld.so.conf.d/ffmpeglibs.conf
-sudo ldconfig
 
 ```
 
@@ -112,14 +92,6 @@ sudo systemctl start vsmp
 
 # stop the Service
 sudo systemctl stop vsmp
-```
-
-Finally you have to update your local library path. This has to be done each time you login or as part of your bash profile.
-
-```
-
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/arm-linux-gnueabihf/:/usr/local/lib/
-
 ```
 
 ## USB Automount

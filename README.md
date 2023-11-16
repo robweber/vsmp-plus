@@ -7,8 +7,12 @@ Both of the reference articles had pieces I liked and pieces I wanted to enhance
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
+## Install
+
+For detailed installation instructions read the [Install](https://github.com/robweber/vsmp-plus/blob/master/INSTALL.md) document. An [install script](https://raw.githubusercontent.com/robweber/vsmp-plus/master/setup/install.sh) is also available in the `setup` directory.
+
 ## Basic Usage
-Once the requirements are in place (See [Install](https://github.com/robweber/vsmp-plus/blob/master/INSTALL.md) document) the program itself is contained in the ```vsmp.py``` file. This file can take a few arguments, but doesn't need any to run normally:
+Once the requirements are in place the program itself is contained in the ```vsmp.py``` file. This file can take a few arguments, but doesn't need any to run normally:
 
 * ```--config``` - path to a config file where any CLI arguments can be specified, useful for when running as a service
 * ```--port``` - the port the web server will run on, default is 5000
@@ -188,14 +192,6 @@ I mentioned two other versions of this type of project that I took inspiration f
 8. Added ability to jump to a specific time in the video (via web UI)
 9. Added blank frame (black screen) detection
 10. Added an abstraction library to load multiple types of e-ink displays
-
-## Problems With FFMPEG
-
-One common problem when installed FFMPEG from source is that the libraries need to be manually added to your path in order to find the program. This can be done with the following command. It is a good idea to add that to your ```.bashrc``` file. When using cron you must also add this to the top of your cron file so it gets executed each time.
-
-```
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/arm-linux-gnueabihf/:/usr/local/lib/
-```
 
 ## License
 

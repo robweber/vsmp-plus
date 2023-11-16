@@ -18,23 +18,27 @@ SERVICE_FILE=vsmp.service
 function install_linux_packages(){
   sudo apt-get update
 
-  sudo apt-get install -y ffmpeg fonts-freefont-ttf git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff5 redis-server usbmount
+  sudo apt-get install -y ffmpeg fonts-freefont-ttf git python3-dev python3-rpi.gpio python3-pil python3-numpy python3-pip libopenjp2-7 libtiff6 redis-server usbmount
 
 }
 
 function install_python_packages(){
-  # set the default python version
-  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-  sudo update-alternatives --set python /usr/bin/python${PYTHON_VERSION}
+  # create the virtual environment
+  cd $LOCAL_DIR
+  python3 -m venv --system-site-packages .venv
+  source .venv/bin/activate
 
-  sudo pip3 install setuptools -U
-  sudo pip3 install -r $LOCAL_DIR/setup/requirements.txt
+  # install requirements
+  pip3 install setuptools -U
+  pip3 install -r $LOCAL_DIR/setup/requirements.txt
 
+  # deactivate the virtual environment
+  deactivate
 }
 
 function build_python_libraries(){
   # leave this here as a placeholder, currently all libs in requirements.txt
-  cd /home/pi
+  cd $HOME
 }
 
 function setup_hardware(){
@@ -68,7 +72,7 @@ function install_service(){
   fi
 
   # go back to home
-  cd /home/pi
+  cd $HOME
 }
 
 # get any options
@@ -96,7 +100,7 @@ while getopts ":r:b:h" arg; do
 done
 
 # set the local directory
-LOCAL_DIR="/home/pi/$(basename $GIT_REPO)"
+LOCAL_DIR="$HOME/$(basename $GIT_REPO)"
 
 # clear screen
   clear;
@@ -124,7 +128,7 @@ echo -e "SlowMovie Repo set to ${YELLOW}${GIT_REPO}/${GIT_BRANCH}${RESET}"
 echo -e "Setting up in local directory ${YELLOW}${LOCAL_DIR}${RESET}"
 echo -e ""
 
-cd /home/pi/
+cd $HOME
 
 if [ "${SKIP_DEPS}" = "false" ]; then
   # install from apt
