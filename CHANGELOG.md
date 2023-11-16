@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## 2023-11-16
+
+### Changed
+
+- updated Install instructions for latest Raspberry Pi OS (12).
+- utilize Python virtual environment instead of installing to system libraries
+- layout of README for better readability and compatibility with the [README Standard](https://github.com/RichardLitt/standard-readme)
+
+### Remove
+
+- removed manual FFMPEG build instructions. No longer needed as apt libraries work just fine
+
 ## 2023-09-15
 
 ### Fixed

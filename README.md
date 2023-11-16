@@ -1,5 +1,6 @@
 # VSMP+ (Very Slow Media Player Plus)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of this project.
 
@@ -7,11 +8,29 @@ Both of the reference articles had pieces I liked and pieces I wanted to enhance
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
+## Table Of Contents
+
+- [Install](#install)
+  - [Display Hardware](#display-hardware)
+- [Usage](#usage)
+  - [Config File](#config-file)
+- [Web Interface](#web-interface)
+  - [Finding Timings](#finding-timings)
+- [REST API](#rest-api)
+- [Differences/Additions](#differencesadditions)
+- [Contributing](#contributing)
+- [License](#license)
+
+
 ## Install
 
 For detailed installation instructions read the [Install](https://github.com/robweber/vsmp-plus/blob/master/INSTALL.md) document. An [install script](https://raw.githubusercontent.com/robweber/vsmp-plus/master/setup/install.sh) is also available in the `setup` directory.
 
-## Basic Usage
+### Display Hardware
+
+Display hardware is a big choice for this project. I used the [Waveshare 7.5in E-ink display](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). Using the `--epd` argument from above you can specify any display that works with the [EPD abstraction library](https://github.com/robweber/omni-epd). This allows dynamic loading of different display types depending on what you've purchased. You can see [an exhaustive list](https://github.com/robweber/omni-epd#displays-implemented) here. In general, most Waveshare displays are compatible.
+
+## Usage
 Once the requirements are in place the program itself is contained in the ```vsmp.py``` file. This file can take a few arguments, but doesn't need any to run normally:
 
 * ```--config``` - path to a config file where any CLI arguments can be specified, useful for when running as a service
@@ -26,11 +45,18 @@ Once started, either with the CLI or as a service, the program will start and th
 tail -f tmp/log.log
 ```
 
-### Display Hardware
+### Config File
 
-Display hardware is a big choice for this project. I used the [Waveshare 7.5in E-ink display](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm). Using the `--epd` argument from above you can specify any display that works with the [EPD abstraction library](https://github.com/robweber/omni-epd). This allows dynamic loading of different display types depending on what you've purchased. You can see [an exhaustive list](https://github.com/robweber/omni-epd#displays-implemented) here. In general, most Waveshare displays are compatible.
+Instead of passing in all the arguments on the command line you can also create a config file and pass in your values with the ```-c``` option instead. There is a sample of this file in the ```setup/``` directory. Any command line argument can be specified in the file.
 
-## Web Server
+```
+
+# Example Config file
+port = 8080
+
+```
+
+## Web Interface
 
 The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. When first run the player will be paused so you can change the settings to correct values. If running in directory mode you can also click the Next or Prev to cycle through videos in the directory. Clicking on the progress bar will seek the video to that percentage. This can be disabled on the setup page if unwanted.
 
@@ -50,7 +76,7 @@ The Player Setup page allows for the configuration of more specific parameters. 
 
 Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
 
-## Find Timing
+### Finding Timings
 
 Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, or months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
 
@@ -135,7 +161,7 @@ curl http://localhost:5000/api/status
 }
 ```
 
-## /api/screenshot [GET]
+### /api/screenshot [GET]
 
 Returns the currently displayed image from the video file. This is a binary PNG file. Can be saved directly via something like `curl` or embedded in another web application.
 
@@ -167,17 +193,6 @@ curl http://localhost:5000/api/browse_files/media/usb/Videos
 
 ```
 
-## Config File
-
-Instead of passing in all the arguments on the command line you can also create a config file and pass in your values with the ```-c``` option instead. There is a sample of this file in the ```setup/``` directory. Any command line argument can be specified in the file.
-
-```
-
-# Example Config file
-port = 8080
-
-```
-
 ## Differences/Additions
 
 I mentioned two other versions of this type of project that I took inspiration from when creating this one. I tried to combine pieces of each that I liked while putting my own spin on things. Below is a quick summary of differences from other implementations. This may be overkill for some users, and if so checkout one of the other great VSMP projects.
@@ -192,6 +207,11 @@ I mentioned two other versions of this type of project that I took inspiration f
 8. Added ability to jump to a specific time in the video (via web UI)
 9. Added blank frame (black screen) detection
 10. Added an abstraction library to load multiple types of e-ink displays
+
+## Contributing
+
+PRs accepted! If there a fix for any of the documentation or something is not quite clear, please [point it out](https://github.com/robweber/vsmp-plus/issues). I made this mostly for fun to get experience with libraries I wasn't very familiar with. Not really looking to enhance it too far from where it is but definitely want to keep it functional as dependencies change.
+
 
 ## License
 

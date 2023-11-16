@@ -1,4 +1,5 @@
 #!/bin/bash
+# Only use if you want to build ffmpeg from source
 # From: https://gist.github.com/jjangsangy/058456fe2d04e3c5f6107d62b60542e3
 
 TMPDIR="$(mktemp -d)"
