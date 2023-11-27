@@ -2,9 +2,13 @@
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
-I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of this project.
+This project is one of many Very Slow Media Player projects floating around the internet. VSMP+ will display both image files and video frames on an e-ink display utilizing a web interface for playback control.
 
-Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these are the ability to specify different displays and a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any parameters or change running files.
+## Background
+
+I read an [article by Tom Whitwell](https://debugger.medium.com/how-to-build-a-very-slow-movie-player-in-2020-c5745052e4e4), detailing his process for creating a slow media player using e-paper and a Raspberry Pi 4. His project was in turn inspired by a [2018 article by Bryan Boyer](https://medium.com/s/story/very-slow-movie-player-499f76c48b62) about the same thing. Both of these were very simple, yet visually stunning and led me to create my own version of an e-ink media player.
+
+Both of the reference articles had pieces I liked and pieces I wanted to enhance about them. This particular project takes the strengths of their ideas and adds a few "ease of use" elements. The biggest of these is the ability to specify different displays and a built in web service to control file selection and playback. Once setup you shouldn't need CLI access to modify any parameters or change running files.
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/front_with_timecode.jpg)
 
@@ -58,27 +62,44 @@ port = 8080
 
 ## Web Interface
 
-The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. When first run the player will be paused so you can change the settings to correct values. If running in directory mode you can also click the Next or Prev to cycle through videos in the directory. Clicking on the progress bar will seek the video to that percentage. This can be disabled on the setup page if unwanted.
+The program runs an embedded web server to control the program status and set additional parameters. The main page will show you the currently playing file and allow you to pause or resume the configured schedule. This is helpful if you wish to pause things and remove a USB stick to add more files without having to shut down the entire Raspberry Pi. When first run the player will be paused so you can change the settings to correct values. If running in directory mode you can also click the Next or Prev to cycle through files in the directory. If the file type is a video file, clicking on the progress bar will seek the video to that percentage. This can be disabled on the setup page if unwanted.
 
 ![](https://github.com/robweber/vsmp-plus/blob/master/pics/web_server_player_status.png)
 
-The Player Setup page allows for the configuration of more specific parameters. This can be saved and will take effect without a program reboot. Settings do take about 1 min for the program to reload the config.
+The Player Setup page allows for the configuration of more specific parameters. This can be saved and will take effect without a program reboot. Settings do take about 1 min for the program to reload the config. Some settings only affect specific media types.
 
+__General__
+* Show Startup Screen - enables or disables the display of a startup screen when VSMP+ starts.
+
+__Media__
+* Media - media types can be either images or video
 * Mode - File mode will play a single file whereas directory mode will play all the files in a given directory. This must be local to the Raspberry Pi.
 * Path - The absolute path to either the file or the directory
 * Update Time - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron)
+
+__Image Options__
+* Display - optionally show the image filename and/or the device IP on the bottom of the display. The device IP will automatically toggle itself on if the IP address of the system changes while the player is running. This helps prevents a "lost" player on the network due to DHCP.
+
+__Video Options__
 * Start time skip - the number of seconds into the video to start, if you want to skip into the video X amount
 * End time skip - the number of seconds to cut off the end of the video, useful for skipping credit sequences
 * Display - optionally show any combination of the title, timecode of the frame being displayed, or the device IP on the bottom of the display. Time in the form of HH:mm:SS. The device IP will automatically toggle itself on if the IP address of the system changes while the player is running. This helps prevents a "lost" player on the network due to DHCP.
 * Allow Seeking - this will enable or disable seeking when clicking on the progress bar in the web interface. Useful to disable if this is happening on accident.
 * Skip Blank Frames - when enabled frames that are all black (blank) will not be displayed. Useful for black screens at the start, end, or even middle of video files.
-* Show Startup Screen - enables or disables the display of a startup screen when VSMP+ starts.
 
-Once applied the given cron expression will be used to update the display starting at the ```start``` frame of the video. The image will be displayed and then status information, specific to this video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the ```increment``` amount. If the video ends it will start over at the ```start``` frame again. If reading from a directory it will start the next video. The log file for the program is stored in the ```tmp``` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
+Once applied the given cron expression will be used to update the display on a schedule. The log file for the program is stored in the `tmp` directory, which is created the first time the program is run. Information related to the current player status and configuration is stored in a Redis database.
 
-### Finding Timings
+## Images
 
-Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters should be for my desired effect. Did I want the video take days, weeks, or months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
+TODO
+
+## Videos
+
+When playing video playback will start at the `start` frame of the video. The image will be displayed and then status information, specific to the video file, will be written to the database with the next frame to display. At each update time the database will be checked and the next frame will be displayed. Subsequent runs will continue to move forward by the `increment` amount. If the video ends it will start over at the `start` frame again. If reading from a directory it will start the next video.
+
+### Finding Video Timings
+
+Once the program was up and running, one thing that was very hit/miss was what exactly the input parameters for video be to achieve the desired effect. Did I want the video to take days, weeks, or months to display? What combination of increments and delays would get the effect I wanted? Using the Analyze menu item you can test parameters and see what happens with a given file, or set of files.
 
 By default the analyze program loads the current settings. These can be tweaked without altering the main player that is running. Using the inputs the video is analyzed and some information is displayed regarding projected play times. Tweaking the configuration values you can find the optimum settings to get your desired play time. Each video will display separately, with a summary at the end. When looking at a whole directory the program will use the position of the currently playing file and analyze from this point forward.
 
@@ -95,6 +116,7 @@ __Example__
 curl http://localhost:5000/api/configuration
 
 {
+  "media": "video",
   "allow_seek": false,
   "display": ["timecode"],
   "end": 300,
@@ -110,7 +132,7 @@ curl http://localhost:5000/api/configuration
 ```
 
 ### /api/control/{{action}} [POST]
-Initiate a player control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in diretory mode. Seeking requires an additional parameter in the POST body: ```{amount: percent}``` where the percentage is a whole number 0-100.
+Initiate a player control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in dirctory mode. Seeking requires an additional parameter in the POST body: `{amount: percent}` where the percentage is a whole number 0-100.
 
 __Examples__
 
@@ -163,7 +185,7 @@ curl http://localhost:5000/api/status
 
 ### /api/screenshot [GET]
 
-Returns the currently displayed image from the video file. This is a binary PNG file. Can be saved directly via something like `curl` or embedded in another web application.
+Returns the currently displayed image on the EPD. This is a binary PNG file. Can be saved directly via something like `curl` or embedded in another web application.
 
 ### /api/analyze [POST]
 
@@ -171,7 +193,7 @@ Takes the same parameters as the ```/api/configuration``` POST method, however t
 
 ### /api/browse_files/{{path}} [GET]
 
-Returns a list of directories and files within the given file path. Files are filtered to include only valid video files. Used by the web interface file browser. The user running the ```vsmp.py``` file must have READ access to the directories to list them.
+Returns a list of directories and files within the given file path. Files are filtered to include only valid video files. Used by the web interface file browser. The user running the `vsmp.py` file must have READ access to the directories to list them.
 
 __Example__
 
