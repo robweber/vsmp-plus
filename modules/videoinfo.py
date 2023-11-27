@@ -1,13 +1,72 @@
 import modules.utils as utils
 import os
 
-
-# helper classes to find the right video to play and analyze it if needed
-class VideoInfo:
+# parent class to hold info from a media file
+class MediaInfo:
     config = None
 
     def __init__(self, config):
         self.config = config
+
+    # implemented by child classes
+    def find_next_file(self, lastPlayed):
+        raise NotImplementedError
+
+    def find_prev_file(self, lastPlayed):
+        raise NotImplementedError
+
+# helper class to find the next image to display and analyze it if needed
+class ImageInfo(MediaInfo):
+
+    def __init__(self, config):
+        super().__init__(config)
+
+    def _get_image(self, lastPlayed):
+        fileList = []
+
+        if(os.path.exists(self.config['path'])):
+            # list all files in the directory, filter on images
+            fileList = utils.list_image_files(self.config['path'])
+
+        if(len(fileList) == 0):
+            return {}  # return nothing, no files to find
+
+        index = 0
+
+        # get the index of the last played file (if exists)
+        try:
+            index = fileList.index(os.path.basename(lastPlayed))
+            index = index + 1  # get the next one
+
+        except ValueError:
+            index = 0  # just use the first one
+
+        # go back to start of list if we got to the end
+        if(index >= len(fileList)):
+            index = 0
+
+        # return this video
+        result = {"file": os.path.join(self.config['path'], fileList[index])}
+        filename = os.path.splitext(os.path.basename(result['file']))[0]
+        result['info'] = {"title": filename.replace('.', ' ')}
+        result['name'] = filename
+        result['pos'] = index
+
+        return result
+
+    def find_next_file(self, lastPlayed):
+        # just get a new file that is not the last file
+        return self._get_image(lastPlayed)
+
+    def find_prev_file(self, lastPlayed):
+        # just get the next image - FIX LATER
+        return self._get_image(lastPlayed)
+
+# helper classes to find the right video to play and analyze it if needed
+class VideoInfo(MediaInfo):
+
+    def __init__(self, config):
+        super().__init__(config)
 
     def analyze_video(self, file):
         result = {}  # return nothing if file doesn't exist
@@ -31,7 +90,7 @@ class VideoInfo:
         return result
 
     # in a given directory find the next video that should be played
-    def find_next_video(self, lastPlayed):
+    def find_next_file(self, lastPlayed):
         fileList = []
 
         if(os.path.exists(self.config['path'])):
@@ -58,7 +117,7 @@ class VideoInfo:
         # return this video
         return self.analyze_video(os.path.join(self.config['path'], fileList[index]))
 
-    def find_prev_video(self, lastPlayed):
+    def find_prev_file(self, lastPlayed):
         fileList = []
 
         if(os.path.exists(self.config['path'])):

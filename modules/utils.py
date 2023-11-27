@@ -17,6 +17,8 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 FONT_PATH = os.path.join('/usr/share/fonts/truetype/freefont', 'FreeSans.ttf')
 # valid video file types
 VIDEO_FILE_TYPES = (".avi", ".m4v", ".mkv", ".mov", ".mp4")
+# valid image file types
+IMAGE_FILE_TYPES = (".jpg", ".jpeg", ".png")
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
@@ -70,9 +72,14 @@ def seconds_to_frames(seconds, fps):
     return int(seconds) * fps
 
 
-# Check if a file is an mp4
+# Check if a file is a video
 def check_vid(value):
     return os.path.exists(value) and value.endswith(VIDEO_FILE_TYPES)
+
+
+# Check if a file is an image
+def check_image(value):
+    return os.path.exists(value) and value.endswith(IMAGE_FILE_TYPES)
 
 
 # Check if directory is valid
@@ -164,6 +171,9 @@ def get_configuration(db):
 def list_video_files(dir):
     return natsorted(filter(lambda f: check_vid(os.path.join(dir, f)), os.listdir(dir)))
 
+
+def list_image_files(dir):
+    return natsorted(filter(lambda f: check_image(os.path.join(dir, f)), os.listdir(dir)))
 
 # read a key from the database, converting to dict
 def read_db(db, db_key):

@@ -89,9 +89,9 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
                 # use the info parser to find the next or previous video
                 info = VideoInfo(utils.get_configuration(db))
                 if(action == 'next'):
-                    nextVideo = info.find_next_video(nextVideo['file'])
+                    nextVideo = info.find_next_file(nextVideo['file'])
                 else:
-                    nextVideo = info.find_prev_video(nextVideo['file'])
+                    nextVideo = info.find_prev_file(nextVideo['file'])
 
                 # save the video file
                 utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextVideo)

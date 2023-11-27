@@ -3,7 +3,7 @@ import ffmpeg
 import logging
 import os
 import modules.utils as utils
-from modules.videoinfo import VideoInfo
+from modules.videoinfo import ImageInfo, VideoInfo
 from modules.twinepd import TwinEpd
 import signal
 import sys
@@ -11,6 +11,7 @@ import time
 import threading
 import redis
 import socket
+import shutil
 import modules.webapp as webapp
 from omni_epd import displayfactory
 from croniter import croniter
@@ -73,28 +74,34 @@ def generate_frame(in_filename, out_filename, time):
         logging.error(e.stderr.decode('utf-8'))
 
 
-def find_video(config, lastPlayed, next=False):
+def find_next_file(config, lastPlayed, next=False):
     result = {}
 
-    # if in file mode, just use the file name
-    if(config['mode'] == 'file'):
-        if(config['path'] == lastPlayed['file']):
-            result = lastPlayed
-        else:
-            info = VideoInfo(config)
-            result = info.analyze_video(config['path'])
-    else:
-        # we're in dir mode, use the name of the last played file if it exists in the directory
-        if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(config['path']) and not next):
-            # use information loaded from last played file
-            result = lastPlayed
-        else:
-            # file might not exist (first run) just make it blank
-            if('file' not in lastPlayed):
-                lastPlayed['file'] = ''
+    if(config['media'] == 'image'):
+        # when in image mode always get a new image
+        info = ImageInfo(config)
+        result = info.find_next_file(lastPlayed['file'])
 
-            info = VideoInfo(config)
-            result = info.find_next_video(lastPlayed['file'])
+    else:
+        # if in file mode, just use the file name
+        if(config['mode'] == 'file'):
+            if(config['path'] == lastPlayed['file']):
+                result = lastPlayed
+            else:
+                info = VideoInfo(config)
+                result = info.analyze_video(config['path'])
+        else:
+            # we're in dir mode, use the name of the last played file if it exists in the directory
+            if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in os.listdir(config['path']) and not next):
+                # use information loaded from last played file
+                result = lastPlayed
+            else:
+                # file might not exist (first run) just make it blank
+                if('file' not in lastPlayed):
+                    lastPlayed['file'] = ''
+
+                info = VideoInfo(config)
+                result = info.find_next_file(lastPlayed['file'])
 
     return result
 
@@ -136,15 +143,15 @@ def show_startup(epd, db, messages=[]):
 
 def update_display(config, epd, db):
 
-    # get the video file information
-    video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
+    # get the file to display
+    media_file = find_next_file(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
 
-    # check if we have a properly analyzed video file
-    if('file' not in video_file):
+    # check if we have a properly analyzed file
+    if('file' not in media_file):
         # log an error message
-        logging.error('No video file to load')
+        logging.error(f"No {config['media']} file to load")
 
-        show_startup(epd, db, ["No Video Loaded"])
+        show_startup(epd, db, [f"No {config['media'].capitalize()} Loaded"])
 
         # set to "paused" so this isn't constantly Updating
         utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': False})
@@ -155,39 +162,49 @@ def update_display(config, epd, db):
     epd.prepare()
 
     # save grab file in memory as a bitmap
+    pil_im = None
     grabFile = os.path.join('/dev/shm/', 'frame.bmp')
-    validImg = False
 
-    while(not validImg):
-        logging.info(f"Loading {video_file['file']}")
+    if(config['media'] == 'image'):
+        # copy source file to grabfile location
+        shutil.copy(media_file['file'], grabFile)
 
-        if(video_file['pos'] >= video_file['info']['frame_count']):
-            # set 'next' to true to force new video file
-            video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
+        # load the file and resize to correct dimensions
+        pil_im = Image.open(grabFile).resize((width, height))
 
-        # calculate the percent percent_complete
-        video_file['percent_complete'] = (video_file['pos'] / video_file['info']['frame_count']) * 100
+    else:
+        validImg = False
 
-        # set the position we want to use
-        frame = video_file['pos']
+        while(not validImg):
+            logging.info(f"Loading {media_file['file']}")
 
-        # Convert that frame to ms from start of video (frame/fps) * 1000
-        msTimecode = f"{utils.frames_to_seconds(frame, video_file['info']['fps']) * 1000}ms"
+            if(media_file['pos'] >= media_file['info']['frame_count']):
+                # set 'next' to true to force new video file
+                media_file = find_next_file(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
 
-        # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
-        generate_frame(video_file['file'], grabFile, msTimecode)
+            # calculate the percent percent_complete
+            media_file['percent_complete'] = (media_file['pos'] / media_file['info']['frame_count']) * 100
 
-        # save the next position
-        video_file['pos'] = video_file['pos'] + float(config['increment'])
+            # set the position we want to use
+            frame = media_file['pos']
 
-        # Open grab.jpg in PIL
-        pil_im = Image.open(grabFile)
+            # Convert that frame to ms from start of video (frame/fps) * 1000
+            msTimecode = f"{utils.frames_to_seconds(frame, media_file['info']['fps']) * 1000}ms"
 
-        # image not valid if skipping blank (None == blank)
-        validImg = (not config['skip_blank']) or (pil_im.getbbox() is not None and config['skip_blank'])
+            # Use ffmpeg to extract a frame from the movie, crop it, letterbox it and save it in memory
+            generate_frame(media_file['file'], grabFile, msTimecode)
 
-        if(not validImg):
-            logging.info('Image is all black, try again')
+            # save the next position
+            media_file['pos'] = media_file['pos'] + float(config['increment'])
+
+            # Open grab.jpg in PIL
+            pil_im = Image.open(grabFile)
+
+            # image not valid if skipping blank (None == blank)
+            validImg = (not config['skip_blank']) or (pil_im.getbbox() is not None and config['skip_blank'])
+
+            if(not validImg):
+                logging.info('Image is all black, try again')
 
     if(len(config['display']) > 0):
         font18 = ImageFont.truetype(utils.FONT_PATH, 18)
@@ -196,11 +213,11 @@ def update_display(config, epd, db):
         timecode = ''
 
         if('title' in config['display']):
-            message = f"{video_file['info']['title']}"
+            message = f"{media_file['info']['title']}"
 
-        if('timecode' in config['display']):
+        if('timecode' in config['display'] and config['media'] == 'video'):
             # show the timecode of the video in the format HH:mm:SS
-            timecode = utils.display_time(seconds=utils.frames_to_seconds(frame, video_file['info']['fps']),
+            timecode = utils.display_time(seconds=utils.frames_to_seconds(frame, media_file['info']['fps']),
                                           granularity=3,
                                           timeFormat='{value:02d}',
                                           joiner=':',
@@ -225,16 +242,21 @@ def update_display(config, epd, db):
 
     # display the image
     epd.display(pil_im)
-    secondsOfVideo = utils.frames_to_seconds(frame, video_file['info']['fps'])
-    logging.info(f"Diplaying frame {frame} ({secondsOfVideo} seconds) of {video_file['name']}")
 
-    if(video_file['pos'] >= video_file['info']['frame_count']):
-        # set 'next' to True to force new file
-        video_file = find_video(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
-        logging.info(f"Will start {video_file} on next run")
+    if(config['media'] == 'video'):
+        # do some calculations for the next run
+        secondsOfVideo = utils.frames_to_seconds(frame, media_file['info']['fps'])
+        logging.info(f"Diplaying frame {frame} ({secondsOfVideo} seconds) of {media_file['name']}")
 
-    # save the last video played info
-    utils.write_db(db, utils.DB_LAST_PLAYED_FILE, video_file)
+        if(media_file['pos'] >= media_file['info']['frame_count']):
+            # set 'next' to True to force new file
+            media_file = find_next_file(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE), True)
+            logging.info(f"Will start {media_file} on next run")
+    else:
+        logging.info(f"Displaying {media_file['name']}")
+
+    # save the last played info
+    utils.write_db(db, utils.DB_LAST_PLAYED_FILE, media_file)
 
     epd.sleep()
 
@@ -297,9 +319,7 @@ if(not db.exists(utils.DB_PLAYER_STATUS)):
 # load the player configuration
 config = utils.get_configuration(db)
 
-logging.info(f"Starting with options Frame Increment: {config['increment']} frames, "
-             f"Video start: {config['start']} seconds, Ending Cutoff: {config['end']} seconds, "
-             f"Updating on schedule: {config['update']}")
+logging.info(f"Starting {config['media']} mode updating on schedule: {config['update']}")
 
 # get the current ip address
 utils.write_db(db, utils.CURRENT_IP, {'ip': get_local_ip()})
