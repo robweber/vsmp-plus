@@ -176,7 +176,8 @@ curl http://localhost:5000/api/status
      "last_run": 1620242760.1,
      "next_run": 1620242880.0,
      "running": true
-   }
+   },
+  "media": "video",
   "name": "Video.File.Name.No.Ext",
   "percent_complete": 20.5,
   "pos": 12145.0

@@ -137,6 +137,10 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
     def status():
         lastPlayed = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
 
+        # set the media config
+        config = utils.get_configuration(db)
+        lastPlayed['media'] = config['media']
+
         # set the player status
         pStatus = utils.read_db(db, utils.DB_PLAYER_STATUS)
         pStatus.update(utils.read_db(db, utils.DB_NEXT_RUN))
