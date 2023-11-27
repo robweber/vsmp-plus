@@ -5,12 +5,49 @@
 {% endblock %}
 {% block content %}
 <div class="container">
+  <h3 class="ml-n2 mb-3 text-secondary">General</h3>
+  <div class="row my-1">
+    <div class="col-md-4 align-self-center">
+      <b>Show Startup Screen</b>
+    </div>
+    <div class="col-md-8">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="config_startup_screen" name="config_startup_screen" value="startup_screen" {{ 'checked' if config['startup_screen'] else '' }}>
+        <label class="form-check-label" for="config_startup_screen">Enabled</label>
+      </div>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      Show a startup screen that includes the current IP of the device before playing video file
+    </div>
+  </div>
+
+  <h3 class="ml-n2 mt-3 mb-3 mb-3 text-secondary">Media</h3>
+  <!-- media type -->
+  <div class="row my-1">
+    <div class="col-md-4 align-self-center">
+      <b>Media Type</b>
+    </div>
+    <div class="col-md-8">
+      <select class="custom-select" id="config_media" onChange="changeMedia()">
+        <option value="image" {{ 'selected' if config['media'] == 'image' else '' }}>Image</option>
+        <option value="video" {{ 'selected' if config['media'] == 'video' else '' }}>Video</option>
+      </select>
+    </div>
+  </div>
+  <div class="row my-2 bg-light">
+    <div class="col-md-12">
+      What type of media to play
+    </div>
+  </div>
+  <!-- playback mode -->
   <div class="row my-1">
     <div class="col-md-4 align-self-center">
       <b>Mode</b>
     </div>
     <div class="col-md-8">
-      <select class="custom-select" id="config_mode" onChange="toggleDirSelect()">
+      <select class="custom-select" id="config_mode" onChange="toggleDirSelect()"{{ ' disabled' if config['media'] == 'image' else '' }}>
         <option value="file" {{ 'selected' if config['mode'] == 'file' else '' }}>File</option>
         <option value="dir" {{ 'selected' if config['mode'] == 'dir' else '' }}>Directory</option>
       </select>
@@ -69,124 +106,134 @@
     </div>
   </div>
 
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>Frames to increment</b>
-    </div>
-    <div class="col-md-8">
-      <input type="text" id="config_increment" class="form-control" value="{{ config['increment'] }}" />
-    </div>
-  </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      How many frames to increment on each update.
-    </div>
-  </div>
-
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>Start time skip</b>
-    </div>
-    <div class="col-md-8">
-      <input type="text" id="config_start" class="form-control" value="{{ config['start'] }}" />
-    </div>
-  </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      How many <i>seconds</i> in to the video to skip when starting a new video
-    </div>
-  </div>
-
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>End time skip</b>
-    </div>
-    <div class="col-md-8">
-      <input type="text" id="config_end" class="form-control" value="{{ config['end'] }}" />
-    </div>
-  </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      How many <i>seconds</i> in to the video to skip at the end of a video, useful for skipping credit sequences
-    </div>
-  </div>
-
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>Additional display options</b>
-    </div>
-    <div class="col-md-8">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="config_display_title" name="config_display" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
-        <label class="form-check-label" for="config_display_title">Title</label>
+  <div id="image_options_display" style="display:{{ 'block' if config['media'] == 'image' else 'none' }}">
+    <h3 class="ml-n2 mt-3 mb-3 mb-3 text-secondary">Image Options</h3>
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>Additional display options</b>
       </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="config_display_timecode" name="config_display" value="timecode" {{ 'checked' if 'timecode' in config['display'] else '' }}>
-        <label class="form-check-label" for="config_display_timecode">Timecode</label>
+      <div class="col-md-8">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_display_title" name="config_display" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
+          <label class="form-check-label" for="config_display_title">Filename</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_display_ip" name="config_display" value="ip" {{ 'checked' if 'ip' in config['display'] else '' }}>
+          <label class="form-check-label" for="config_display_ip">Device IP</label>
+        </div>
       </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="config_display_ip" name="config_display" value="ip" {{ 'checked' if 'ip' in config['display'] else '' }}>
-        <label class="form-check-label" for="config_display_ip">Device IP</label>
+    </div>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        Optionally display the image filename or device IP address below the video on the display. The device IP is useful for finding the device on the network. The device IP will turn itself on automatically if the system IP changes while VSMP is running so it can be found again.
       </div>
     </div>
   </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      Optionally display the video title, timecode, or device IP address below the video on the display. The device IP is useful for finding the device on the network. The device IP will turn itself on automatically if the system IP changes while VSMP is running so it can be found again.
-    </div>
-  </div>
 
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>Allow seeking</b>
+  <div id="video_options_display"  style="display:{{ 'block' if config['media'] == 'video' else 'none' }}">
+    <h3 class="ml-n2 mt-3 mb-3 mb-3 text-secondary">Video Options</h3>
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>Frames to increment</b>
+      </div>
+      <div class="col-md-8">
+        <input type="text" id="config_increment" class="form-control" value="{{ config['increment'] }}" />
+      </div>
     </div>
-    <div class="col-md-8">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="config_allow_seek" name="config_allow_seek" value="allow_seek" {{ 'checked' if config['allow_seek'] else '' }}>
-        <label class="form-check-label" for="config_allow_seek">Allow</label>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        How many frames to increment on each update.
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>Start time skip</b>
+      </div>
+      <div class="col-md-8">
+        <input type="text" id="config_start" class="form-control" value="{{ config['start'] }}" />
+      </div>
+    </div>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        How many <i>seconds</i> in to the video to skip when starting a new video
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>End time skip</b>
+      </div>
+      <div class="col-md-8">
+        <input type="text" id="config_end" class="form-control" value="{{ config['end'] }}" />
+      </div>
+    </div>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        How many <i>seconds</i> in to the video to skip at the end of a video, useful for skipping credit sequences
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>Additional display options</b>
+      </div>
+      <div class="col-md-8">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_display_title" name="config_display" value="title" {{ 'checked' if 'title' in config['display'] else '' }}>
+          <label class="form-check-label" for="config_display_title">Title</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_display_timecode" name="config_display" value="timecode" {{ 'checked' if 'timecode' in config['display'] else '' }}>
+          <label class="form-check-label" for="config_display_timecode">Timecode</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_display_ip" name="config_display" value="ip" {{ 'checked' if 'ip' in config['display'] else '' }}>
+          <label class="form-check-label" for="config_display_ip">Device IP</label>
+        </div>
+      </div>
+    </div>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        Optionally display the video title, timecode, or device IP address below the video on the display. The device IP is useful for finding the device on the network. The device IP will turn itself on automatically if the system IP changes while VSMP is running so it can be found again.
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>Allow seeking</b>
+      </div>
+      <div class="col-md-8">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_allow_seek" name="config_allow_seek" value="allow_seek" {{ 'checked' if config['allow_seek'] else '' }}>
+          <label class="form-check-label" for="config_allow_seek">Allow</label>
+        </div>
+      </div>
+    </div>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        Locks or unlocks seeking when clicking the progress bar in the web interface. Turning this off doesn't affect seeking using the api seek control.
+      </div>
+    </div>
+
+    <div class="row my-1">
+      <div class="col-md-4 align-self-center">
+        <b>Skip Blank Frames</b>
+      </div>
+      <div class="col-md-8">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="config_skip_blank" name="config_skip_blank" value="skip_blank" {{ 'checked' if config['skip_blank'] else '' }}>
+          <label class="form-check-label" for="config_skip_blank">Enabled</label>
+        </div>
+      </div>
+    </div>
+    <div class="row my-2 bg-light">
+      <div class="col-md-12">
+        When enabled frames that are all black (blank) will not be displayed. Useful for black screens at the start, end, or even middle of video files.
       </div>
     </div>
   </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      Locks or unlocks seeking when clicking the progress bar in the web interface. Turning this off doesn't affect seeking using the api seek control.
-    </div>
-  </div>
 
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>Skip Blank Frames</b>
-    </div>
-    <div class="col-md-8">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="config_skip_blank" name="config_skip_blank" value="skip_blank" {{ 'checked' if config['skip_blank'] else '' }}>
-        <label class="form-check-label" for="config_skip_blank">Enabled</label>
-      </div>
-    </div>
-  </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      When enabled frames that are all black (blank) will not be displayed. Useful for black screens at the start, end, or even middle of video files.
-    </div>
-  </div>
-
-  <div class="row my-1">
-    <div class="col-md-4 align-self-center">
-      <b>Show Startup Screen</b>
-    </div>
-    <div class="col-md-8">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="config_startup_screen" name="config_startup_screen" value="startup_screen" {{ 'checked' if config['startup_screen'] else '' }}>
-        <label class="form-check-label" for="config_startup_screen">Enabled</label>
-      </div>
-    </div>
-  </div>
-  <div class="row my-2 bg-light">
-    <div class="col-md-12">
-      Show a startup screen that includes the current IP of the device before playing video file
-    </div>
-  </div>
-  
   <div class="row my-3">
     <div class="col-md-12" align="center">
       <button class="btn btn-primary" onClick="saveConfig()">Save</button>

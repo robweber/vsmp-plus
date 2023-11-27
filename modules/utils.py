@@ -87,6 +87,10 @@ def check_cron(schedule):
 
 def validate_configuration(config):
 
+    # check media type
+    if(config['media'] not in ['image', 'video']):
+        return (False, 'Incorrect media type, must be "image" or "video"')
+
     # check mode
     if(config['mode'] not in ['file', 'dir']):
         return (False, 'Incorrect mode, must be "file" or "dir"')
@@ -146,7 +150,7 @@ def get_video_info(file):
 # get the configuration, use default values where custom don't exist
 def get_configuration(db):
     # default configuration
-    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4,
+    result = {'media': 'video', 'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4,
               'update': '* * * * *', 'start': 1, 'end': 0, 'display': ['ip'],
               'allow_seek': True, "startup_screen": True, "skip_blank": False}
 
