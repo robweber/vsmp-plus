@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Added
+
+- added support for displaying images as well as video. Images can now be displayed from a directory of images using the cron schedule
+
+### Fixed
+
+- minor syntax and spelling issues
+
 ## 2023-11-16
 
 ### Changed
