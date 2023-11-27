@@ -98,6 +98,10 @@ def validate_configuration(config):
     if(config['media'] not in ['image', 'video']):
         return (False, 'Incorrect media type, must be "image" or "video"')
 
+    # force set directory if displaying images
+    if(config['media'] == 'image'):
+        config['mode'] = 'dir'
+
     # check mode
     if(config['mode'] not in ['file', 'dir']):
         return (False, 'Incorrect mode, must be "file" or "dir"')
