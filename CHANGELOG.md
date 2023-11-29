@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
-- added support for displaying images as well as video. Images can now be displayed from a directory of images using the cron schedule
+- added support for displaying images as well as video. Images can now be displayed from a directory of images and cycled on the cron schedule
+- updated web UI to accommodate image and video modes
 
 ### Fixed
 
