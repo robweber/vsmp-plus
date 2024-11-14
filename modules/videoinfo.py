@@ -22,7 +22,7 @@ class ImageInfo(MediaInfo):
     def __init__(self, config):
         super().__init__(config)
 
-    def _get_image(self, lastPlayed):
+    def _get_image(self, lastPlayed, direction = 1):
         fileList = []
 
         if(os.path.exists(self.config['path'])):
@@ -41,11 +41,13 @@ class ImageInfo(MediaInfo):
             index = 0  # just use the first one
 
         if(self.config['image_rotation'] == 'in_order'):
-            index = index + 1  # get the next one
+            index = index + direction  # get the next/prev one
 
-            # go back to start of list if we got to the end
+            # circle to end of list if we got to either end
             if(index >= len(fileList)):
                 index = 0
+            elif(index < 0):
+                index = len(fileList) - 1
         else:
             # get a random image that is not the current one
             old_index = index
@@ -66,8 +68,8 @@ class ImageInfo(MediaInfo):
         return self._get_image(lastPlayed)
 
     def find_prev_file(self, lastPlayed):
-        # just get the next image - FIX LATER
-        return self._get_image(lastPlayed)
+        # get the previous image, doesn't work with mode random
+        return self._get_image(lastPlayed, -1)
 
 # helper classes to find the right video to play and analyze it if needed
 class VideoInfo(MediaInfo):
