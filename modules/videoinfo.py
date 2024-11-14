@@ -1,5 +1,6 @@
 import modules.utils as utils
 import os
+import random
 
 # parent class to hold info from a media file
 class MediaInfo:
@@ -36,16 +37,22 @@ class ImageInfo(MediaInfo):
         # get the index of the last played file (if exists)
         try:
             index = fileList.index(os.path.basename(lastPlayed))
-            index = index + 1  # get the next one
-
         except ValueError:
             index = 0  # just use the first one
 
-        # go back to start of list if we got to the end
-        if(index >= len(fileList)):
-            index = 0
+        if(self.config['image_rotation'] == 'in_order'):
+            index = index + 1  # get the next one
 
-        # return this video
+            # go back to start of list if we got to the end
+            if(index >= len(fileList)):
+                index = 0
+        else:
+            # get a random image that is not the current one
+            old_index = index
+            while(index == old_index):
+                index = random.randint(0, len(fileList) - 1)
+
+        # return this image
         result = {"file": os.path.join(self.config['path'], fileList[index])}
         filename = os.path.splitext(os.path.basename(result['file']))[0]
         result['info'] = {"title": filename.replace('.', ' ')}

@@ -114,8 +114,8 @@
       </div>
       <div class="col-md-8">
         <select class="form-control" id="config_image_rotation">
-          <option value="in_order">In Order</option>
-          <option value="random">Random</option>
+          <option value="in_order" {{ 'selected' if config['image_rotation'] == 'in_order' else '' }}>In Order</option>
+          <option value="random" {{ 'selected' if config['image_rotation'] == 'random' else '' }}>Random</option>
         </select>
       </div>
     </div>

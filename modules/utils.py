@@ -163,7 +163,8 @@ def get_configuration(db):
     # default configuration
     result = {'media': 'video', 'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4,
               'update': '* * * * *', 'start': 1, 'end': 0, 'display': ['ip'],
-              'allow_seek': True, "startup_screen": True, "skip_blank": False}
+              'allow_seek': True, "startup_screen": True, "skip_blank": False,
+              'image_rotation': 'in_order'}
 
     # merge any saved configuration
     if(db.exists(DB_CONFIGURATION)):

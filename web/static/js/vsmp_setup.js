@@ -27,7 +27,8 @@ function saveConfig(){
              "update": $('#config_update').val(),
              "increment": parseInt($('#config_increment').val()),
              "start": parseInt($('#config_start').val()),
-             "end": parseInt($('#config_end').val())};
+             "end": parseInt($('#config_end').val()),
+             "image_rotation": $('#config_image_rotation').val()};
 
   // display represented as an array
   display = [];
