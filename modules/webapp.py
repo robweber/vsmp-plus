@@ -2,7 +2,7 @@ import modules.utils as utils
 import os
 import redis
 import logging
-from modules.videoinfo import VideoInfo
+from modules.videoinfo import ImageInfo, VideoInfo
 from flask import Flask, render_template, jsonify, request, send_file
 from modules.analyze import Analyzer
 
@@ -84,18 +84,42 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
             config = utils.get_configuration(db)
 
             if(config['mode'] == 'dir'):
-                nextVideo = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
+                nextFile = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
+                skip_num = {'num': 0}
 
-                # use the info parser to find the next or previous video
-                info = VideoInfo(utils.get_configuration(db))
-                if(action == 'next'):
-                    nextVideo = info.find_next_file(nextVideo['file'])
+                # use the info parser to find the next or previous file
+                if(config['media'] == 'video'):
+                    info = VideoInfo(utils.get_configuration(db))
                 else:
-                    nextVideo = info.find_prev_file(nextVideo['file'])
+                    info = ImageInfo(utils.get_configuration(db))
 
-                # save the video file
-                utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextVideo)
-                result['message'] = f"Next video will be {nextVideo['name']}"
+                    # load how many skips are queued
+                    skip_num = utils.read_db(db, utils.DB_IMAGE_SKIP)
+
+                if(action == 'next'):
+                    if(config['media'] == 'video'):
+                        # just get the next video
+                        nextFile = info.find_next_file(nextFile['file'])
+                        utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextFile)
+                    else:
+                        skip_num['num'] = skip_num['num'] + 1
+                        # skip X number of files from this one
+                        for i in range(0, abs(skip_num['num'])):
+                            nextFile = info.find_next_file(nextFile['file'])
+                        utils.write_db(db, utils.DB_IMAGE_SKIP, skip_num)
+                else:
+                    if(config['media'] == 'video'):
+                        # load previous video
+                        nextFile= info.find_prev_file(nextFile['file'])
+                        utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextFile)
+                    else:
+                        skip_num['num'] = skip_num['num'] - 1
+                        # skip X number of files from this one
+                        for i in range(0, abs(skip_num['num'])):
+                            nextFile = info.find_prev_file(nextFile['file'])
+                        utils.write_db(db, utils.DB_IMAGE_SKIP, skip_num)
+
+                result['message'] = f"Next file will be {nextFile['name']}"
             else:
                 result['success'] = False
                 result['message'] = 'Cannot use next/prev actions when in file mode'

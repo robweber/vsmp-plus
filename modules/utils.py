@@ -26,6 +26,7 @@ DB_LAST_PLAYED_FILE = 'last_played_file'
 DB_CONFIGURATION = 'vsmp_configuration'
 DB_NEXT_RUN = 'vsmp_next_run'
 DB_LAST_RUN = 'vsmp_last_run'
+DB_IMAGE_SKIP = 'vsmp_image_skip'
 CURRENT_IP = 'current_ip'
 
 intervals = (

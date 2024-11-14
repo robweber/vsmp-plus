@@ -80,8 +80,25 @@ def find_next_file(config, lastPlayed, next=False):
     if(config['media'] == 'image'):
         # when in image mode always get a new image
         info = ImageInfo(config)
-        result = info.find_next_file(lastPlayed['file'])
 
+        if('file' not in lastPlayed):
+            lastPlayed['file'] = ''
+        result = lastPlayed
+
+        skip_num = utils.read_db(db, utils.DB_IMAGE_SKIP)
+        if(skip_num['num'] != 0):
+            # reset the skip num
+            utils.write_db(db, utils.DB_IMAGE_SKIP, {"num": 0})
+        else:
+            # needs to be at least 1 to advance proper
+            skip_num['num'] = 1
+
+        # go through and skip the number of images ahead - or behind
+        for i in range(0, abs(skip_num['num'])):
+            if(skip_num['num'] >= 0):
+                result = info.find_next_file(result['file'])
+            else:
+                result = info.find_prev_file(result['file'])
     else:
         # if in file mode, just use the file name
         if(config['mode'] == 'file'):
@@ -323,6 +340,9 @@ logging.info(f"Starting {config['media']} mode updating on schedule: {config['up
 
 # get the current ip address
 utils.write_db(db, utils.CURRENT_IP, {'ip': get_local_ip()})
+
+# set skip_num to 0
+utils.write_db(db, utils.DB_IMAGE_SKIP, {'num': 0})
 
 # start the web app
 webAppThread = threading.Thread(name='Web App', target=webapp.webapp_thread, args=(args.port, args.debug, logHandlers))
