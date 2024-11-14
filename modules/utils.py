@@ -148,7 +148,7 @@ def get_video_info(file):
 
     # get the filename to show as a title
     name = os.path.splitext(os.path.basename(file))[0]
-    if('title' in probeInfo['format']['tags']):
+    if('tags' in probeInfo['format'] and 'title' in probeInfo['format']['tags']):
         name = probeInfo['format']['tags']['title']
     else:
         # replace common chars with spaces
