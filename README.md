@@ -72,12 +72,13 @@ __General__
 * Show Startup Screen - enables or disables the display of a startup screen when VSMP+ starts.
 
 __Media__
-* Media - media types can be either images or video
+* Media - media types can be either __images__ or __video__
 * Mode - File mode will play a single file whereas directory mode will play all the files in a given directory. This must be local to the Raspberry Pi.
 * Path - The absolute path to either the file or the directory
 * Update Time - how often to update the display, this is given as a [cron expression](http://en.wikipedia.org/wiki/Cron)
 
 __Image Options__
+* Image Rotation - order to display the images. Default is In Order as sorted alphabetically. Choosing Random will randomly select an image from the directory.
 * Display - optionally show the image filename and/or the device IP on the bottom of the display. The device IP will automatically toggle itself on if the IP address of the system changes while the player is running. This helps prevents a "lost" player on the network due to DHCP.
 
 __Video Options__
@@ -91,7 +92,7 @@ Once applied the given cron expression will be used to update the display on a s
 
 ## Images
 
-TODO
+A new image will display every time the cron schedule executes. These will either be _In Order_ or _Random_ depending on the Image Rotation option selected on the Setup page. If displaying images In Order you can also cycle through them using the Prev and Next buttons on the web interface. Pressing either one will skip one image forward or backwards on the next update. Hitting the buttons successively will skip multiple images on the next update.
 
 ## Videos
 
@@ -120,6 +121,7 @@ curl http://localhost:5000/api/configuration
   "allow_seek": false,
   "display": ["timecode"],
   "end": 300,
+  "image_rotation": "in_order",
   "increment": 50,
   "mode": "dir",
   "path": "/media/usb/Videos",
@@ -132,7 +134,7 @@ curl http://localhost:5000/api/configuration
 ```
 
 ### /api/control/{{action}} [POST]
-Initiate a player control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in dirctory mode. Seeking requires an additional parameter in the POST body: `{amount: percent}` where the percentage is a whole number 0-100.
+Initiate a player control action. Valid actions at this time are <b>resume</b>, <b>pause</b>, <b>next</b>, <b>prev</b>, and <b>seek</b>. Note that next and prev functions will return an error when not in directory mode. Seeking requires an additional parameter in the POST body: `{amount: percent}` where the percentage is a whole number 0-100.
 
 __Examples__
 
@@ -158,7 +160,7 @@ curl http://localhost:5000/api/control/seek -d '{"amount": 20}' -X POST
 
 ### /api/status [GET]
 
-Returns the current status of the sign as a JSON object. This includes information about the currently playing video like it's title, file path, and percent complete. The ```pos``` key value is the current frame being displayed.
+Returns the current status of the sign as a JSON object. This includes information about the currently playing file like it's media type, title, file path, and percent complete. The `pos` key value is the current frame being displayed.
 
 __Example__
 ```
@@ -222,14 +224,15 @@ I mentioned two other versions of this type of project that I took inspiration f
 
 1. Using cron syntax for updating instead of a simple delay in seconds. This allows for more complex schedules, like not updating at night if you don't want to miss something.
 2. Added analyzer to help with figuring out video play times
-3. Use seconds instead of frames for ```--start``` value. More intuitive
-4. Added ```--end``` value to skip end credits
-5. Added the ```-display``` value so you can see where the title of the video and/or the timecode for the frame displayed
+3. Use seconds instead of frames for `--start` value. More intuitive
+4. Added `--end` value to skip end credits
+5. Adding display options so you can see where the title of the video and/or the timecode for the frame displayed
 6. Added a built in web service for controlling the sign so more can be done without the CLI or restarting the service directly
 7. Use a Redis database to store information rather than a host of flat files. This should help limit reads/writes to the Raspberry PI SD card
 8. Added ability to jump to a specific time in the video (via web UI)
 9. Added blank frame (black screen) detection
 10. Added an abstraction library to load multiple types of e-ink displays
+11. Allowing the display of either images or videos controlled via the setup screen
 
 ## Contributing
 
