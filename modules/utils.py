@@ -181,6 +181,7 @@ def list_video_files(dir):
 def list_image_files(dir):
     return natsorted(filter(lambda f: check_image(os.path.join(dir, f)), os.listdir(dir)))
 
+
 # read a key from the database, converting to dict
 def read_db(db, db_key):
     result = {}

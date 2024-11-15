@@ -2,6 +2,7 @@ import modules.utils as utils
 import os
 import random
 
+
 # parent class to hold info from a media file
 class MediaInfo:
     config = None
@@ -16,13 +17,14 @@ class MediaInfo:
     def find_prev_file(self, lastPlayed):
         raise NotImplementedError
 
+
 # helper class to find the next image to display and analyze it if needed
 class ImageInfo(MediaInfo):
 
     def __init__(self, config):
         super().__init__(config)
 
-    def _get_image(self, lastPlayed, direction = 1):
+    def _get_image(self, lastPlayed, direction=1):
         fileList = []
 
         if(os.path.exists(self.config['path'])):
@@ -70,6 +72,7 @@ class ImageInfo(MediaInfo):
     def find_prev_file(self, lastPlayed):
         # get the previous image, doesn't work with mode random
         return self._get_image(lastPlayed, -1)
+
 
 # helper classes to find the right video to play and analyze it if needed
 class VideoInfo(MediaInfo):

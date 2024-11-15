@@ -110,7 +110,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
                 else:
                     if(config['media'] == 'video'):
                         # load previous video
-                        nextFile= info.find_prev_file(nextFile['file'])
+                        nextFile = info.find_prev_file(nextFile['file'])
                         utils.write_db(db, utils.DB_LAST_PLAYED_FILE, nextFile)
                     else:
                         skip_num['num'] = skip_num['num'] - 1
