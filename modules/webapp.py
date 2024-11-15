@@ -123,7 +123,8 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
             else:
                 result['success'] = False
                 result['message'] = 'Cannot use next/prev actions when in file mode'
-        elif(action == 'seek'):
+        elif(action == 'seek' and config['media'] == 'video'):
+
             # get the seek amount as a percent
             data = request.get_json(force=True)
 
