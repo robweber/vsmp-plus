@@ -17,6 +17,8 @@ TMP_DIR = os.path.join(DIR_PATH, 'tmp')
 FONT_PATH = os.path.join('/usr/share/fonts/truetype/freefont', 'FreeSans.ttf')
 # valid video file types
 VIDEO_FILE_TYPES = (".avi", ".m4v", ".mkv", ".mov", ".mp4")
+# valid image file types
+IMAGE_FILE_TYPES = (".jpg", ".jpeg", ".png")
 
 # redis keys
 DB_PLAYER_STATUS = 'player_status'
@@ -24,6 +26,7 @@ DB_LAST_PLAYED_FILE = 'last_played_file'
 DB_CONFIGURATION = 'vsmp_configuration'
 DB_NEXT_RUN = 'vsmp_next_run'
 DB_LAST_RUN = 'vsmp_last_run'
+DB_IMAGE_SKIP = 'vsmp_image_skip'
 CURRENT_IP = 'current_ip'
 
 intervals = (
@@ -70,9 +73,14 @@ def seconds_to_frames(seconds, fps):
     return int(seconds) * fps
 
 
-# Check if a file is an mp4
+# Check if a file is a video
 def check_vid(value):
     return os.path.exists(value) and value.endswith(VIDEO_FILE_TYPES)
+
+
+# Check if a file is an image
+def check_image(value):
+    return os.path.exists(value) and value.endswith(IMAGE_FILE_TYPES)
 
 
 # Check if directory is valid
@@ -86,6 +94,14 @@ def check_cron(schedule):
 
 
 def validate_configuration(config):
+
+    # check media type
+    if(config['media'] not in ['image', 'video']):
+        return (False, 'Incorrect media type, must be "image" or "video"')
+
+    # force set directory if displaying images
+    if(config['media'] == 'image'):
+        config['mode'] = 'dir'
 
     # check mode
     if(config['mode'] not in ['file', 'dir']):
@@ -133,7 +149,7 @@ def get_video_info(file):
 
     # get the filename to show as a title
     name = os.path.splitext(os.path.basename(file))[0]
-    if('title' in probeInfo['format']['tags']):
+    if('tags' in probeInfo['format'] and 'title' in probeInfo['format']['tags']):
         name = probeInfo['format']['tags']['title']
     else:
         # replace common chars with spaces
@@ -146,9 +162,10 @@ def get_video_info(file):
 # get the configuration, use default values where custom don't exist
 def get_configuration(db):
     # default configuration
-    result = {'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4,
+    result = {'media': 'video', 'mode': 'file', 'path': '/home/pi/Videos', 'increment': 4,
               'update': '* * * * *', 'start': 1, 'end': 0, 'display': ['ip'],
-              'allow_seek': True, "startup_screen": True, "skip_blank": False}
+              'allow_seek': True, "startup_screen": True, "skip_blank": False,
+              'image_rotation': 'in_order'}
 
     # merge any saved configuration
     if(db.exists(DB_CONFIGURATION)):
@@ -159,6 +176,10 @@ def get_configuration(db):
 
 def list_video_files(dir):
     return natsorted(filter(lambda f: check_vid(os.path.join(dir, f)), os.listdir(dir)))
+
+
+def list_image_files(dir):
+    return natsorted(filter(lambda f: check_image(os.path.join(dir, f)), os.listdir(dir)))
 
 
 # read a key from the database, converting to dict

@@ -27,8 +27,17 @@ function load_status(){
 
     $('#file_title').text(data.info.title);
 
-    $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
-    $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
+    if(data.media == 'video')
+    {
+      $('#video_progress').css("width", data.percent_complete.toFixed(2) + "%");
+      $('#video_progress').text(data.percent_complete.toFixed(2) + "%");
+    }
+    else
+    {
+      $('#video_progress').css("width", "100%");
+      $('#video_progress').text("");
+    }
+
     $('#next_update_text').text(dateString);
 
     // update the player status
@@ -113,16 +122,16 @@ function showPercent(){
     </div>
 </div>
 <div class="container my-2" align="center">
-  {% if(config['mode'] == 'dir'): %}
+  {% if((config['media'] == 'video' and config['mode'] == 'dir') or (config['image_rotation'] == 'in_order')): %}
   <button class="btn btn-secondary mr-3" id="prev_button" onClick="run_action('prev')">Prev</button>
   {% endif %}
   <button class="btn btn-danger" id="toggle_pause_button" onClick="run_action('pause')" style="display: {{ 'display' if status['running'] else 'none' }}">Pause</button>
   <button class="btn btn-success" id="toggle_resume_button" onClick="run_action('resume')" style="display: {{ 'none' if status['running'] else 'display' }}">Resume</button>
-  {% if(config['mode'] == 'dir'): %}
+  {% if((config['media'] == 'video' and config['mode'] == 'dir') or (config['image_rotation'] == 'in_order')): %}
   <button class="btn btn-secondary ml-3" id="next_button" onClick="run_action('next')">Next</button>
   {% endif %}
 </div>
-{% if(config['allow_seek']): %}
+{% if(config['allow_seek'] and config['media'] == 'video'): %}
 <div class="container">
   <div class="row mt-4 mb-2">
     <div class="col-md-12">
@@ -135,6 +144,7 @@ function showPercent(){
 $(document).ready(function () {
     load_status()
 
+{% if(config['media'] == 'video'): %}
     $('.tool-tip')
       .attr('data-toggle', 'tooltip')
       .tooltip({
@@ -165,8 +175,8 @@ $(document).ready(function () {
       // show the tooltip
       $('.tool-tip').tooltip('show');
     });
-
-{% if(config['allow_seek']): %}
+{% endif %}
+{% if(config['allow_seek'] and config['media'] == 'video'): %}
 
     //add a listener for clicking on the progress bar
     $('#video_progress_container').click(function(e){

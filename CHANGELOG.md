@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Added
+
+- added support for displaying images as well as video. Images can now be displayed from a directory of images and cycled on the cron schedule
+- updated web UI to accommodate image and video modes
+
+### Changed
+
+- Pin croniter lib at version 3.0.3. Versions greater than this seem to have issues calculating proper next date values.
+
+### Fixed
+
+- minor syntax and spelling issues
+
 ## 2023-11-16
 
 ### Changed

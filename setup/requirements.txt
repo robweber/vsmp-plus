@@ -1,5 +1,5 @@
 configargparse
-croniter
+croniter==3.0.3
 spidev
 image
 ffmpeg-python

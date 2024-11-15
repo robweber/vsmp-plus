@@ -5,7 +5,9 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-8">
-      <h2>{{ file_info['info']['title'] }} - {{ file_info['percent_complete'] | int }}%</h2>
+      <h2>
+        {{ file_info['info']['title'] }}{% if (file_info['media'] == 'video') %}- {{ file_info['percent_complete'] | int }}%{% endif %}
+      </h2>
     </div>
   </div>
   <div class="row mb-2 mt-2">
