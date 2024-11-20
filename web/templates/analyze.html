@@ -3,11 +3,13 @@
 <script src="/static/js/vsmp_file_browser.js"></script>
 <script type="text/javascript">
   function analyze(){
+    $('#config_table').hide();
     showFlash('Analyzer started - please wait', 'success')
     $('#analyze_button').prop('disabled', true);
 
     // build the json post
-    postData = {"mode": $('#config_mode').val(),
+    postData = {"media": "video",
+               "mode": $('#config_mode').val(),
                "path": $('#config_path').val(),
                "update": $('#config_update').val(),
                "increment": parseInt($('#config_increment').val()),
@@ -19,7 +21,6 @@
       if(data.success)
       {
         // hide config and show results
-        $('#config_table').hide();
         $('#result_table').show();
 
         // clear table
