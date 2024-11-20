@@ -109,7 +109,7 @@ def find_next_file(config, lastPlayed, next=False):
                 result = info.analyze_video(config['path'])
         else:
             # we're in dir mode, use the name of the last played file if it exists in the directory
-            validFiles = os.listDir(config['path'])
+            validFiles = os.listdir(config['path'])
             if('file' in lastPlayed and os.path.basename(lastPlayed['file']) in validFiles and not next):
                 # use information loaded from last played file
                 result = lastPlayed
