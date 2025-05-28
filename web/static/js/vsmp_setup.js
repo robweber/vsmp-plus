@@ -20,8 +20,9 @@ function changeMedia(){
 }
 
 function saveConfig(){
+  media_type = $('#config_media').val()
   // build the json post
-  postData = {"media": $('#config_media').val(),
+  postData = {"media": media_type,
              "mode": $('#config_mode').val(),
              "path": $('#config_path').val(),
              "update": $('#config_update').val(),
@@ -32,19 +33,20 @@ function saveConfig(){
 
   // display represented as an array
   display = [];
-  if($('#config_display_title').is(':checked'))
+  if($('#config_display_' + media_type + '_title').is(':checked'))
   {
     display.push('title');
   }
 
-  if($('#config_display_timecode').is(':checked'))
-  {
-    display.push('timecode');
-  }
-
-  if($('#config_display_ip').is(':checked'))
+  if($('#config_display_' + media_type + '_ip').is(':checked'))
   {
     display.push('ip');
+  }
+
+  // this option only exists for video
+  if($('#config_display_video_timecode').is(':checked'))
+  {
+    display.push('timecode');
   }
 
   postData.display = display;
