@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - Seek fails due to config variable not being set (moved db read of config to beginning of execute_action in webapp.py
+- Fix to seek commands being ignored (caused by data being over-written by update_display()) 
 
 ## 2025-05-28
 
