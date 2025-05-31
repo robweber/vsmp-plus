@@ -163,6 +163,8 @@ def update_display(config, epd, db):
 
     # get the file to display
     media_file = find_next_file(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
+    # Save pos to cehck for db changes later
+    last_pos = media_file['pos']
 
     # check if we have a properly analyzed file
     if('file' not in media_file):
@@ -273,8 +275,13 @@ def update_display(config, epd, db):
     else:
         logging.info(f"Displaying {media_file['name']}")
 
-    # save the last played info
-    utils.write_db(db, utils.DB_LAST_PLAYED_FILE, media_file)
+    # If the current values in the database have changed since the start of update_display,
+    # then a change has been (such as a seek or an api/db update). So we do not write back the calculated
+    # values for the next run
+    media_file_now = find_next_file(config, utils.read_db(db, utils.DB_LAST_PLAYED_FILE))
+    if media_file_now['pos'] == last_pos:
+        # save the last played info
+        utils.write_db(db, utils.DB_LAST_PLAYED_FILE, media_file)
 
     epd.sleep()
 
