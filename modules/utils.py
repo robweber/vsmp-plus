@@ -70,7 +70,7 @@ def frames_to_seconds(frames, fps):
 
 
 def seconds_to_frames(seconds, fps):
-    return int(seconds) * fps
+    return int(seconds * fps)
 
 
 # Check if a file is a video

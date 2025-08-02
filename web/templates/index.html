@@ -88,9 +88,10 @@ function calcSeconds(percent){
   pos = percent * vInfo.frame_count;
 
   //turn pos into seconds/minutes/hours of video
-  seconds = ((pos/vInfo.fps) % 60) % 60;
-  minutes = ((pos/vInfo.fps)/60) % 60;
-  hours = (pos/vInfo.fps)/60/60;
+  totalSeconds = pos/vInfo.fps
+  hours = Math.floor(totalSeconds / 3600);
+  minutes = Math.floor((totalSeconds % 3600) / 60);
+  seconds = Math.round(totalSeconds % 60);
 
   //return hours.min of video
   return hours.toLocaleString('en-US', localeOptions) + ":" +

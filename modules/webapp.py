@@ -74,6 +74,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
     @app.route('/api/control/<action>', methods=['POST'])
     def execute_action(action):
         result = {'success': True, 'message': '', 'action': action}
+        config = utils.get_configuration(db)
 
         # get the action
         if(action in ['pause', 'resume']):
@@ -81,7 +82,6 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
             utils.write_db(db, utils.DB_PLAYER_STATUS, {'running': action == 'resume'})  # eval to True/False
             result['message'] = f"Action {action} executed"
         elif(action in ['next', 'prev']):
-            config = utils.get_configuration(db)
 
             if(config['mode'] == 'dir'):
                 nextFile = utils.read_db(db, utils.DB_LAST_PLAYED_FILE)
@@ -89,9 +89,9 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
 
                 # use the info parser to find the next or previous file
                 if(config['media'] == 'video'):
-                    info = VideoInfo(utils.get_configuration(db))
+                    info = VideoInfo(config)
                 else:
-                    info = ImageInfo(utils.get_configuration(db))
+                    info = ImageInfo(config)
 
                     # load how many skips are queued
                     skip_num = utils.read_db(db, utils.DB_IMAGE_SKIP)
@@ -133,7 +133,7 @@ def webapp_thread(port_number, debugMode=False, logHandlers=[]):
 
                 if('file' in nextVideo):
                     # see to this value
-                    info = VideoInfo(utils.get_configuration(db))
+                    info = VideoInfo(config)
                     nextVideo = info.seek_video(nextVideo, data['amount'])
 
                     result['message'] = f"Seeking to {data['amount']:.2f} percent on next update"
